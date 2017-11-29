@@ -1,8 +1,16 @@
 package com.example.formandocodigo.psicotimes.view;
 
+import android.app.AppOpsManager;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Process;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,18 +22,40 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.formandocodigo.psicotimes.R;
+import com.example.formandocodigo.psicotimes.data.cache.FileManager;
+import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
+import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
+import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
+import com.example.formandocodigo.psicotimes.model.StateUse;
+import com.example.formandocodigo.psicotimes.service.StateUseService;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private PieChart pieChart;
+    ArrayList<StateUse> stateUses = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        pieChart = findViewById(R.id.pie_chart_statistics);
+        pieChart.setUsePercentValues(true);
+
+        initializeService();
+
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -40,8 +70,28 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        setData();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopService(new Intent(MainActivity.this, StateUseService.class));
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        initializeService();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(MainActivity.this, StateUseService.class));
     }
 
     @Override
@@ -96,8 +146,125 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void initializeService() {
+        if (checkForPermission(this)) {
+            startService(new Intent(MainActivity.this, StateUseService.class));
+        } else {
+            requestPermission();
+        }
+    }
+
+    private boolean checkForPermission(Context context) {
+        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.getPackageName());
+        return mode == AppOpsManager.MODE_ALLOWED;
+    }
+
+    private void requestPermission() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        View view = getLayoutInflater().inflate(R.layout.dialog_request_permission, null);
+
+        builder.setView(view);
+
+        builder.setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    void setData() {
+        getAppAll();
+
+        ArrayList<PieEntry> yVals = new ArrayList<>();
+        ArrayList<String> xVals = new ArrayList<>();
+
+        PieDataSet dataSet;
+
+        if (stateUses.size() > 0) {
+            for (int i = 0; i < stateUses.size(); i++) {
+                yVals.add(new PieEntry(stateUses.get(i).getQuantity(), i));
+                xVals.add(stateUses.get(i).getNameApplication());
+            }
+            dataSet = new PieDataSet(yVals, "Cantidad de uso");
+            dataSet.setSelectionShift(stateUses.size());
+        } else {
+            // Default valor
+            float[] yData = { 5, 10, 15, 30, 40 };
+            String[] xData = { "Sony", "Huawei", "LG", "Apple", "Samsung" };
+
+            for (int i = 0; i < yData.length; i++)
+                yVals.add(new PieEntry(yData[i], i));
+
+            for (int i = 0; i < xData.length; i++)
+                xVals.add(xData[i]);
+
+            dataSet = new PieDataSet(yVals, "Dafault");
+            dataSet.setSelectionShift(5);
+        }
+
+        // create pie data set
+        dataSet.setSliceSpace(2);
+        //dataSet.setSelectionShift(5);
+
+        // add many colors
+        ArrayList<Integer> colors = new ArrayList<>();
+
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.LIBERTY_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.PASTEL_COLORS)
+            colors.add(c);
+
+        colors.add(ColorTemplate.getHoloBlue());
+        dataSet.setColors(colors);
+
+        // instantiate pie data object now
+        PieData data = new PieData(dataSet);
+        data.setValueFormatter(new PercentFormatter());
+        data.setValueTextSize(11f);
+        data.setValueTextColor(Color.GRAY);
+
+        pieChart.setData(data);
+
+        // undo all highlights
+        pieChart.highlightValues(null);
+
+        // update pie chart
+        pieChart.invalidate();
+    }
+
+
+    void getAppAll() {
+        StateUseCacheImpl read = new StateUseCacheImpl(this, new Serializer(), new FileManager());
+        StateUseEntityDataMapper stateUseMapper = new StateUseEntityDataMapper();
+        stateUses = stateUseMapper.transformArrayList(read.getAll());
+    }
+
 }
