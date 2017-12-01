@@ -13,13 +13,13 @@ public class RegisterResponse {
     @Json(name = "message")
     String message;
     @Json(name = "success")
-    Map<String, List<String>> success;
+    Map<String, String> success;
 
     public String getMessage() {
         return message;
     }
 
-    public Map<String, List<String>> getSuccess() {
+    public Map<String, String> getSuccess() {
         return success;
     }
 }

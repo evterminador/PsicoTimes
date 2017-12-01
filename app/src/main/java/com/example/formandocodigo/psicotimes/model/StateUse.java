@@ -12,6 +12,7 @@ public class StateUse {
     private Long useTime;
     private Timestamp lastUseTime;
     private Integer quantity;
+    private Boolean state;
     private Timestamp created_at;
     private Timestamp updated_at;
 
@@ -60,6 +61,14 @@ public class StateUse {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Boolean getState() {
+        return state;
+    }
+
+    public void setState(Boolean state) {
+        this.state = state;
     }
 
     public Timestamp getCreated_at() {

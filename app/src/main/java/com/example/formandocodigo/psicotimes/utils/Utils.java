@@ -54,9 +54,4 @@ public class Utils {
 
         return day+hour+min+sec;
     }
-
-    public static String moreStringToTime(String usedTimeOld, String usedTimeNew) {
-
-        return "";
-    }
 }

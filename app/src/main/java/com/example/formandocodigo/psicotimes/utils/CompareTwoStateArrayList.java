@@ -1,6 +1,7 @@
 package com.example.formandocodigo.psicotimes.utils;
 
 import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
+import com.example.formandocodigo.psicotimes.model.StateUse;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,39 +19,33 @@ public class CompareTwoStateArrayList {
         this.a2 = a2;
     }
 
-    public ArrayList<StateUseEntity> fix() {
-        ArrayList<StateUseEntity> newArray = new ArrayList<>();
+    public ArrayList<StateUseEntity> fixArray() {
         Iterator i = a1.iterator();
-
-        Boolean swith;
 
         while (i.hasNext()) {
             StateUseEntity state = (StateUseEntity) i.next();
-            String nomApp;
-            swith = true;
-            for (StateUseEntity stateUse : a2) {
-                nomApp = stateUse.getNameApplication();
-                if (state.getNameApplication().equalsIgnoreCase(nomApp)) {
-                    state.setUseTime(state.getUseTime());
-                    state.setQuantity(state.getQuantity() + stateUse.getQuantity());
-                    swith = false;
-                    break;
-                }
-            }
-            if (swith) {
 
+            if (isExistsStateUse(state)) {
+                addStateUseOld(state);
             }
         }
 
-        return newArray;
+        return a2;
     }
 
-    public int size1() {
-        return a1.size();
+    private boolean isExistsStateUse(StateUseEntity stateUseEntity) {
+        for (StateUseEntity state : a2) {
+            if (state.getNameApplication().equalsIgnoreCase(stateUseEntity.getNameApplication())) {
+                state.setUseTime(state.getUseTime());
+                state.setQuantity(state.getQuantity() + stateUseEntity.getQuantity());
+                return false;
+            }
+        }
+        return true;
     }
 
-    public int size2() {
-        return  a2.size();
+    private void addStateUseOld(StateUseEntity stateUseEntity) {
+        a2.add(stateUseEntity);
     }
 
 }

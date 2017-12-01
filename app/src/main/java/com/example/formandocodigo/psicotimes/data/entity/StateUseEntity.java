@@ -24,6 +24,9 @@ public class StateUseEntity {
     @SerializedName("quantity")
     private Integer quantity;
 
+    @SerializedName("state")
+    private Boolean state;
+
     @SerializedName("created_at")
     private Timestamp created_at;
 
@@ -71,6 +74,14 @@ public class StateUseEntity {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Boolean getState() {
+        return state;
+    }
+
+    public void setState(Boolean state) {
+        this.state = state;
     }
 
     public Timestamp getCreated_at() {

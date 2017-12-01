@@ -264,7 +264,9 @@ public class MainActivity extends AppCompatActivity
     void getAppAll() {
         StateUseCacheImpl read = new StateUseCacheImpl(this, new Serializer(), new FileManager());
         StateUseEntityDataMapper stateUseMapper = new StateUseEntityDataMapper();
-        stateUses = stateUseMapper.transformArrayList(read.getAll());
+        if (read.getAll() != null) {
+            stateUses = stateUseMapper.transformArrayList(read.getAll());
+        }
     }
 
 }

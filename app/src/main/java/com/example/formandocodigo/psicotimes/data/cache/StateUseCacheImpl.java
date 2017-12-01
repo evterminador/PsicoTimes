@@ -4,13 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.formandocodigo.psicotimes.utils.CompareTwoStateArrayList;
-import com.example.formandocodigo.psicotimes.utils.Utils;
 import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -54,7 +52,10 @@ public class StateUseCacheImpl implements StateUseCache {
 
     public ArrayList<StateUseEntity> getAll() {
         String stateUses = fileManager.getFromPreferencesStates(context, DEFAULT_FILE_NAME, DEFAULT_PREFERENCES_NAME);
-        return this.serializer.deserializeAll(stateUses);
+        if (stateUses != null) {
+            return this.serializer.deserializeAll(stateUses);
+        }
+        return null;
     }
 
     @Override
@@ -68,20 +69,21 @@ public class StateUseCacheImpl implements StateUseCache {
             //final File userEntityFile = this.buildFile(stateUseEntity);
             String value = getAppLast();
             // In process implementation
+            final String jsonString;
             if (value != null) {
                 ArrayList<StateUseEntity> stateUseEntities = this.serializer.deserializeAll(value);
 
                 CompareTwoStateArrayList comparar = new CompareTwoStateArrayList(stateUseEntity, stateUseEntities);
 
-                ArrayList<StateUseEntity> newArray = comparar.fix();
+                ArrayList<StateUseEntity> newArray = comparar.fixArray();
+
+                jsonString = this.serializer.serializeAll(newArray);
+            } else {
+                jsonString = this.serializer.serializeAll(stateUseEntity);
             }
-
-            final String jsonString = this.serializer.serializeAll(stateUseEntity);
-
             setLastCacheUpdateTimeMillis();
 
             fileManager.writeToPreferences(context, DEFAULT_FILE_NAME, DEFAULT_PREFERENCES_NAME, jsonString);
-
             /*if (!isCached(stateUseEntity.getId())) {
                 new CacheWriter(this.fileManager, userEntityFile, jsonString);
             }*/
@@ -93,8 +95,6 @@ public class StateUseCacheImpl implements StateUseCache {
                 Context.MODE_PRIVATE);
         return sharedPreferences.getString(DEFAULT_PREFERENCES_NAME, null);
     }
-
-
 
     @Override
     public boolean isCached(int stateUseId) {

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
@@ -28,13 +27,14 @@ public class StateUseService extends Service implements StateUseServiceView {
 
     private ArrayList<StateUseEntity> stateUses = new ArrayList<>();
 
-    StateUseCacheImpl save = new StateUseCacheImpl(this, new Serializer(), new FileManager());
+    StateUseCacheImpl save;
 
     public StateUseService() {}
 
     @Override
     public void onCreate() {
         super.onCreate();
+        save = new StateUseCacheImpl(this, new Serializer(), new FileManager());
     }
 
     @Override
@@ -66,9 +66,10 @@ public class StateUseService extends Service implements StateUseServiceView {
     @Override
     public void getApp() {
         UsageStatsManager manager = (UsageStatsManager) getSystemService(this.USAGE_STATS_SERVICE);
-        long time = System.currentTimeMillis();
+        long beginTime = System.currentTimeMillis();
+        long endTime = getAppLastUse();
 
-        List<UsageStats> stats = manager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - getAppLastUse(), time);
+        List<UsageStats> stats = manager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, beginTime - endTime, beginTime);
 
         Iterator i = stats.iterator();
 
@@ -80,29 +81,27 @@ public class StateUseService extends Service implements StateUseServiceView {
             sta = (UsageStats) i.next();
 
             CharSequence c;
-
             try {
                 timeUse = new Timestamp(sta.getLastTimeStamp());
                 c = pm.getApplicationLabel(pm.getApplicationInfo(sta.getPackageName(), PackageManager.GET_META_DATA));
                 String nPk = String.valueOf(c);
 
-                Log.d("Aplicaciones", c.toString());
+                if (sta.getLastTimeUsed() > endTime) {
+                    StateUseEntity  stateUse;
+                    if (!repeatApp(sta, nPk)) {
+                        stateUse = new StateUseEntity();
 
-                StateUseEntity  stateUse;
-                if (!repeatApp(sta, nPk)) {
-                    stateUse = new StateUseEntity();
+                        stateUse.setNameApplication(c.toString());
+                        stateUse.setUseTime(sta.getTotalTimeInForeground());
+                        stateUse.setLastUseTime(timeUse);
+                        stateUse.setQuantity(1);
 
-                    stateUse.setNameApplication(c.toString());
-                    stateUse.setUseTime(sta.getTotalTimeInForeground());
-                    stateUse.setLastUseTime(timeUse);
-                    stateUse.setQuantity(1);
-
-                    stateUses.add(stateUse);
+                        stateUses.add(stateUse);
+                    }
                 }
                 //runningApplications.add(c.toString());
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d("Aplicaciones", e.getMessage());
             }
         }
     }
@@ -112,13 +111,12 @@ public class StateUseService extends Service implements StateUseServiceView {
         if (lastTime > 0) {
             return  lastTime;
         }
-        return 1000*60*60*10;
+        return (System.currentTimeMillis() - 1000*60*60);
     }
 
     private void saveApplication() {
         save.putAll(stateUses);
     }
-
 
     private boolean repeatApp(UsageStats stats, String nPackage) {
         try {
@@ -138,6 +136,6 @@ public class StateUseService extends Service implements StateUseServiceView {
     }
 
     void lastAppUseTime() {
-
+        
     }
 }

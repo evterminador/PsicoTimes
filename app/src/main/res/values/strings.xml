@@ -5,7 +5,7 @@
     <!-- Strings related to login -->
     <string name="prompt_name">Username</string>
     <string name="prompt_email">Correo</string>
-    <string name="prompt_password">Contraseña (opcional)</string>
+    <string name="prompt_password">Contraseña</string>
     <string name="prompt_password_confirmed">Confirmar contraseña</string>
     <string name="action_start">Iniciar aplicación</string>
     <string name="action_sign_in_short">Registrar</string>
@@ -16,8 +16,6 @@
     <string name="permission_rationale">"Los permisos de contacto son necesarios
         para proporcinar terminaciones de correos electronicos."
     </string>
-    <string name="dont_have_account">¿No tienes cuenta? </string>
-    <string name="text_create_here">Crea una aqui</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
