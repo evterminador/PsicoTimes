@@ -1,6 +1,6 @@
-package com.example.formandocodigo.psicotimes.login.network;
+package com.example.formandocodigo.psicotimes.login.net;
 
-import com.example.formandocodigo.psicotimes.login.entity.RegisterResponse;
+import com.example.formandocodigo.psicotimes.login.net.entity.RegisterResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Field;

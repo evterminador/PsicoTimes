@@ -3,11 +3,10 @@ package com.example.formandocodigo.psicotimes.login.repository;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.formandocodigo.psicotimes.login.entity.RegisterResponse;
+import com.example.formandocodigo.psicotimes.login.net.entity.RegisterResponse;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Singleton;

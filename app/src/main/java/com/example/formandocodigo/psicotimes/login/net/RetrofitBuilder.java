@@ -1,4 +1,4 @@
-package com.example.formandocodigo.psicotimes.login.network;
+package com.example.formandocodigo.psicotimes.login.net;
 
 import com.example.formandocodigo.psicotimes.BuildConfig;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 /**
@@ -20,7 +21,7 @@ public class RetrofitBuilder {
     private static final String BASE_URL = "http://192.168.1.6:8000/api/";
 
     private final static OkHttpClient client = buildClient();
-    private final static Retrofit retrofit = buildRetrofit(client);
+    private static Retrofit retrofit = buildRetrofit(client);
 
     private static OkHttpClient buildClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()

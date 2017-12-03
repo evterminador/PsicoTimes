@@ -145,7 +145,7 @@ public class StateUseCacheImpl implements StateUseCache {
     /**
      * Set in millis, the last time the cache was accessed.
      */
-    private void setLastCacheUpdateTimeMillis() {
+    public void setLastCacheUpdateTimeMillis() {
         final long currentMillis = System.currentTimeMillis();
         this.fileManager.writeToPreferences(this.context, SETTINGS_FILE_NAME,
                 SETTINGS_KEY_LAST_CACHE_UPDATE, currentMillis);

@@ -41,6 +41,7 @@ public class StateUseService extends Service implements StateUseServiceView {
     public int onStartCommand(Intent intent, int flags, int startId) {
         //return super.onStartCommand(intent, flags, startId);
         Toast.makeText(this, "Service starting", Toast.LENGTH_SHORT).show();
+        //save.setLastCacheUpdateTimeMillis();
         initializeApp();
         return  START_STICKY;
     }

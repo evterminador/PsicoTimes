@@ -9,8 +9,8 @@ import android.os.Bundle;
 import android.os.Process;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,12 +20,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.R;
 import com.example.formandocodigo.psicotimes.data.cache.FileManager;
 import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
 import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
+import com.example.formandocodigo.psicotimes.view.net.OrderService;
+import com.example.formandocodigo.psicotimes.view.net.RetrofitBuilder;
+import com.example.formandocodigo.psicotimes.view.net.entity.AppOrder;
+import com.example.formandocodigo.psicotimes.view.net.entity.AppOrderResponse;
 import com.example.formandocodigo.psicotimes.model.StateUse;
 import com.example.formandocodigo.psicotimes.service.StateUseService;
 import com.github.mikephil.charting.charts.PieChart;
@@ -37,11 +42,20 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "MainActivity";
+
     private PieChart pieChart;
     ArrayList<StateUse> stateUses = new ArrayList<>();
+
+    OrderService service;
+    Call<AppOrderResponse> call;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,18 +67,21 @@ public class MainActivity extends AppCompatActivity
         pieChart = findViewById(R.id.pie_chart_statistics);
         pieChart.setUsePercentValues(true);
 
+        service = RetrofitBuilder.createService(OrderService.class);
+
         initializeService();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                syncUp();
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -91,12 +108,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (call != null)  {
+            call.cancel();
+            call = null;
+        }
         stopService(new Intent(MainActivity.this, StateUseService.class));
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -267,6 +288,42 @@ public class MainActivity extends AppCompatActivity
         if (read.getAll() != null) {
             stateUses = stateUseMapper.transformArrayList(read.getAll());
         }
+    }
+
+    void syncUp() {
+
+        if (stateUses != null) {
+            AppOrder order = new AppOrder();
+
+            order.setToken("5WnKwTopjztqMPIZpKWwxVl40jlGdQVLTtSsueoQwAjWFzgSWcli1TjPmRws");
+            order.setEmail("k_npc2009@hotmail.com");
+
+            Toast.makeText(this, "" + stateUses.size(), Toast.LENGTH_LONG).show();
+
+            order.setStateUses(stateUses);
+
+            call = service.appOrder(order);
+
+            call.enqueue(new Callback<AppOrderResponse>() {
+
+                @Override
+                public void onResponse(Call<AppOrderResponse> call, Response<AppOrderResponse> response) {
+                    if (response.isSuccessful()) {
+                        Log.w(TAG, "onResponse: " + response.body());
+                        //repository.signIn(response.body());
+                    } else {
+                        Log.w(TAG, "onResponse: " + response.errorBody());
+                        //handleErrors(response.errorBody());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AppOrderResponse> call, Throwable t) {
+                    Log.w(TAG, "onFailure: " + t.getMessage());
+                }
+            });
+        }
+
     }
 
 }

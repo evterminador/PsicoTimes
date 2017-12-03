@@ -1,4 +1,4 @@
-package com.example.formandocodigo.psicotimes.login.entity;
+package com.example.formandocodigo.psicotimes.login.net.entity;
 
 import java.util.List;
 import java.util.Map;

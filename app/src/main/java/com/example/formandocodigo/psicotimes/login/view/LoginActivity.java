@@ -12,10 +12,10 @@ import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
 import com.example.formandocodigo.psicotimes.R;
-import com.example.formandocodigo.psicotimes.login.entity.ApiError;
-import com.example.formandocodigo.psicotimes.login.entity.RegisterResponse;
-import com.example.formandocodigo.psicotimes.login.network.ApiService;
-import com.example.formandocodigo.psicotimes.login.network.RetrofitBuilder;
+import com.example.formandocodigo.psicotimes.login.net.entity.ApiError;
+import com.example.formandocodigo.psicotimes.login.net.entity.RegisterResponse;
+import com.example.formandocodigo.psicotimes.login.net.ApiService;
+import com.example.formandocodigo.psicotimes.login.net.RetrofitBuilder;
 import com.example.formandocodigo.psicotimes.login.repository.LoginActivityRepositoryImpl;
 import com.example.formandocodigo.psicotimes.utils.Utils;
 import com.example.formandocodigo.psicotimes.view.MainActivity;
@@ -99,6 +99,8 @@ public class LoginActivity extends AppCompatActivity implements LoginActivityVie
                     if (response.isSuccessful()) {
                         Log.w(TAG, "onResponse: " + response.body());
                         repository.signIn(response.body());
+
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     } else {
                         handleErrors(response.errorBody());
                     }
