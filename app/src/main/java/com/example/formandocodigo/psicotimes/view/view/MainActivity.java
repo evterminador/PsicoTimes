@@ -1,4 +1,4 @@
-package com.example.formandocodigo.psicotimes.view;
+package com.example.formandocodigo.psicotimes.view.view;
 
 import android.app.AppOpsManager;
 import android.content.Context;
@@ -27,10 +27,10 @@ import com.example.formandocodigo.psicotimes.data.cache.FileManager;
 import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
 import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
-import com.example.formandocodigo.psicotimes.view.net.OrderService;
-import com.example.formandocodigo.psicotimes.view.net.RetrofitBuilder;
-import com.example.formandocodigo.psicotimes.view.net.entity.AppOrder;
-import com.example.formandocodigo.psicotimes.view.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.view.repository.net.OrderService;
+import com.example.formandocodigo.psicotimes.view.repository.net.RetrofitBuilder;
+import com.example.formandocodigo.psicotimes.view.repository.net.entity.AppOrder;
+import com.example.formandocodigo.psicotimes.view.repository.net.entity.AppOrderResponse;
 import com.example.formandocodigo.psicotimes.model.StateUse;
 import com.example.formandocodigo.psicotimes.service.StateUseService;
 import com.github.mikephil.charting.charts.PieChart;
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity
 
         if (stateUses.size() > 0) {
             for (int i = 0; i < stateUses.size(); i++) {
-                yVals.add(new PieEntry(stateUses.get(i).getQuantity(), i));
+                yVals.add(new PieEntry(stateUses.get(i).getQuantity(), stateUses.get(i).getNameApplication()));
                 xVals.add(stateUses.get(i).getNameApplication());
             }
             dataSet = new PieDataSet(yVals, "Cantidad de uso");
@@ -323,7 +323,6 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
-
     }
 
 }

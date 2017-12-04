@@ -7,18 +7,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
 import com.example.formandocodigo.psicotimes.R;
-import com.example.formandocodigo.psicotimes.login.net.entity.ApiError;
-import com.example.formandocodigo.psicotimes.login.net.entity.RegisterResponse;
-import com.example.formandocodigo.psicotimes.login.net.ApiService;
-import com.example.formandocodigo.psicotimes.login.net.RetrofitBuilder;
-import com.example.formandocodigo.psicotimes.login.repository.LoginActivityRepositoryImpl;
+import com.example.formandocodigo.psicotimes.login.repository.net.entity.ApiError;
+import com.example.formandocodigo.psicotimes.login.repository.net.entity.RegisterResponse;
+import com.example.formandocodigo.psicotimes.login.repository.net.ApiService;
+import com.example.formandocodigo.psicotimes.login.repository.net.RetrofitBuilder;
+import com.example.formandocodigo.psicotimes.login.repository.LoginRepositoryImpl;
 import com.example.formandocodigo.psicotimes.utils.Utils;
-import com.example.formandocodigo.psicotimes.view.MainActivity;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LoginActivity extends AppCompatActivity implements LoginActivityView {
+public class LoginActivity extends AppCompatActivity implements LoginView {
 
     private static final String TAG = "LoginActivity";
 
@@ -41,10 +41,12 @@ public class LoginActivity extends AppCompatActivity implements LoginActivityVie
     TextInputLayout txtEmail;
     @BindView(R.id.txt_password)
     TextInputLayout txtPassword;
+    @BindView(R.id.login_progress)
+    ProgressBar loginProgress;
 
     AwesomeValidation validator;
 
-    LoginActivityRepositoryImpl repository;
+    LoginRepositoryImpl repository;
 
     ApiService service;
     Call<RegisterResponse> call;
@@ -56,10 +58,10 @@ public class LoginActivity extends AppCompatActivity implements LoginActivityVie
 
         ButterKnife.bind(this);
 
-        repository = new LoginActivityRepositoryImpl(this);
+        repository = new LoginRepositoryImpl(this);
 
         if (repository.isExistsPreferences()) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, CreateProfileActivity.class);
             startActivity(intent);
         }
         service = RetrofitBuilder.createService(ApiService.class);
@@ -78,6 +80,7 @@ public class LoginActivity extends AppCompatActivity implements LoginActivityVie
 
     @OnClick(R.id.btn_start)
     void onButtonStartClick(View e) {
+        showProgressBar();
         String name = txtName.getEditText().getText().toString();
         String email = txtEmail.getEditText().getText().toString();
         String password = txtPassword.getEditText().getText().toString();
@@ -100,14 +103,18 @@ public class LoginActivity extends AppCompatActivity implements LoginActivityVie
                         Log.w(TAG, "onResponse: " + response.body());
                         repository.signIn(response.body());
 
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        startActivity(new Intent(LoginActivity.this, CreateProfileActivity.class));
                     } else {
                         handleErrors(response.errorBody());
                     }
+
+                    hideProgressBar();
                 }
                 @Override
                 public void onFailure(Call<RegisterResponse> call, Throwable t) {
                     Log.w(TAG, "onFailure: " + t.getMessage());
+
+                    hideProgressBar();
                 }
             });
         }
@@ -133,5 +140,15 @@ public class LoginActivity extends AppCompatActivity implements LoginActivityVie
                 txtPassword.setError(error.getValue().get(0));
             }
         }
+    }
+
+    @Override
+    public void showProgressBar() {
+        loginProgress.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        loginProgress.setVisibility(View.GONE);
     }
 }

@@ -10,7 +10,7 @@ import com.squareup.leakcanary.LeakCanary;
  * Created by FormandoCodigo on 01/12/2017.
  */
 
-public class MyApp extends Application {
+public class PsicoTimesApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();

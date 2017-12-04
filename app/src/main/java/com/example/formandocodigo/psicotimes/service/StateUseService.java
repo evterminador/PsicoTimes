@@ -26,7 +26,7 @@ import java.util.List;
 public class StateUseService extends Service implements StateUseServiceView {
 
     private ArrayList<StateUseEntity> stateUses = new ArrayList<>();
-
+    private long initialTime;
     StateUseCacheImpl save;
 
     public StateUseService() {}
@@ -41,7 +41,8 @@ public class StateUseService extends Service implements StateUseServiceView {
     public int onStartCommand(Intent intent, int flags, int startId) {
         //return super.onStartCommand(intent, flags, startId);
         Toast.makeText(this, "Service starting", Toast.LENGTH_SHORT).show();
-        //save.setLastCacheUpdateTimeMillis();
+        initialTime = getAppLastUse();
+        save.setLastCacheUpdateTimeMillis();
         initializeApp();
         return  START_STICKY;
     }
@@ -68,7 +69,7 @@ public class StateUseService extends Service implements StateUseServiceView {
     public void getApp() {
         UsageStatsManager manager = (UsageStatsManager) getSystemService(this.USAGE_STATS_SERVICE);
         long beginTime = System.currentTimeMillis();
-        long endTime = getAppLastUse();
+        long endTime = initialTime;
 
         List<UsageStats> stats = manager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, beginTime - endTime, beginTime);
 

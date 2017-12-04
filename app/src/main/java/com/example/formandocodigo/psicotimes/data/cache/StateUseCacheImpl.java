@@ -81,7 +81,6 @@ public class StateUseCacheImpl implements StateUseCache {
             } else {
                 jsonString = this.serializer.serializeAll(stateUseEntity);
             }
-            setLastCacheUpdateTimeMillis();
 
             fileManager.writeToPreferences(context, DEFAULT_FILE_NAME, DEFAULT_PREFERENCES_NAME, jsonString);
             /*if (!isCached(stateUseEntity.getId())) {

@@ -1,7 +1,7 @@
 package com.example.formandocodigo.psicotimes.utils;
 
-import com.example.formandocodigo.psicotimes.login.net.entity.ApiError;
-import com.example.formandocodigo.psicotimes.login.net.RetrofitBuilder;
+import com.example.formandocodigo.psicotimes.login.repository.net.entity.ApiError;
+import com.example.formandocodigo.psicotimes.login.repository.net.RetrofitBuilder;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;

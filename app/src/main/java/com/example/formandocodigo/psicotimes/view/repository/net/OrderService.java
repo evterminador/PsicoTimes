@@ -1,7 +1,7 @@
-package com.example.formandocodigo.psicotimes.view.net;
+package com.example.formandocodigo.psicotimes.view.repository.net;
 
-import com.example.formandocodigo.psicotimes.view.net.entity.AppOrder;
-import com.example.formandocodigo.psicotimes.view.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.view.repository.net.entity.AppOrder;
+import com.example.formandocodigo.psicotimes.view.repository.net.entity.AppOrderResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

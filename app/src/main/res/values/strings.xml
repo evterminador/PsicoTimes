@@ -25,4 +25,22 @@
     <string name="exception_message_generic">Hubo un error en la apliación</string>
     <string name="exception_message_no_connection">No hay conexión a internet</string>
     <string name="exception_message_state_use_not_found">No se pueden recuperar los datos del estado de uso. Compruebe su conexión a internet</string>
+    <string name="toolbar_tittle_create_profile">Crear perfil</string>
+    <string name="error_field_number">El campo solo acepta números</string>
+
+    <string name="occupation_prompt">Ocupación</string>
+    <string name="sex_prompt">Sexo</string>
+
+    <string-array name="occupations">
+        <item>Solo trabajo</item>
+        <item>Solo estudio</item>
+        <item>Estudio y trabajo</item>
+        <item>Sin occup.</item>
+    </string-array>
+
+    <string-array name="sex">
+        <item>M</item>
+        <item>F</item>
+        <item>otros</item>
+    </string-array>
 </resources>

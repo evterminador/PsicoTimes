@@ -1,4 +1,4 @@
-package com.example.formandocodigo.psicotimes.view.net.entity;
+package com.example.formandocodigo.psicotimes.view.repository.net.entity;
 
 import com.example.formandocodigo.psicotimes.model.StateUse;
 import com.squareup.moshi.Json;
