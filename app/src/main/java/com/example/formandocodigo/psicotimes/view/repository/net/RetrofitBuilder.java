@@ -43,7 +43,6 @@ public class RetrofitBuilder {
         if (BuildConfig.DEBUG) {
             builder.addNetworkInterceptor(new StethoInterceptor());
         }
-
         return builder.build();
     }
 
