@@ -1,4 +1,4 @@
-package com.example.formandocodigo.psicotimes.model;
+package com.example.formandocodigo.psicotimes.entity;
 
 import java.sql.Date;
 import java.sql.Timestamp;

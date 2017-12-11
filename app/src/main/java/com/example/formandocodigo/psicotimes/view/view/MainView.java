@@ -5,4 +5,5 @@ package com.example.formandocodigo.psicotimes.view.view;
  */
 
 public interface MainView {
+    void syncError(String error);
 }

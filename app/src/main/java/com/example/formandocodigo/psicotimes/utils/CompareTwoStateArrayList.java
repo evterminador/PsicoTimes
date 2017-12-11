@@ -1,7 +1,6 @@
 package com.example.formandocodigo.psicotimes.utils;
 
 import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
-import com.example.formandocodigo.psicotimes.model.StateUse;
 
 import java.util.ArrayList;
 import java.util.Iterator;

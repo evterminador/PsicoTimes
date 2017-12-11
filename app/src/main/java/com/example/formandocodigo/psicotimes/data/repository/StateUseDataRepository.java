@@ -3,7 +3,7 @@ package com.example.formandocodigo.psicotimes.data.repository;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
 import com.example.formandocodigo.psicotimes.data.repository.datasource.StateUseDataStore;
 import com.example.formandocodigo.psicotimes.data.repository.datasource.StateUseDataStoreFactory;
-import com.example.formandocodigo.psicotimes.model.StateUse;
+import com.example.formandocodigo.psicotimes.entity.StateUse;
 
 import java.util.List;
 

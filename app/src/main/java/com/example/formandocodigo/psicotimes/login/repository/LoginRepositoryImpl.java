@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.formandocodigo.psicotimes.login.repository.net.entity.RegisterResponse;
+import com.example.formandocodigo.psicotimes.utils.Continual;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -19,8 +20,6 @@ import javax.inject.Singleton;
 @Singleton
 public class LoginRepositoryImpl implements LoginRepository {
 
-    private static final String DEFAULT_FILE_NAME = "user_";
-
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     private Context context;
@@ -30,7 +29,7 @@ public class LoginRepositoryImpl implements LoginRepository {
 
     public LoginRepositoryImpl(Context context) {
         this.context = context;
-        sharedPreferences = context.getSharedPreferences(DEFAULT_FILE_NAME, Context.MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences(Continual.Shared.DEFAULT_FILE_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
     }
 
@@ -63,7 +62,7 @@ public class LoginRepositoryImpl implements LoginRepository {
         return false;
     }
 
-    public HashMap<String, String> getEmailandToken() {
+    public HashMap<String, String> getEmailAndToken() {
         HashMap<String, String> data = new HashMap<>();
 
         String email = sharedPreferences.getString("email", null);

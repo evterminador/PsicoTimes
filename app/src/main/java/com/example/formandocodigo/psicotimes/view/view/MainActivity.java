@@ -10,7 +10,6 @@ import android.os.Process;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,39 +22,51 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.R;
-import com.example.formandocodigo.psicotimes.data.cache.FileManager;
-import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
-import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
-import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
-import com.example.formandocodigo.psicotimes.view.repository.net.OrderService;
-import com.example.formandocodigo.psicotimes.view.repository.net.RetrofitBuilder;
-import com.example.formandocodigo.psicotimes.view.repository.net.entity.AppOrder;
-import com.example.formandocodigo.psicotimes.view.repository.net.entity.AppOrderResponse;
-import com.example.formandocodigo.psicotimes.model.StateUse;
+import com.example.formandocodigo.psicotimes.sort.SortStateUseByQuantity;
+import com.example.formandocodigo.psicotimes.sort.SortStateUseByUseTime;
+import com.example.formandocodigo.psicotimes.utils.Converts;
+import com.example.formandocodigo.psicotimes.view.presenter.MainPresenter;
+import com.example.formandocodigo.psicotimes.view.presenter.MainPresenterImpl;
+import com.example.formandocodigo.psicotimes.view.net.OrderService;
+import com.example.formandocodigo.psicotimes.view.net.RetrofitBuilder;
+import com.example.formandocodigo.psicotimes.view.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.service.StateUseService;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-
-    private static final String TAG = "MainActivity";
+        implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
     private PieChart pieChart;
-    ArrayList<StateUse> stateUses = new ArrayList<>();
+    private LineChart lineChart;
+    private BarChart barChart;
+    List<StateUse> stateUses = new ArrayList<>();
 
     OrderService service;
     Call<AppOrderResponse> call;
+
+    private MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +76,19 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         pieChart = findViewById(R.id.pie_chart_statistics);
+        barChart = findViewById(R.id.bar_chart_quantity_use);
         pieChart.setUsePercentValues(true);
 
+
+        Legend l = pieChart.getLegend();
+        l.setEnabled(false);
+
+        Legend l1 = barChart.getLegend();
+        l1.setEnabled(false);
+
         service = RetrofitBuilder.createService(OrderService.class);
+
+        presenter = new MainPresenterImpl(this);
 
         initializeService();
 
@@ -90,7 +111,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        setData();
+        initializeGraphics();
     }
 
     @Override
@@ -103,6 +124,7 @@ public class MainActivity extends AppCompatActivity
     protected void onRestart() {
         super.onRestart();
         initializeService();
+        initializeGraphics();
     }
 
     @Override
@@ -172,6 +194,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void syncError(String error) {
+
+    }
+
     private void initializeService() {
         if (checkForPermission(this)) {
             startService(new Intent(MainActivity.this, StateUseService.class));
@@ -211,21 +238,35 @@ public class MainActivity extends AppCompatActivity
         dialog.show();
     }
 
-    void setData() {
+    private void initializeGraphics() {
         getAppAll();
+        setPieChart();
+        setBarChart();
+    }
 
+    private void setPieChart() {
         ArrayList<PieEntry> yVals = new ArrayList<>();
         ArrayList<String> xVals = new ArrayList<>();
 
         PieDataSet dataSet;
 
         if (stateUses.size() > 0) {
-            for (int i = 0; i < stateUses.size(); i++) {
-                yVals.add(new PieEntry(stateUses.get(i).getQuantity(), stateUses.get(i).getNameApplication()));
-                xVals.add(stateUses.get(i).getNameApplication());
+            List<StateUse> stateUsesByUseTime = stateUseListByUseTime();
+
+            StateUse maxUseTime = null;
+            for (StateUse s : stateUsesByUseTime) {
+                if (maxUseTime == null)
+                    maxUseTime = s;
+                yVals.add(new PieEntry(s.getUseTime(), s.getNameApplication()));
+                xVals.add(s.getNameApplication());
             }
+
             dataSet = new PieDataSet(yVals, "Cantidad de uso");
-            dataSet.setSelectionShift(stateUses.size());
+            dataSet.setSelectionShift(stateUsesByUseTime.size());
+
+            pieChart.setCenterText(maxUseTime.getNameApplication() +
+                    "\n Tiempo de uso: " +
+                    Converts.convertLongToTimeChar(maxUseTime.getUseTime()));
         } else {
             // Default valor
             float[] yData = { 5, 10, 15, 30, 40 };
@@ -246,24 +287,10 @@ public class MainActivity extends AppCompatActivity
         //dataSet.setSelectionShift(5);
 
         // add many colors
-        ArrayList<Integer> colors = new ArrayList<>();
-
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.JOYFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.COLORFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.LIBERTY_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.PASTEL_COLORS)
-            colors.add(c);
+        ArrayList<Integer> colors = getChartsColors();
 
         colors.add(ColorTemplate.getHoloBlue());
+
         dataSet.setColors(colors);
 
         // instantiate pie data object now
@@ -281,48 +308,118 @@ public class MainActivity extends AppCompatActivity
         pieChart.invalidate();
     }
 
+    private void setLineChart() {
+        ArrayList<Entry> componet1 = new ArrayList<>();
 
-    void getAppAll() {
-        StateUseCacheImpl read = new StateUseCacheImpl(this, new Serializer(), new FileManager());
-        StateUseEntityDataMapper stateUseMapper = new StateUseEntityDataMapper();
-        if (read.getAll() != null) {
-            stateUses = stateUseMapper.transformArrayList(read.getAll());
+        LineDataSet dataSet;
+
+        if (stateUses.size() > 0) {
+            List<StateUse> stateUseByQuantity = stateUseListByQuantity();
+
+            for (StateUse s : stateUseByQuantity) {
+                componet1.add(new Entry());
+            }
         }
     }
 
-    void syncUp() {
+    private void setBarChart() {
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        ArrayList<String> xValues = new ArrayList<>();
 
-        if (stateUses != null) {
-            AppOrder order = new AppOrder();
+        BarDataSet dataSet;
 
-            order.setToken("5WnKwTopjztqMPIZpKWwxVl40jlGdQVLTtSsueoQwAjWFzgSWcli1TjPmRws");
-            order.setEmail("k_npc2009@hotmail.com");
+        if (stateUses.size() > 0) {
+            List<StateUse> stateUseByQuantity = stateUseListByQuantity();
 
-            Toast.makeText(this, "" + stateUses.size(), Toast.LENGTH_LONG).show();
+            for (int i = 0; i < stateUseByQuantity.size(); i++) {
+                entries.add(new BarEntry(i, stateUseByQuantity.get(i).getQuantity()));
+                xValues.add(stateUseByQuantity.get(i).getNameApplication());
+            }
 
-            order.setStateUses(stateUses);
+            dataSet = new BarDataSet(entries, "Cantidad de entradas");
+        } else {
+            float[] yData = { 5, 10, 15, 30, 40 };
+            String[] xData = { "Sony", "Huawei", "LG", "Apple", "Samsung" };
 
-            call = service.appOrder(order);
+            for (int i = 0; i < yData.length; i++) {
+                entries.add(new BarEntry(i, yData[i]));
+                xValues.add(xData[i]);
+            }
 
-            call.enqueue(new Callback<AppOrderResponse>() {
-
-                @Override
-                public void onResponse(Call<AppOrderResponse> call, Response<AppOrderResponse> response) {
-                    if (response.isSuccessful()) {
-                        Log.w(TAG, "onResponse: " + response.body());
-                        //repository.signIn(response.body());
-                    } else {
-                        Log.w(TAG, "onResponse: " + response.errorBody());
-                        //handleErrors(response.errorBody());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<AppOrderResponse> call, Throwable t) {
-                    Log.w(TAG, "onFailure: " + t.getMessage());
-                }
-            });
+            dataSet = new BarDataSet(entries, "Defaul values");
         }
+
+        ArrayList<Integer> colors = getChartsColors();
+
+        colors.add(ColorTemplate.getHoloBlue());
+
+        dataSet.setColors(colors);
+
+        BarData data = new BarData(dataSet);
+
+        data.setBarWidth(0.9F);
+
+        barChart.setData(data);
+        barChart.invalidate();
     }
 
+    private void getAppAll() {
+        stateUses = presenter.findAll(this);
+    }
+
+    private void syncUp() {
+        presenter.syncUp(this, service, call);
+    }
+
+    private List<StateUse> stateUseListByUseTime() {
+        List<StateUse> list = stateUses;
+        Collections.sort(list, new SortStateUseByUseTime());
+        Collections.reverse(list);
+
+        List<StateUse> top10 = limitStateUses(list, 10);
+
+        return top10;
+    }
+
+    private List<StateUse> stateUseListByQuantity() {
+        List<StateUse> list = stateUses;
+        Collections.sort(list, new SortStateUseByQuantity());
+        Collections.reverse(list);
+
+        List<StateUse> top5 = limitStateUses(list, 5);
+
+        return top5;
+    }
+
+    private List<StateUse> limitStateUses(List<StateUse> list, int limit) {
+        List<StateUse> newList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            if (i >= limit) {
+                return newList;
+            }
+            newList.add(list.get(i));
+        }
+        return newList;
+    }
+
+    protected ArrayList<Integer> getChartsColors() {
+        ArrayList<Integer> colors = new ArrayList<>();
+
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.LIBERTY_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.PASTEL_COLORS)
+            colors.add(c);
+
+        return colors;
+    }
 }

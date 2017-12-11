@@ -1,4 +1,4 @@
-package com.example.formandocodigo.psicotimes.view.repository.net;
+package com.example.formandocodigo.psicotimes.view.net;
 
 import com.example.formandocodigo.psicotimes.BuildConfig;
 import com.facebook.stetho.okhttp3.StethoInterceptor;

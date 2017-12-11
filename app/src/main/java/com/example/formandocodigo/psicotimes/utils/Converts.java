@@ -13,7 +13,7 @@ import retrofit2.Converter;
  * Created by FormandoCodigo on 29/11/2017.
  */
 
-public class Utils {
+public class Converts {
 
     public static ApiError convertErrors(ResponseBody response) {
         Converter<ResponseBody, ApiError> converter = RetrofitBuilder

@@ -1,6 +1,6 @@
 package com.example.formandocodigo.psicotimes.data.entity.mapper;
 
-import com.example.formandocodigo.psicotimes.model.StateUse;
+import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 
 import java.util.ArrayList;

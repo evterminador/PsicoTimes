@@ -1,9 +1,9 @@
-package com.example.formandocodigo.psicotimes.view.repository.net.entity;
+package com.example.formandocodigo.psicotimes.view.net.entity;
 
-import com.example.formandocodigo.psicotimes.model.StateUse;
+import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by FormandoCodigo on 03/12/2017.
@@ -18,7 +18,7 @@ public class AppOrder {
     private String token;
 
     @SerializedName("stateUse")
-    private ArrayList<StateUse> stateUses;
+    private List<StateUse> stateUses;
 
     public String getEmail() {
         return email;
@@ -36,11 +36,11 @@ public class AppOrder {
         this.token = token;
     }
 
-    public ArrayList<StateUse> getStateUses() {
+    public List<StateUse> getStateUses() {
         return stateUses;
     }
 
-    public void setStateUses(ArrayList<StateUse> stateUses) {
+    public void setStateUses(List<StateUse> stateUses) {
         this.stateUses = stateUses;
     }
 }

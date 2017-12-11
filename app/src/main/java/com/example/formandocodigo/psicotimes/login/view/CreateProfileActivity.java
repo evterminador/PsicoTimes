@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
@@ -22,7 +21,7 @@ import com.example.formandocodigo.psicotimes.login.repository.net.ApiService;
 import com.example.formandocodigo.psicotimes.login.repository.net.RetrofitBuilder;
 import com.example.formandocodigo.psicotimes.login.repository.net.entity.ApiError;
 import com.example.formandocodigo.psicotimes.login.repository.net.entity.RegisterResponse;
-import com.example.formandocodigo.psicotimes.utils.Utils;
+import com.example.formandocodigo.psicotimes.utils.Converts;
 import com.example.formandocodigo.psicotimes.view.view.MainActivity;
 
 import java.text.DateFormat;
@@ -48,6 +47,8 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
     TextInputLayout txtBirthDate;
     @BindView(R.id.txt_use_time)
     TextInputLayout txtUseTime;
+    @BindView(R.id.txt_dni)
+    TextInputLayout txtDni;
     @BindView(R.id.spinner_sex)
     Spinner spiSex;
     @BindView(R.id.spinner_occupation)
@@ -96,11 +97,13 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
         selectsSpinner();
         DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String getDate = txtBirthDate.getEditText().getText().toString();
+        String dni = txtDni.getEditText().getText().toString();
 
         txtBirthDate.setError(null);
         txtUseTime.setError(null);
+        txtDni.setError(null);
 
-        String email = loginRepository.getEmailandToken().get("email");
+        String email = loginRepository.getEmailAndToken().get("email");
 
         validator.clear();
 
@@ -113,7 +116,7 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
                 e.printStackTrace();
             }
 
-            call = service.profile(email, birthDate, sex, occupation, false, timeUse);
+            call = service.profile(email, birthDate, sex, dni, occupation, false, timeUse);
 
             call.enqueue(new Callback<RegisterResponse>() {
                 @Override
@@ -176,7 +179,7 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
     }
 
     private void handleErrors(ResponseBody response) {
-        ApiError apiError = Utils.convertErrors(response);
+        ApiError apiError = Converts.convertErrors(response);
 
         for (Map.Entry<String, List<String>> error : apiError.getErrors().entrySet()) {
             if (error.getKey().equals("birthDate")) {
@@ -184,6 +187,9 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
             }
             if (error.getKey().equals("timeUse")) {
                 txtUseTime.setError(error.getValue().get(0));
+            }
+            if (error.getKey().equals("dni")) {
+                txtDni.setError(error.getValue().get(0));
             }
         }
     }
@@ -195,6 +201,7 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
 
     public void setupRules() {
         validator.addValidation(this, R.id.txt_birth_date, RegexTemplate.NOT_EMPTY, R.string.error_field_required);
+        validator.addValidation(this, R.id.txt_dni, RegexTemplate.NOT_EMPTY, R.string.error_field_required);
         validator.addValidation(this, R.id.txt_use_time, RegexTemplate.NOT_EMPTY, R.string.error_field_required);
         validator.addValidation(this, R.id.txt_use_time, "[0-9]", R.string.error_field_number);
     }
