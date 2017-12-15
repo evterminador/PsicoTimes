@@ -35,7 +35,7 @@ public class CompareTwoStateArrayList {
     private boolean isExistsStateUse(StateUseEntity stateUseEntity) {
         for (StateUseEntity state : a2) {
             if (state.getNameApplication().equalsIgnoreCase(stateUseEntity.getNameApplication())) {
-                state.setUseTime(state.getUseTime());
+                state.setUseTime(stateUseEntity.getUseTime());
                 state.setQuantity(state.getQuantity() + stateUseEntity.getQuantity());
                 return false;
             }

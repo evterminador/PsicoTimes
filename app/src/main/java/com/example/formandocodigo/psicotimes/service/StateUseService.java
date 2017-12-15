@@ -125,7 +125,7 @@ public class StateUseService extends Service implements StateUseServiceView {
             if (stateUses.size() > 0) {
                 for (int x = 0; x < stateUses.size(); x++) {
                     if (stateUses.get(x).getNameApplication().equalsIgnoreCase(nPackage)) {
-                        stateUses.get(x).setUseTime(stats.getLastTimeUsed());
+                        stateUses.get(x).setUseTime(stats.getTotalTimeInForeground());
                         stateUses.get(x).setQuantity(stateUses.get(x).getQuantity() + 1);
                         return true;
                     }

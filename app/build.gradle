@@ -44,6 +44,8 @@ dependencies {
 
     implementation 'com.basgeekball:awesome-validation:2.0'
 
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+
     implementation 'com.fernandocejas:arrow:1.0.0'
     implementation 'com.google.dagger:dagger-android:2.13'
     implementation 'com.google.dagger:dagger-android-support:2.13'

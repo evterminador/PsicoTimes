@@ -122,6 +122,14 @@ public class FileManager {
         editor.apply();
     }
 
+    void clearPreferences(Context context, String preferenceFileName) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName,
+                Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear().commit();
+    }
+
 
     String getFromPreferencesStates(Context context, String preferenceFileName, String key) {
         try {

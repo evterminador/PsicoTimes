@@ -1,10 +1,10 @@
-package com.example.formandocodigo.psicotimes.view.interactor;
+package com.example.formandocodigo.psicotimes.main.interactor;
 
 import android.app.Activity;
 
 import com.example.formandocodigo.psicotimes.entity.StateUse;
-import com.example.formandocodigo.psicotimes.view.net.OrderService;
-import com.example.formandocodigo.psicotimes.view.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.OrderService;
+import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
 
 import java.util.List;
 

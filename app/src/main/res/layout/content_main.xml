@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.formandocodigo.psicotimes.view.view.MainActivity"
+    tools:context="com.example.formandocodigo.psicotimes.main.view.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
     <LinearLayout
@@ -18,27 +18,27 @@
             android:id="@+id/pie_chart_statistics"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/activity_horizontal_margin"
-            android:layout_weight="0.45"/>
+            android:layout_weight="0.45"
+            android:padding="@dimen/activity_horizontal_margin" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:layout_weight="0.55"
+            android:orientation="horizontal"
             android:padding="@dimen/activity_vertical_margin"
             android:weightSum="1">
 
             <com.github.mikephil.charting.charts.LineChart
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="0.5"/>
+                android:layout_weight="0.5" />
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/bar_chart_quantity_use"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="0.5"/>
+                android:layout_weight="0.5" />
         </LinearLayout>
     </LinearLayout>
 

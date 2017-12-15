@@ -1,4 +1,4 @@
-package com.example.formandocodigo.psicotimes.view.view;
+package com.example.formandocodigo.psicotimes.main.view;
 
 import android.app.AppOpsManager;
 import android.content.Context;
@@ -25,13 +25,14 @@ import com.example.formandocodigo.psicotimes.R;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseByQuantity;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseByUseTime;
 import com.example.formandocodigo.psicotimes.utils.Converts;
-import com.example.formandocodigo.psicotimes.view.presenter.MainPresenter;
-import com.example.formandocodigo.psicotimes.view.presenter.MainPresenterImpl;
-import com.example.formandocodigo.psicotimes.view.net.OrderService;
-import com.example.formandocodigo.psicotimes.view.net.RetrofitBuilder;
-import com.example.formandocodigo.psicotimes.view.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.presenter.MainPresenter;
+import com.example.formandocodigo.psicotimes.main.presenter.MainPresenterImpl;
+import com.example.formandocodigo.psicotimes.main.net.OrderService;
+import com.example.formandocodigo.psicotimes.main.net.RetrofitBuilder;
+import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.service.StateUseService;
+import com.example.formandocodigo.psicotimes.view.HistoricActivity;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -44,12 +45,10 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -179,8 +178,9 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
-
+        } else if (id == R.id.nav_historic) {
+            Intent intent = new Intent(MainActivity.this, HistoricActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void syncError(String error) {
-
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
 
     private void initializeService() {
@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity
                 xValues.add(xData[i]);
             }
 
-            dataSet = new BarDataSet(entries, "Defaul values");
+            dataSet = new BarDataSet(entries, "Default values");
         }
 
         ArrayList<Integer> colors = getChartsColors();
@@ -356,8 +356,6 @@ public class MainActivity extends AppCompatActivity
         dataSet.setColors(colors);
 
         BarData data = new BarData(dataSet);
-
-        data.setBarWidth(0.9F);
 
         barChart.setData(data);
         barChart.invalidate();

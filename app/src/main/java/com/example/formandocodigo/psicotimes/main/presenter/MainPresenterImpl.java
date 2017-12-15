@@ -1,13 +1,13 @@
-package com.example.formandocodigo.psicotimes.view.presenter;
+package com.example.formandocodigo.psicotimes.main.presenter;
 
 import android.app.Activity;
 
 import com.example.formandocodigo.psicotimes.entity.StateUse;
-import com.example.formandocodigo.psicotimes.view.interactor.MainInteractor;
-import com.example.formandocodigo.psicotimes.view.interactor.MainInteractorImpl;
-import com.example.formandocodigo.psicotimes.view.net.OrderService;
-import com.example.formandocodigo.psicotimes.view.net.entity.AppOrderResponse;
-import com.example.formandocodigo.psicotimes.view.view.MainView;
+import com.example.formandocodigo.psicotimes.main.interactor.MainInteractor;
+import com.example.formandocodigo.psicotimes.main.interactor.MainInteractorImpl;
+import com.example.formandocodigo.psicotimes.main.net.OrderService;
+import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.view.MainView;
 
 import java.util.List;
 
@@ -38,12 +38,12 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
-    public void syncSuccess() {
+    public void syncSuccess(String error) {
 
     }
 
     @Override
-    public void syncError() {
-
+    public void syncError(String error) {
+        mainView.syncError(error);
     }
 }

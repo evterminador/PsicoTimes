@@ -117,7 +117,7 @@ public class StateUseCacheImpl implements StateUseCache {
 
     @Override
     public void evictAll() {
-
+        fileManager.clearPreferences(context, DEFAULT_FILE_NAME);
     }
 
     /*public boolean isCached(int stateUseId) {

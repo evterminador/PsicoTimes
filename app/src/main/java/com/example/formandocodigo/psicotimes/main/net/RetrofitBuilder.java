@@ -1,6 +1,7 @@
-package com.example.formandocodigo.psicotimes.view.net;
+package com.example.formandocodigo.psicotimes.main.net;
 
 import com.example.formandocodigo.psicotimes.BuildConfig;
+import com.example.formandocodigo.psicotimes.utils.Continual;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitBuilder {
 
-    private static final String BASE_URL = "http://192.168.1.6:8000/api/post/";
+    private static final String BASE_URL = Continual.Net.BASE_URL + "post/";
 
     private final static OkHttpClient client = buildClient();
     private static Retrofit retrofit = buildRetrofit(client);

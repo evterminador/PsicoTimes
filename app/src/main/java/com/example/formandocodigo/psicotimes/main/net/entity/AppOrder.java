@@ -1,4 +1,4 @@
-package com.example.formandocodigo.psicotimes.view.net.entity;
+package com.example.formandocodigo.psicotimes.main.net.entity;
 
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.google.gson.annotations.SerializedName;

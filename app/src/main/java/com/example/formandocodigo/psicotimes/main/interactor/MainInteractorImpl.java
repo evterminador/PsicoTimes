@@ -1,19 +1,20 @@
-package com.example.formandocodigo.psicotimes.view.interactor;
+package com.example.formandocodigo.psicotimes.main.interactor;
 
 import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.entity.StateUse;
-import com.example.formandocodigo.psicotimes.view.net.OrderService;
-import com.example.formandocodigo.psicotimes.view.net.entity.AppOrder;
-import com.example.formandocodigo.psicotimes.view.net.entity.AppOrderResponse;
-import com.example.formandocodigo.psicotimes.view.presenter.MainPresenter;
-import com.example.formandocodigo.psicotimes.view.repository.MainRepository;
-import com.example.formandocodigo.psicotimes.view.repository.MainRepositoryImpl;
+import com.example.formandocodigo.psicotimes.main.net.OrderService;
+import com.example.formandocodigo.psicotimes.main.net.entity.AppOrder;
+import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.presenter.MainPresenter;
+import com.example.formandocodigo.psicotimes.main.repository.MainRepository;
+import com.example.formandocodigo.psicotimes.main.repository.MainRepositoryImpl;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,7 +64,9 @@ public class MainInteractorImpl implements MainInteractor {
                 public void onResponse(Call<AppOrderResponse> call, Response<AppOrderResponse> response) {
                     if (response.isSuccessful()) {
                         Log.w(TAG, "onResponse: " + response.body());
-                        //repository.signIn(response.body());
+
+                        repository.fetchApp(activity, response.body());
+
                     } else {
                         Log.w(TAG, "onResponse: " + response.errorBody());
                         //handleErrors(response.errorBody());
@@ -73,6 +76,7 @@ public class MainInteractorImpl implements MainInteractor {
                 @Override
                 public void onFailure(Call<AppOrderResponse> call, Throwable t) {
                     Log.w(TAG, "onFailure: " + t.getMessage());
+                    t.printStackTrace();
                 }
             });
         }

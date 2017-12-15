@@ -5,6 +5,10 @@ import com.example.formandocodigo.psicotimes.login.repository.net.RetrofitBuilde
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
@@ -53,5 +57,19 @@ public class Converts {
             sec = s+"s";
 
         return day+hour+min+sec;
+    }
+
+    public static String convertTimestampToString(Timestamp timestamp) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        return dateFormat.format(timestamp);
+    }
+
+    public static Timestamp convertStringToTimestamp(String value) throws ParseException {
+        SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        Date date = dateFormat.parse(value);
+
+        return new Timestamp(date.getTime());
     }
 }

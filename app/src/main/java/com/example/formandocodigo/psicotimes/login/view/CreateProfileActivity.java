@@ -22,7 +22,7 @@ import com.example.formandocodigo.psicotimes.login.repository.net.RetrofitBuilde
 import com.example.formandocodigo.psicotimes.login.repository.net.entity.ApiError;
 import com.example.formandocodigo.psicotimes.login.repository.net.entity.RegisterResponse;
 import com.example.formandocodigo.psicotimes.utils.Converts;
-import com.example.formandocodigo.psicotimes.view.view.MainActivity;
+import com.example.formandocodigo.psicotimes.main.view.MainActivity;
 
 import java.text.DateFormat;
 import java.text.ParseException;
