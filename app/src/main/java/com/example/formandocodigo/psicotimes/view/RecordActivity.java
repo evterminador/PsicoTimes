@@ -2,6 +2,7 @@ package com.example.formandocodigo.psicotimes.view;
 
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,14 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.R;
 import com.example.formandocodigo.psicotimes.adapter.StateUseAdapterRecyclerView;
-import com.example.formandocodigo.psicotimes.data.cache.FileManager;
-import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
-import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
-import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
 import com.example.formandocodigo.psicotimes.domain.StateUseCase;
 import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
@@ -31,7 +27,7 @@ import java.util.Collections;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HistoricActivity extends AppCompatActivity {
+public class RecordActivity extends AppCompatActivity {
 
     private ArrayList<StateUse> stateUses = new ArrayList<>();
 
@@ -52,20 +48,18 @@ public class HistoricActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_historic);
+        setContentView(R.layout.activity_record);
         showToolbar("Historial", true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayout.VERTICAL);
 
-        stateUsesRecycler = findViewById(R.id.historic_recycler);
+        stateUsesRecycler = findViewById(R.id.record_recycler);
         stateUsesRecycler.setLayoutManager(linearLayoutManager);
 
         ButterKnife.bind(this);
 
         getAppAll();
-
-        StateUseAdapterRecyclerView stateUseAdapterRecyclerView = null;
 
         ctlUseTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,13 +97,12 @@ public class HistoricActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.ctl_percent_use_time) {
-            Toast.makeText(HistoricActivity.this, "Tiempo", Toast.LENGTH_LONG).show();
-        } else if (id == R.id.ctl_percent_quantity) {
-            Toast.makeText(HistoricActivity.this, "Cantidad", Toast.LENGTH_LONG).show();
+        if (id == R.id.homeAsUp) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
         }
 
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     private void fillBody(int mode) {
@@ -154,19 +147,23 @@ public class HistoricActivity extends AppCompatActivity {
         if (mode == 1) {
             ctlUseTime.setBackground(null);
             ctlUseTime.setElevation(0);
-            txtUTPValue.setText("47");
+            txtUTPValue.setText("67");
             txtUTPValue.setTextColor(Color.parseColor("#3D3D3D"));
 
             ctlQuantity.setBackground(getResources().getDrawable(R.drawable.border_select_historic));
             ctlQuantity.setElevation(4F);
+            txtQValue.setText("47%");
+            txtQValue.setTextColor(Color.parseColor("#1EFF8A"));
         } else {
             ctlQuantity.setBackground(null);
             ctlQuantity.setElevation(0);
-            txtQValue.setText("47%");
-            txtQValue.setTextColor(Color.parseColor("#1EFF8A"));
+            txtQValue.setText("47");
+            txtQValue.setTextColor(Color.parseColor("#3D3D3D"));
 
             ctlUseTime.setBackground(getResources().getDrawable(R.drawable.border_select_historic));
             ctlUseTime.setElevation(4F);
+            txtUTPValue.setText("67%");
+            txtUTPValue.setTextColor(Color.parseColor("#1EFF8A"));
         }
     }
 

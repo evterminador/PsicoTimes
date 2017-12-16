@@ -33,7 +33,8 @@ import com.example.formandocodigo.psicotimes.main.net.RetrofitBuilder;
 import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.service.StateUseService;
-import com.example.formandocodigo.psicotimes.view.HistoricActivity;
+import com.example.formandocodigo.psicotimes.view.RecordActivity;
+import com.example.formandocodigo.psicotimes.view.RecordDayActivity;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -182,10 +183,11 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_historic) {
-            Intent intent = new Intent(MainActivity.this, HistoricActivity.class);
+        } else if (id == R.id.nav_record_date) {
+            Intent intent = new Intent(MainActivity.this, RecordDayActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_record) {
+            Intent intent = new Intent(MainActivity.this, RecordActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_manage) {
 

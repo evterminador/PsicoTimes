@@ -1,7 +1,6 @@
 package com.example.formandocodigo.psicotimes.adapter;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +16,10 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 /**
- * Created by FormandoCodigo on 12/12/2017.
+ * Created by FormandoCodigo on 16/12/2017.
  */
 
-public class StateUseAdapterRecyclerView extends RecyclerView.Adapter<StateUseAdapterRecyclerView.StateUseViewHolder> {
+public class StateUseByDateAdapterRecyclerView extends RecyclerView.Adapter<StateUseByDateAdapterRecyclerView.StateUseByDateViewHolder> {
 
     private ArrayList<StateUse> stateUses;
     private int resource;
@@ -28,7 +27,7 @@ public class StateUseAdapterRecyclerView extends RecyclerView.Adapter<StateUseAd
     private int c;
     private int mode;
 
-    public StateUseAdapterRecyclerView(ArrayList<StateUse> stateUses, int resource, Activity activity, int mode) {
+    public StateUseByDateAdapterRecyclerView(ArrayList<StateUse> stateUses, int resource, Activity activity, int mode) {
         this.stateUses = stateUses;
         this.resource = resource;
         this.activity = activity;
@@ -37,26 +36,20 @@ public class StateUseAdapterRecyclerView extends RecyclerView.Adapter<StateUseAd
     }
 
     @Override
-    public StateUseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public StateUseByDateViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(resource, parent, false);
-        return new StateUseViewHolder(view);
+        return new StateUseByDateAdapterRecyclerView.StateUseByDateViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(StateUseViewHolder holder, int position) {
+    public void onBindViewHolder(StateUseByDateViewHolder holder, int position) {
         StateUse stateUse = stateUses.get(position);
         holder.txtNum.setText("#"+c);
         holder.txtNameHistoric.setText(stateUse.getNameApplication());
         Picasso.with(activity).load(stateUse.getImageApp()).into(holder.imgAppHistoric);
-        if (mode == 0) {
-            holder.txtMode.setText("Tiempo de uso:");
-            holder.imgIconHistoric.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_access_time));
-            holder.txtValueHistoric.setText(Converts.convertLongToTimeChar(stateUse.getUseTime()));
-        } else if (mode == 1) {
-            holder.txtMode.setText("Veces usadas");
-            holder.imgIconHistoric.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_natural_user_interface_50px));
-            holder.txtValueHistoric.setText(stateUse.getQuantity() + "");
-        }
+        holder.txtMode.setText("Fecha de creación:");
+        holder.imgIconHistoric.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_today));
+        holder.txtValueHistoric.setText(Converts.convertTimestampToString(stateUse.getCreated_at()));
         holder.imgIconHistoric.setColorFilter(activity.getResources().getColor(android.R.color.holo_green_light));
         c++;
     }
@@ -66,7 +59,7 @@ public class StateUseAdapterRecyclerView extends RecyclerView.Adapter<StateUseAd
         return stateUses.size();
     }
 
-    public class StateUseViewHolder extends RecyclerView.ViewHolder {
+    public class StateUseByDateViewHolder extends RecyclerView.ViewHolder {
         private TextView txtNum;
         private ImageView imgAppHistoric;
         private TextView txtNameHistoric;
@@ -75,7 +68,7 @@ public class StateUseAdapterRecyclerView extends RecyclerView.Adapter<StateUseAd
         private TextView txtValueHistoric;
         private TextView txtPositionHistoric;
 
-        public StateUseViewHolder(View itemView) {
+        public StateUseByDateViewHolder(View itemView) {
             super(itemView);
 
             txtNum = itemView.findViewById(R.id.txt_num);

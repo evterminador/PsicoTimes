@@ -10,4 +10,6 @@ import java.util.ArrayList;
 
 public interface StateUseCase {
     ArrayList<StateUse> getStateUseAll();
+
+    ArrayList<StateUse> getStateUseByDate();
 }

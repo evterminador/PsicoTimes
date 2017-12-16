@@ -21,4 +21,6 @@ public interface StateUseDisk {
     List<App> getAppAll();
 
     List<StateUse> getStateUseAll();
+
+    List<StateUse> getStateUseByDate();
 }

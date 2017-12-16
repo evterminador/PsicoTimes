@@ -162,6 +162,46 @@ public class SQLiteManager extends SQLiteOpenHelper {
             final String sql = "select a." + app.COLUMN_NAME +
                     ", a." + app.COLUMN_IMAGE +
                     ", s." + stateUse.COLUMN_TIME_USE +
+                    ", sum(s." + stateUse.COLUMN_QUANTITY + ") " +
+                    ", s." + stateUse.COLUMN_LAST_USE_TIME +
+                    ", s." + stateUse.COLUMN_CREATED_AT +
+                    ", s." + stateUse.COLUMN_UPDATED_AT +
+                    " from " + stateUse.TABLE_NAME + " as s " +
+                    "inner join " + app.TABLE_NAME + " as a " +
+                    "on a." + app.COLUMN_ID + " = s." + stateUse.COLUMN_ID_APP + " " +
+                    "group by a." + app.COLUMN_NAME;
+
+            c = this.getReadableDatabase().rawQuery(sql, null);
+
+            StateUse stateUse;
+            while (c.moveToNext()) {
+                stateUse = new StateUse();
+                stateUse.setNameApplication(c.getString(0));
+                stateUse.setImageApp(c.getString(1));
+                stateUse.setUseTime(c.getLong(2));
+                stateUse.setQuantity(c.getInt(3));
+                stateUse.setLastUseTime(Converts.convertStringToTimestamp(c.getString(4)));
+                stateUse.setCreated_at(Converts.convertStringToTimestamp(c.getString(5)));
+                stateUse.setUpdated_at(Converts.convertStringToTimestamp(c.getString(6)));
+
+                list.add(stateUse);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            c.close();
+        }
+        return list;
+    }
+
+    public List<StateUse> getStateUsesByDate () {
+        List<StateUse> list = new ArrayList<>();
+        Cursor c = null;
+
+        try {
+            final String sql = "select a." + app.COLUMN_NAME +
+                    ", a." + app.COLUMN_IMAGE +
+                    ", s." + stateUse.COLUMN_TIME_USE +
                     ", s." + stateUse.COLUMN_QUANTITY +
                     ", s." + stateUse.COLUMN_LAST_USE_TIME +
                     ", s." + stateUse.COLUMN_CREATED_AT +
@@ -242,10 +282,10 @@ public class SQLiteManager extends SQLiteOpenHelper {
         db = this.getWritableDatabase();
 
         db.delete(stateUse.TABLE_NAME,
-                stateUse.COLUMN_ID_APP + "=" + stateUser.getId_app() + " and " +
-                        stateUse.COLUMN_TIME_USE + " = " + stateUser.getTimeUse() + " and " +
-                        stateUse.COLUMN_CREATED_AT + " = " + Converts.convertTimestampToString(stateUser.getCreated_at()),
-                null);
+                stateUse.COLUMN_ID_APP + "= ? " + " and " +
+                        stateUse.COLUMN_CREATED_AT + " = ? ",
+                new String[] { String.valueOf(stateUser.getId_app()),
+                        Converts.convertTimestampToString(stateUser.getCreated_at()) });
     }
 
 }

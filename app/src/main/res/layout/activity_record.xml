@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.formandocodigo.psicotimes.view.HistoricActivity">
+    tools:context="com.example.formandocodigo.psicotimes.view.RecordActivity">
 
     <include layout="@layout/actionbar_toolbar" />
 
@@ -25,7 +25,7 @@
                 android:id="@+id/ctl_percent_use_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.33"
+                android:layout_weight="0.5"
                 android:background="@drawable/border_select_historic"
                 android:elevation="2dp"
                 android:orientation="vertical"
@@ -81,7 +81,7 @@
                 android:id="@+id/ctl_percent_quantity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.33"
+                android:layout_weight="0.5"
                 android:orientation="vertical"
                 android:padding="4dp">
 
@@ -128,60 +128,6 @@
 
             </android.support.constraint.ConstraintLayout>
 
-            <android.support.constraint.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.33"
-                android:orientation="vertical"
-                android:padding="4dp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView9"
-                app:layout_constraintTop_toBottomOf="@+id/textView9">
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="3dp"
-                    android:text="53"
-                    android:textSize="18sp"
-                    app:layout_constraintBottom_toTopOf="@+id/textView10"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="MissingConstraints" />
-
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Cantidad"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0"
-                    tools:ignore="MissingConstraints" />
-
-                <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
-                    android:layout_marginTop="4dp"
-                    android:text="TextView"
-                    android:textSize="10sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView2"
-                    tools:ignore="MissingConstraints"
-                    tools:text="12% incremento" />
-
-            </android.support.constraint.ConstraintLayout>
-
         </LinearLayout>
 
         <ScrollView
@@ -194,7 +140,7 @@
                 android:orientation="vertical">
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/historic_recycler"
+                    android:id="@+id/record_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/activity_vertical_margin"/>

@@ -32,19 +32,26 @@
             android:name=".main.view.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
-            android:name=".view.HistoricActivity"
+            android:name=".view.RecordActivity"
             android:parentActivityName=".main.view.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".main.view.MainActivity"/>
+                android:value=".main.view.MainActivity" />
         </activity>
 
         <service
             android:name=".service.StateUseService"
             android:enabled="true"
             android:exported="false" />
+
+        <activity
+            android:name=".view.RecordDayActivity"
+            android:parentActivityName=".main.view.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.view.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

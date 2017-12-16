@@ -82,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         if (repository.isExistsPreferences()) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
+            finish();
         }
 
 

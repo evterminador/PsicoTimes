@@ -23,4 +23,9 @@ public class StateUseCaseImpl implements StateUseCase {
         return new ArrayList<>(stateUseDisk.getStateUseAll());
     }
 
+    @Override
+    public ArrayList<StateUse> getStateUseByDate() {
+        return new ArrayList<>(stateUseDisk.getStateUseByDate());
+    }
+
 }
