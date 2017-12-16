@@ -20,7 +20,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Configurar</string>
+    <string name="action_update">Actualizar</string>
 
     <string name="exception_message_generic">Hubo un error en la apliación</string>
     <string name="exception_message_no_connection">No hay conexión a internet</string>

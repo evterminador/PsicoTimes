@@ -4,17 +4,18 @@ import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.formandocodigo.psicotimes.entity.App;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.main.net.OrderService;
-import com.example.formandocodigo.psicotimes.main.net.entity.AppOrder;
 import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrder;
+import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.main.presenter.MainPresenter;
 import com.example.formandocodigo.psicotimes.main.repository.MainRepository;
 import com.example.formandocodigo.psicotimes.main.repository.MainRepositoryImpl;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,16 +38,42 @@ public class MainInteractorImpl implements MainInteractor {
     }
 
     @Override
-    public List<StateUse> findAll(Activity activity) {
-        return repository.findAll(activity);
+    public List<StateUse> findAll() {
+        return repository.findAll();
     }
 
     @Override
-    public void syncUp(Activity activity, OrderService service,  Call<AppOrderResponse> call) {
-        List<StateUse> stateUses = findAll(activity);
+    public void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call) {
+        call = service.appOrder();
+
+        Toast.makeText(activity, "Espere un momento estamos trayendo toda la data", Toast.LENGTH_LONG).show();
+
+        call.enqueue(new Callback<AppOrderResponse>() {
+            @Override
+            public void onResponse(Call<AppOrderResponse> call, Response<AppOrderResponse> response) {
+                if (response.isSuccessful()) {
+                    Log.w(TAG, "onResponse: " + response.body().getApplications().size());
+                    repository.storeApp(activity, response.body());
+                } else {
+                    Log.w(TAG, "onResponse: " + response.errorBody());
+                    presenter.updateAppError(response.errorBody().toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AppOrderResponse> call, Throwable t) {
+                Log.w(TAG, "onFailure: " + t.getMessage());
+                t.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public void syncUp(Activity activity, OrderService service,  Call<StateUserOrderResponse> call) {
+        List<StateUse> stateUses = repository.findCacheAll(activity);
 
         if (stateUses != null) {
-            AppOrder order = new AppOrder();
+            StateUserOrder order = new StateUserOrder();
 
             HashMap<String, String> data = repository.getUserEmailAndPassword(activity);
 
@@ -54,18 +81,18 @@ public class MainInteractorImpl implements MainInteractor {
             order.setEmail(data.get("email"));
             order.setStateUses(stateUses);
 
-            call = service.appOrder(order);
+            call = service.stateUserOrder(order);
 
             Toast.makeText(activity, "Sincronizando " + stateUses.size() + " elementos", Toast.LENGTH_LONG).show();
 
-            call.enqueue(new Callback<AppOrderResponse>() {
+            call.enqueue(new Callback<StateUserOrderResponse>() {
 
                 @Override
-                public void onResponse(Call<AppOrderResponse> call, Response<AppOrderResponse> response) {
+                public void onResponse(Call<StateUserOrderResponse> call, Response<StateUserOrderResponse> response) {
                     if (response.isSuccessful()) {
                         Log.w(TAG, "onResponse: " + response.body());
 
-                        repository.fetchApp(activity, response.body());
+                        repository.storeStateUser(activity, response.body());
 
                     } else {
                         Log.w(TAG, "onResponse: " + response.errorBody());
@@ -74,7 +101,7 @@ public class MainInteractorImpl implements MainInteractor {
                 }
 
                 @Override
-                public void onFailure(Call<AppOrderResponse> call, Throwable t) {
+                public void onFailure(Call<StateUserOrderResponse> call, Throwable t) {
                     Log.w(TAG, "onFailure: " + t.getMessage());
                     t.printStackTrace();
                 }

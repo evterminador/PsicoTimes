@@ -6,12 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.formandocodigo.psicotimes.entity.ApplicationEntity;
+import com.example.formandocodigo.psicotimes.entity.App;
+import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.entity.StateUser;
 import com.example.formandocodigo.psicotimes.utils.Continual;
 import com.example.formandocodigo.psicotimes.utils.Converts;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by FormandoCodigo on 13/12/2017.
@@ -26,7 +28,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
             app.TABLE_NAME + " ( " +
             app.COLUMN_ID + " INTEGER PRIMARY KEY," +
             app.COLUMN_NAME +  " TEXT NOT NULL," +
-            app.COLUMN_RELEVANCE_ + " INTEGER NOT NULL," +
+            app.COLUMN_RELEVANCE + " INTEGER NOT NULL," +
             app.COLUMN_IMAGE + " TEXT NOT NULL," +
             app.COLUMN_DESCRIPTION + " TEXT NOT NULL," +
             app.COLUMN_CREATED_AT + " text," +
@@ -37,7 +39,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
             stateUse.TABLE_NAME + " ( " +
             stateUse.COLUMN_ID_USERS + " integer, " +
             stateUse.COLUMN_ID_APP + " integer, " +
-            stateUse.COLUMN_TIME_USE + " REAL not null, " +
+            stateUse.COLUMN_TIME_USE + " integer not null, " +
             stateUse.COLUMN_QUANTITY + " integer not null, " +
             stateUse.COLUMN_LAST_USE_TIME + " text not null, " +
             stateUse.COLUMN_CREATED_AT + " text, " +
@@ -79,43 +81,42 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     }
 
-    public void insertAppAll(ArrayList<ApplicationEntity> list) {
+    public void insertApp(App a) {
         db = this.getWritableDatabase();
-        ContentValues values;
 
-        for (ApplicationEntity s : list) {
-            values = new ContentValues();
-            values.put(app.COLUMN_ID, s.getId());
-            values.put(app.COLUMN_NAME, s.getName());
-            values.put(app.COLUMN_RELEVANCE_, s.getRelevance());
-            values.put(app.COLUMN_IMAGE, s.getImage());
-            values.put(app.COLUMN_DESCRIPTION, s.getDescription());
-            values.put(app.COLUMN_CREATED_AT, Converts.convertTimestampToString(s.getCreated_at()));
-            values.put(app.COLUMN_UPDATED_AT, Converts.convertTimestampToString(s.getUpdated_at()));
+        ContentValues values  = new ContentValues();
 
-            db.insert(app.TABLE_NAME, null, values);
-        }
+        values.put(app.COLUMN_ID, a.getId());
+        values.put(app.COLUMN_NAME, a.getName());
+        values.put(app.COLUMN_RELEVANCE, a.getRelevance());
+        values.put(app.COLUMN_IMAGE, a.getImage());
+        values.put(app.COLUMN_DESCRIPTION, a.getDescription());
+        values.put(app.COLUMN_CREATED_AT, Converts.convertTimestampToString(a.getCreated_at()));
+        values.put(app.COLUMN_UPDATED_AT, Converts.convertTimestampToString(a.getUpdated_at()));
+
+        db.insert(app.TABLE_NAME, null, values);
+
     }
 
-    public ArrayList<StateUser> getAllStateUser() {
-        ArrayList<StateUser> all = new ArrayList<>();
+    public ArrayList<App> getAllApp () {
+        ArrayList<App> all = new ArrayList<>();
         Cursor c = null;
 
         try {
-            c = this.getReadableDatabase().rawQuery("select * from " + stateUse.TABLE_NAME, null);
+            c = this.getReadableDatabase().rawQuery("select * from " + app.TABLE_NAME, null);
 
-            StateUser userEntity;
+            App app;
             while (c.moveToNext()) {
-                userEntity = new StateUser();
-                userEntity.setId_users(c.getInt(0));
-                userEntity.setId_app(c.getInt(1));
-                userEntity.setTimeUse(c.getLong(2));
-                userEntity.setQuantity(c.getInt(3));
-                userEntity.setLastUseTime(Converts.convertStringToTimestamp(c.getString(4)));
-                userEntity.setCreated_at(Converts.convertStringToTimestamp(c.getString(5)));
-                userEntity.setUpdated_at(Converts.convertStringToTimestamp(c.getString(6)));
+                app = new App();
+                app.setId(c.getInt(0));
+                app.setName(c.getString(1));
+                app.setRelevance(c.getInt(2));
+                app.setImage(c.getString(3));
+                app.setDescription(c.getString(4));
+                app.setCreated_at(Converts.convertStringToTimestamp(c.getString(5)));
+                app.setUpdated_at(Converts.convertStringToTimestamp(c.getString(6)));
 
-                all.add(userEntity);
+                all.add(app);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,43 +126,125 @@ public class SQLiteManager extends SQLiteOpenHelper {
         return all;
     }
 
-    public void insertStateUser(StateUser userEntity) {
+    public ArrayList<StateUser> getAllStateUser() {
+        ArrayList<StateUser> all = new ArrayList<>();
+        Cursor c = null;
+
+        try {
+            c = this.getReadableDatabase().rawQuery("select * from " + stateUse.TABLE_NAME, null);
+
+            StateUser stateUser;
+            while (c.moveToNext()) {
+                stateUser = new StateUser();
+                stateUser.setId_users(c.getInt(0));
+                stateUser.setId_app(c.getInt(1));
+                stateUser.setTimeUse(c.getLong(2));
+                stateUser.setQuantity(c.getInt(3));
+                stateUser.setLastUseTime(Converts.convertStringToTimestamp(c.getString(4)));
+                stateUser.setCreated_at(Converts.convertStringToTimestamp(c.getString(5)));
+                stateUser.setUpdated_at(Converts.convertStringToTimestamp(c.getString(6)));
+
+                all.add(stateUser);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            c.close();
+        }
+        return all;
+    }
+
+    public List<StateUse> getStateUses() {
+        List<StateUse> list = new ArrayList<>();
+        Cursor c = null;
+
+        try {
+            final String sql = "select a." + app.COLUMN_NAME +
+                    ", a." + app.COLUMN_IMAGE +
+                    ", s." + stateUse.COLUMN_TIME_USE +
+                    ", s." + stateUse.COLUMN_QUANTITY +
+                    ", s." + stateUse.COLUMN_LAST_USE_TIME +
+                    ", s." + stateUse.COLUMN_CREATED_AT +
+                    ", s." + stateUse.COLUMN_UPDATED_AT +
+                    " from " + stateUse.TABLE_NAME + " as s " +
+                    "inner join " + app.TABLE_NAME + " as a " +
+                    "on a." + app.COLUMN_ID + " = s." + stateUse.COLUMN_ID_APP;
+
+            c = this.getReadableDatabase().rawQuery(sql, null);
+
+            StateUse stateUse;
+            while (c.moveToNext()) {
+                stateUse = new StateUse();
+                stateUse.setNameApplication(c.getString(0));
+                stateUse.setImageApp(c.getString(1));
+                stateUse.setUseTime(c.getLong(2));
+                stateUse.setQuantity(c.getInt(3));
+                stateUse.setLastUseTime(Converts.convertStringToTimestamp(c.getString(4)));
+                stateUse.setCreated_at(Converts.convertStringToTimestamp(c.getString(5)));
+                stateUse.setUpdated_at(Converts.convertStringToTimestamp(c.getString(6)));
+
+                list.add(stateUse);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            c.close();
+        }
+        return list;
+    }
+
+    public void insertStateUser(StateUser stateUser) {
         db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
 
-        values.put(stateUse.COLUMN_ID_USERS, userEntity.getId_users());
-        values.put(stateUse.COLUMN_ID_APP, userEntity.getId_app());
-        values.put(stateUse.COLUMN_TIME_USE, userEntity.getTimeUse());
-        values.put(stateUse.COLUMN_QUANTITY, userEntity.getQuantity());
-        values.put(stateUse.COLUMN_LAST_USE_TIME, Converts.convertTimestampToString(userEntity.getLastUseTime()));
-        values.put(stateUse.COLUMN_CREATED_AT, Converts.convertTimestampToString(userEntity.getCreated_at()));
-        values.put(stateUse.COLUMN_UPDATED_AT, Converts.convertTimestampToString(userEntity.getUpdated_at()));
+        values.put(stateUse.COLUMN_ID_USERS, stateUser.getId_users());
+        values.put(stateUse.COLUMN_ID_APP, stateUser.getId_app());
+        values.put(stateUse.COLUMN_TIME_USE, stateUser.getTimeUse());
+        values.put(stateUse.COLUMN_QUANTITY, stateUser.getQuantity());
+        values.put(stateUse.COLUMN_LAST_USE_TIME, Converts.convertTimestampToString(stateUser.getLastUseTime()));
+        values.put(stateUse.COLUMN_CREATED_AT, Converts.convertTimestampToString(stateUser.getCreated_at()));
+        values.put(stateUse.COLUMN_UPDATED_AT, Converts.convertTimestampToString(stateUser.getUpdated_at()));
 
         db.insert(stateUse.TABLE_NAME, null, values);
     }
 
-    public void updateStateUser(StateUser userEntity) {
+    public void updateStateUser(StateUser stateUser) {
+        db = this.getWritableDatabase();
+
         ContentValues values = new ContentValues();
-        values.put(stateUse.COLUMN_TIME_USE, userEntity.getTimeUse());
-        values.put(stateUse.COLUMN_QUANTITY, userEntity.getQuantity());
-        values.put(stateUse.COLUMN_LAST_USE_TIME, Converts.convertTimestampToString(userEntity.getLastUseTime()));
-        values.put(stateUse.COLUMN_UPDATED_AT, Converts.convertTimestampToString(userEntity.getUpdated_at()));
+        values.put(stateUse.COLUMN_TIME_USE, stateUser.getTimeUse());
+        values.put(stateUse.COLUMN_QUANTITY, stateUser.getQuantity());
+        values.put(stateUse.COLUMN_LAST_USE_TIME, Converts.convertTimestampToString(stateUser.getLastUseTime()));
+        values.put(stateUse.COLUMN_UPDATED_AT, Converts.convertTimestampToString(stateUser.getUpdated_at()));
 
         db.update(stateUse.TABLE_NAME, values,
-                stateUse.COLUMN_ID_APP + "=" + userEntity.getId_app() + " and " +
-                        stateUse.COLUMN_TIME_USE + " = " + userEntity.getTimeUse() + " and " +
-                        stateUse.COLUMN_CREATED_AT + " = " +  Converts.convertTimestampToString(userEntity.getCreated_at())
-                ,null);
+                stateUse.COLUMN_ID_APP + "= ? " + " AND " +
+                        stateUse.COLUMN_CREATED_AT + " = ? "
+                , new String[] { String.valueOf(stateUser.getId_app()), Converts.convertTimestampToString(stateUser.getCreated_at()) });
     }
 
-    public void deleteStateUSer(StateUser userEntity) {
+    public void updateApp(App a) {
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(app.COLUMN_NAME, a.getName());
+        values.put(app.COLUMN_RELEVANCE, a.getRelevance());
+        values.put(app.COLUMN_IMAGE, a.getImage());
+        values.put(app.COLUMN_DESCRIPTION, a.getDescription());
+        values.put(app.COLUMN_UPDATED_AT, Converts.convertTimestampToString(a.getUpdated_at()));
+
+        db.update(app.TABLE_NAME, values, app.COLUMN_ID + " = " + a.getId(), null);
+    }
+
+    public void deleteStateUSer(StateUser stateUser) {
         db = this.getWritableDatabase();
 
         db.delete(stateUse.TABLE_NAME,
-                stateUse.COLUMN_ID_APP + "=" + userEntity.getId_app() + " and " +
-                        stateUse.COLUMN_TIME_USE + " = " + userEntity.getTimeUse() + " and " +
-                        stateUse.COLUMN_CREATED_AT + " = " + Converts.convertTimestampToString(userEntity.getCreated_at()),
+                stateUse.COLUMN_ID_APP + "=" + stateUser.getId_app() + " and " +
+                        stateUse.COLUMN_TIME_USE + " = " + stateUser.getTimeUse() + " and " +
+                        stateUse.COLUMN_CREATED_AT + " = " + Converts.convertTimestampToString(stateUser.getCreated_at()),
                 null);
     }
 

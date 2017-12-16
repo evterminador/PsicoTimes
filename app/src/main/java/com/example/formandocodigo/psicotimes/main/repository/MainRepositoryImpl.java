@@ -8,12 +8,18 @@ import com.example.formandocodigo.psicotimes.data.cache.FileManager;
 import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
 import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
 import com.example.formandocodigo.psicotimes.data.disk.StateUseDiskImpl;
+import com.example.formandocodigo.psicotimes.data.entity.AppEntity;
 import com.example.formandocodigo.psicotimes.data.entity.StateUserEntity;
+import com.example.formandocodigo.psicotimes.data.entity.mapper.AppEntityDataMapper;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUserEntityDataMapper;
+import com.example.formandocodigo.psicotimes.domain.StateUseCase;
+import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
+import com.example.formandocodigo.psicotimes.entity.App;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.entity.StateUser;
 import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.utils.Continual;
 import com.example.formandocodigo.psicotimes.main.presenter.MainPresenter;
 
@@ -29,13 +35,21 @@ public class MainRepositoryImpl implements MainRepository {
 
     private MainPresenter presenter;
     private StateUseCacheImpl useCache = null;
+    private StateUseCase useCase;
 
     public MainRepositoryImpl(MainPresenter presenter) {
         this.presenter = presenter;
+        useCase = new StateUseCaseImpl();
     }
 
     @Override
-    public List<StateUse> findAll(Activity activity) {
+    public List<StateUse> findAll() {
+        List<StateUse> stateUses = useCase.getStateUseAll();
+        return stateUses;
+    }
+
+    @Override
+    public List<StateUse> findCacheAll(Activity activity) {
         List<StateUse> stateUses = new ArrayList<>();
 
         if (useCache == null) {
@@ -48,6 +62,7 @@ public class MainRepositoryImpl implements MainRepository {
         }
         return stateUses;
     }
+
 
     @Override
     public HashMap<String, String> getUserEmailAndPassword(Activity activity) {
@@ -65,7 +80,21 @@ public class MainRepositoryImpl implements MainRepository {
     }
 
     @Override
-    public void fetchApp(Activity activity, AppOrderResponse response) {
+    public void storeApp(Activity activity, AppOrderResponse response) {
+        StateUseDiskImpl disk = new StateUseDiskImpl();
+
+        ArrayList<App> res = transformAppEntityToApp(response.getApplications());
+
+        int result = disk.putApplicationAll(res);
+        if (result != -1) {
+            presenter.updateAppSuccess("Aplicaciones añadidas: " + result);
+        } else {
+            presenter.updateAppError("Error al grabar las aplicaiones");
+        }
+    }
+
+    @Override
+    public void storeStateUser(Activity activity, StateUserOrderResponse response) {
         StateUseDiskImpl disk = new StateUseDiskImpl();
 
         if (useCache == null) {
@@ -90,6 +119,16 @@ public class MainRepositoryImpl implements MainRepository {
         stateUsers = new ArrayList<>(mapper.transformArrayList((ArrayList<StateUserEntity>) stateUserEntities));
 
         return stateUsers;
+    }
+
+    private ArrayList<App> transformAppEntityToApp(List<AppEntity> appEntities) {
+        ArrayList<App> apps;
+
+        AppEntityDataMapper mapper = new AppEntityDataMapper();
+
+        apps = new ArrayList<>(mapper.transformArrayList((ArrayList<AppEntity>) appEntities));
+
+        return apps;
     }
 
 }

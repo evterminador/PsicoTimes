@@ -11,31 +11,24 @@ import java.sql.Timestamp;
 
 public class StateUserEntity {
     @SerializedName("id_app")
-    @Expose
     private Integer id_app;
 
     @SerializedName("id_users")
-    @Expose
     private Integer id_users;
 
     @SerializedName("timeUse")
-    @Expose
     private Long timeUse;
 
     @SerializedName("quantity")
-    @Expose
     private Integer quantity;
 
     @SerializedName("lastUseTime")
-    @Expose
     private String lastUseTime;
 
     @SerializedName("created_at")
-    @Expose
     private String created_at;
 
     @SerializedName("updated_at")
-    @Expose
     private String updated_at;
 
     public StateUserEntity() {

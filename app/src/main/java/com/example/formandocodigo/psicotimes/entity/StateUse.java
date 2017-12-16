@@ -9,10 +9,10 @@ import java.sql.Timestamp;
 public class StateUse {
     private Integer id;
     private String nameApplication;
+    private String imageApp;
     private Long useTime;
     private Timestamp lastUseTime;
     private Integer quantity;
-    private Boolean state;
     private Timestamp created_at;
     private Timestamp updated_at;
 
@@ -39,6 +39,14 @@ public class StateUse {
         this.nameApplication = nameApplication;
     }
 
+    public String getImageApp() {
+        return imageApp;
+    }
+
+    public void setImageApp(String imageApp) {
+        this.imageApp = imageApp;
+    }
+
     public Long getUseTime() {
         return useTime;
     }
@@ -61,14 +69,6 @@ public class StateUse {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public Boolean getState() {
-        return state;
-    }
-
-    public void setState(Boolean state) {
-        this.state = state;
     }
 
     public Timestamp getCreated_at() {

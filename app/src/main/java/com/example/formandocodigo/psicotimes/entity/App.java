@@ -6,7 +6,7 @@ import java.sql.Timestamp;
  * Created by FormandoCodigo on 13/12/2017.
  */
 
-public class ApplicationEntity {
+public class App {
     private Integer id;
     private String name;
     private Integer relevance;
@@ -15,11 +15,11 @@ public class ApplicationEntity {
     private Timestamp created_at;
     private Timestamp updated_at;
 
-    public ApplicationEntity(Integer id) {
+    public App(Integer id) {
         this.id = id;
     }
 
-    public ApplicationEntity() {
+    public App() {
         super();
     }
 

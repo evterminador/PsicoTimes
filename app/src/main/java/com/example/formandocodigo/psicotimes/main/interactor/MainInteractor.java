@@ -5,6 +5,7 @@ import android.app.Activity;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.main.net.OrderService;
 import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import retrofit2.Call;
  */
 
 public interface MainInteractor {
-    List<StateUse> findAll(Activity activity);
-    void syncUp(Activity activity, OrderService service, Call<AppOrderResponse> call);
+    List<StateUse> findAll();
+    void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call);
+    void syncUp(Activity activity, OrderService service, Call<StateUserOrderResponse> call);
 }

@@ -21,7 +21,7 @@ public final class Continual {
             public final String TABLE_NAME = "application";
             public final String COLUMN_ID = "id";
             public final String COLUMN_NAME = "name";
-            public final String COLUMN_RELEVANCE_ = "relevance";
+            public final String COLUMN_RELEVANCE = "relevance";
             public final String COLUMN_IMAGE = "image";
             public final String COLUMN_DESCRIPTION = "description";
             public final String COLUMN_CREATED_AT = "created_at";

@@ -9,7 +9,7 @@ import java.util.List;
  * Created by FormandoCodigo on 03/12/2017.
  */
 
-public class AppOrder {
+public class StateUserOrder {
 
     @SerializedName("email")
     private String email;

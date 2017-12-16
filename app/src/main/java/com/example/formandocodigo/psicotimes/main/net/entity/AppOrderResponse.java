@@ -1,28 +1,25 @@
 package com.example.formandocodigo.psicotimes.main.net.entity;
 
-import com.example.formandocodigo.psicotimes.data.entity.StateUserEntity;
-import com.google.gson.annotations.SerializedName;
+import com.example.formandocodigo.psicotimes.data.entity.AppEntity;
+import com.example.formandocodigo.psicotimes.entity.App;
 import com.squareup.moshi.Json;
 
 import java.util.List;
 
 /**
- * Created by FormandoCodigo on 03/12/2017.
+ * Created by FormandoCodigo on 15/12/2017.
  */
 
 public class AppOrderResponse {
 
-    @Json(name = "message")
-    String message;
+    @Json(name = "applications")
+    List<AppEntity> applications;
 
-    @SerializedName("appOrder")
-    List<StateUserEntity> stateUses;
-
-    public String getMessage() {
-        return message;
+    public List<AppEntity> getApplications() {
+        return applications;
     }
 
-    public List<StateUserEntity> getStateUses() {
-        return stateUses;
+    public void setApplications(List<AppEntity> applications) {
+        this.applications = applications;
     }
 }

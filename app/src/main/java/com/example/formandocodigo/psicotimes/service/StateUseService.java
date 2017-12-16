@@ -101,7 +101,6 @@ public class StateUseService extends Service implements StateUseServiceView {
                         stateUses.add(stateUse);
                     }
                 }
-                //runningApplications.add(c.toString());
             } catch (Exception e) {
                 e.printStackTrace();
             }

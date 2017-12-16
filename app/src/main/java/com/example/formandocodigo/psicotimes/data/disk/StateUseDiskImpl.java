@@ -3,10 +3,12 @@ package com.example.formandocodigo.psicotimes.data.disk;
 
 import android.util.Log;
 
-import com.example.formandocodigo.psicotimes.entity.ApplicationEntity;
+import com.example.formandocodigo.psicotimes.entity.App;
+import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.entity.StateUser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by FormandoCodigo on 13/12/2017.
@@ -19,13 +21,34 @@ public class StateUseDiskImpl implements StateUseDisk {
     }
 
     @Override
-    public void putApplication(ApplicationEntity applicationEntity) {
+    public Integer putApplicationAll(ArrayList<App> appList) {
+        int result;
 
-    }
+        try {
+            ArrayList<App> data = SQLiteManager.Instance().getAllApp();
 
-    @Override
-    public void putApplicationAll(ArrayList<ApplicationEntity> applicationEntityList) {
-
+            int c = 0;
+            if (appList.size() > 0) {
+                if (data.size() > 0) {
+                    for (App a : appList) {
+                        if (!isExistsUpdateApp(data, a)) {
+                            SQLiteManager.Instance().insertApp(a);
+                            c++;
+                        }
+                    }
+                } else {
+                    for (App a : appList) {
+                        SQLiteManager.Instance().insertApp(a);
+                        c++;
+                    }
+                }
+            }
+            result = c;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+        return result;
     }
 
     @Override
@@ -39,7 +62,7 @@ public class StateUseDiskImpl implements StateUseDisk {
             if (stateUserList.size() > 0) {
                 if (data.size() > 0) {
                     for (StateUser s : stateUserList) {
-                        if (!isExistsUpdate(data, s)) {
+                        if (!isExistsUpdateStateUser(data, s)) {
                             SQLiteManager.Instance().insertStateUser(s);
                             c++;
                         }
@@ -60,11 +83,59 @@ public class StateUseDiskImpl implements StateUseDisk {
         return result;
     }
 
-    private boolean isExistsUpdate(ArrayList<StateUser> o1, StateUser o2) {
+    @Override
+    public List<StateUser> getStateUserAll() {
+        List<StateUser> list = null;
+        try {
+            list = SQLiteManager.Instance().getAllStateUser();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
+    public List<App> getAppAll() {
+        List<App> list = new ArrayList<>();
+        try {
+            list = SQLiteManager.Instance().getAllApp();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
+    public List<StateUse> getStateUseAll() {
+        List<StateUse> list = new ArrayList<>();
+        try {
+            list = SQLiteManager.Instance().getStateUses();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    private boolean isExistsUpdateStateUser(ArrayList<StateUser> o1, StateUser o2) {
         for (StateUser s : o1) {
             if (s.getId_app().equals(o2.getId_app()) && s.getCreated_at().equals(o2.getCreated_at())) {
                 try {
                     SQLiteManager.Instance().updateStateUser(o2);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return true;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isExistsUpdateApp(ArrayList<App> a1, App a2) {
+        for (App a : a1) {
+            if (a.getId().equals(a2.getId())) {
+                try {
+                    SQLiteManager.Instance().updateApp(a);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return true;

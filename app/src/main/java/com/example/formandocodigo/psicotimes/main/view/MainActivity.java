@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.R;
+import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseByQuantity;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseByUseTime;
 import com.example.formandocodigo.psicotimes.utils.Converts;
@@ -29,7 +30,7 @@ import com.example.formandocodigo.psicotimes.main.presenter.MainPresenter;
 import com.example.formandocodigo.psicotimes.main.presenter.MainPresenterImpl;
 import com.example.formandocodigo.psicotimes.main.net.OrderService;
 import com.example.formandocodigo.psicotimes.main.net.RetrofitBuilder;
-import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.service.StateUseService;
 import com.example.formandocodigo.psicotimes.view.HistoricActivity;
@@ -63,7 +64,8 @@ public class MainActivity extends AppCompatActivity
     List<StateUse> stateUses = new ArrayList<>();
 
     OrderService service;
-    Call<AppOrderResponse> call;
+    Call<StateUserOrderResponse> stateUserCall;
+    Call<AppOrderResponse> appCall;
 
     private MainPresenter presenter;
 
@@ -77,7 +79,6 @@ public class MainActivity extends AppCompatActivity
         pieChart = findViewById(R.id.pie_chart_statistics);
         barChart = findViewById(R.id.bar_chart_quantity_use);
         pieChart.setUsePercentValues(true);
-
 
         Legend l = pieChart.getLegend();
         l.setEnabled(false);
@@ -129,9 +130,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (call != null)  {
-            call.cancel();
-            call = null;
+        if (stateUserCall != null)  {
+            stateUserCall.cancel();
+            stateUserCall = null;
+        }
+        if (appCall != null) {
+            appCall.cancel();
+            appCall = null;
         }
         stopService(new Intent(MainActivity.this, StateUseService.class));
     }
@@ -162,6 +167,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            updateApp();
             return true;
         }
 
@@ -192,6 +198,16 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void updateAppSuccess(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void updateAppError(String error) {
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -362,11 +378,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getAppAll() {
-        stateUses = presenter.findAll(this);
+        stateUses = presenter.findAll();
+    }
+
+    private void updateApp() {
+        presenter.updateApp(this, service, appCall);
     }
 
     private void syncUp() {
-        presenter.syncUp(this, service, call);
+        presenter.syncUp(this, service, stateUserCall);
     }
 
     private List<StateUse> stateUseListByUseTime() {

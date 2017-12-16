@@ -7,6 +7,7 @@ import com.example.formandocodigo.psicotimes.main.interactor.MainInteractor;
 import com.example.formandocodigo.psicotimes.main.interactor.MainInteractorImpl;
 import com.example.formandocodigo.psicotimes.main.net.OrderService;
 import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.main.view.MainView;
 
 import java.util.List;
@@ -28,17 +29,32 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
-    public List<StateUse> findAll(Activity activity) {
-        return interactor.findAll(activity);
+    public List<StateUse> findAll() {
+        return interactor.findAll();
     }
 
     @Override
-    public void syncUp(Activity activity, OrderService service, Call<AppOrderResponse> call) {
+    public void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call) {
+        interactor.updateApp(activity, service, call);
+    }
+
+    @Override
+    public void updateAppSuccess(String message) {
+        mainView.updateAppSuccess(message);
+    }
+
+    @Override
+    public void updateAppError(String error) {
+        mainView.updateAppError(error);
+    }
+
+    @Override
+    public void syncUp(Activity activity, OrderService service, Call<StateUserOrderResponse> call) {
         interactor.syncUp(activity, service, call);
     }
 
     @Override
-    public void syncSuccess(String error) {
+    public void syncSuccess(String message) {
 
     }
 

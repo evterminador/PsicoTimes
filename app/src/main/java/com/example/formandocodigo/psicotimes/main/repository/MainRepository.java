@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,9 @@ import java.util.List;
  */
 
 public interface MainRepository {
-    List<StateUse> findAll(Activity activity);
+    List<StateUse> findAll();
+    List<StateUse> findCacheAll(Activity activity);
     HashMap<String, String> getUserEmailAndPassword(Activity activity);
-    void fetchApp(Activity activity, AppOrderResponse response);
+    void storeApp(Activity activity, AppOrderResponse response);
+    void storeStateUser(Activity activity, StateUserOrderResponse response);
 }

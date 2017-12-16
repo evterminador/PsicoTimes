@@ -19,6 +19,8 @@ import com.example.formandocodigo.psicotimes.data.cache.FileManager;
 import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
 import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
+import com.example.formandocodigo.psicotimes.domain.StateUseCase;
+import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseByQuantity;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseByUseTime;
@@ -144,11 +146,8 @@ public class HistoricActivity extends AppCompatActivity {
     }
 
     private void getAppAll() {
-        StateUseCacheImpl read = new StateUseCacheImpl(this, new Serializer(), new FileManager());
-        StateUseEntityDataMapper stateUseMapper = new StateUseEntityDataMapper();
-        if (read.getAll() != null) {
-            stateUses = stateUseMapper.transformArrayList(read.getAll());
-        }
+        StateUseCase stateUseCase = new StateUseCaseImpl();
+        stateUses = stateUseCase.getStateUseAll();
     }
 
     private void changedMode() {
@@ -156,7 +155,7 @@ public class HistoricActivity extends AppCompatActivity {
             ctlUseTime.setBackground(null);
             ctlUseTime.setElevation(0);
             txtUTPValue.setText("47");
-            txtUTPValue.setTextColor(null);
+            txtUTPValue.setTextColor(Color.parseColor("#3D3D3D"));
 
             ctlQuantity.setBackground(getResources().getDrawable(R.drawable.border_select_historic));
             ctlQuantity.setElevation(4F);
