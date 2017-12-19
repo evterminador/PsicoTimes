@@ -20,6 +20,8 @@ public interface StateUseDisk {
 
     List<App> getAppAll();
 
+    List<StateUse> findStateUseByIdAll(Integer id);
+
     List<StateUse> getStateUseAll();
 
     List<StateUse> getStateUseByDate();

@@ -102,6 +102,18 @@ public class StateUseDiskImpl implements StateUseDisk {
     }
 
     @Override
+    public List<StateUse> findStateUseByIdAll(Integer id) {
+        List<StateUse> list = new ArrayList<>();
+
+        try {
+            list = SQLiteManager.Instance().findStateUseById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
     public List<StateUse> getStateUseAll() {
         List<StateUse> list = new ArrayList<>();
         try {

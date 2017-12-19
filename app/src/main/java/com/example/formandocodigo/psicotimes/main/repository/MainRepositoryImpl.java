@@ -43,9 +43,13 @@ public class MainRepositoryImpl implements MainRepository {
     }
 
     @Override
+    public List<StateUse> findByIdAll(Integer id) {
+        return useCase.findStateUseByIdAll(id);
+    }
+
+    @Override
     public List<StateUse> findAll() {
-        List<StateUse> stateUses = useCase.getStateUseAll();
-        return stateUses;
+        return useCase.getStateUseAll();
     }
 
     @Override

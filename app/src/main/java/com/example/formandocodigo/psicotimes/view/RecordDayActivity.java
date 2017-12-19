@@ -176,7 +176,7 @@ public class RecordDayActivity extends AppCompatActivity {
 
     private void getStateUsesAll() {
         StateUseCase useCase = new StateUseCaseImpl();
-        stateUses = useCase.getStateUseByDate();
+        stateUses = new ArrayList<>(useCase.getStateUseByDate());
     }
 
     private void changedMode() {

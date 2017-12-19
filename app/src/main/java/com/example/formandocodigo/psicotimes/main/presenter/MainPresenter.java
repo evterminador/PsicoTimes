@@ -18,6 +18,8 @@ import retrofit2.Call;
 public interface MainPresenter {
     List<StateUse> findAll();
 
+    List<StateUse> findAllById(Integer id);
+
     void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call);
 
     void updateAppSuccess(String message);

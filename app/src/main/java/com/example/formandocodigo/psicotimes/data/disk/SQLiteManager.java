@@ -159,7 +159,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
         Cursor c = null;
 
         try {
-            final String sql = "select a." + app.COLUMN_NAME +
+            final String sql = "select " + " a." + app.COLUMN_ID +
+                    ", a." + app.COLUMN_NAME +
                     ", a." + app.COLUMN_IMAGE +
                     ", s." + stateUse.COLUMN_TIME_USE +
                     ", sum(s." + stateUse.COLUMN_QUANTITY + ") " +
@@ -176,13 +177,14 @@ public class SQLiteManager extends SQLiteOpenHelper {
             StateUse stateUse;
             while (c.moveToNext()) {
                 stateUse = new StateUse();
-                stateUse.setNameApplication(c.getString(0));
-                stateUse.setImageApp(c.getString(1));
-                stateUse.setUseTime(c.getLong(2));
-                stateUse.setQuantity(c.getInt(3));
-                stateUse.setLastUseTime(Converts.convertStringToTimestamp(c.getString(4)));
-                stateUse.setCreated_at(Converts.convertStringToTimestamp(c.getString(5)));
-                stateUse.setUpdated_at(Converts.convertStringToTimestamp(c.getString(6)));
+                stateUse.setId(c.getInt(0));
+                stateUse.setNameApplication(c.getString(1));
+                stateUse.setImageApp(c.getString(2));
+                stateUse.setUseTime(c.getLong(3));
+                stateUse.setQuantity(c.getInt(4));
+                stateUse.setLastUseTime(Converts.convertStringToTimestamp(c.getString(5)));
+                stateUse.setCreated_at(Converts.convertStringToTimestamp(c.getString(6)));
+                stateUse.setUpdated_at(Converts.convertStringToTimestamp(c.getString(7)));
 
                 list.add(stateUse);
             }
@@ -190,6 +192,45 @@ public class SQLiteManager extends SQLiteOpenHelper {
             e.printStackTrace();
         } finally {
             c.close();
+        }
+        return list;
+    }
+
+    public ArrayList<StateUse> findStateUseById(Integer id) {
+        ArrayList<StateUse> list = new ArrayList<>();
+        Cursor c = null;
+        try {
+            final String sql = "select " + " a." + app.COLUMN_ID +
+                    ", a." + app.COLUMN_NAME +
+                    ", a." + app.COLUMN_IMAGE +
+                    ", s." + stateUse.COLUMN_TIME_USE +
+                    ", s." + stateUse.COLUMN_QUANTITY +
+                    ", s." + stateUse.COLUMN_LAST_USE_TIME +
+                    ", s." + stateUse.COLUMN_CREATED_AT +
+                    ", s." + stateUse.COLUMN_UPDATED_AT +
+                    " from " + stateUse.TABLE_NAME + " as s " +
+                    "inner join " + app.TABLE_NAME + " as a " +
+                    "on a." + app.COLUMN_ID + " = s." + stateUse.COLUMN_ID_APP + " " +
+                    "where a." + app.COLUMN_ID + " = " + id;
+
+            c = this.getReadableDatabase().rawQuery(sql, null);
+
+            StateUse use;
+            while (c.moveToNext()) {
+                use = new StateUse();
+                use.setId(c.getInt(0));
+                use.setNameApplication(c.getString(1));
+                use.setImageApp(c.getString(2));
+                use.setUseTime(c.getLong(3));
+                use.setQuantity(c.getInt(4));
+                use.setLastUseTime(Converts.convertStringToTimestamp(c.getString(5)));
+                use.setCreated_at(Converts.convertStringToTimestamp(c.getString(6)));
+                use.setUpdated_at(Converts.convertStringToTimestamp(c.getString(7)));
+
+                list.add(use);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return list;
     }
@@ -215,13 +256,14 @@ public class SQLiteManager extends SQLiteOpenHelper {
             StateUse stateUse;
             while (c.moveToNext()) {
                 stateUse = new StateUse();
-                stateUse.setNameApplication(c.getString(0));
-                stateUse.setImageApp(c.getString(1));
-                stateUse.setUseTime(c.getLong(2));
-                stateUse.setQuantity(c.getInt(3));
-                stateUse.setLastUseTime(Converts.convertStringToTimestamp(c.getString(4)));
-                stateUse.setCreated_at(Converts.convertStringToTimestamp(c.getString(5)));
-                stateUse.setUpdated_at(Converts.convertStringToTimestamp(c.getString(6)));
+                stateUse.setId(c.getInt(0));
+                stateUse.setNameApplication(c.getString(1));
+                stateUse.setImageApp(c.getString(2));
+                stateUse.setUseTime(c.getLong(3));
+                stateUse.setQuantity(c.getInt(4));
+                stateUse.setLastUseTime(Converts.convertStringToTimestamp(c.getString(5)));
+                stateUse.setCreated_at(Converts.convertStringToTimestamp(c.getString(6)));
+                stateUse.setUpdated_at(Converts.convertStringToTimestamp(c.getString(7)));
 
                 list.add(stateUse);
             }

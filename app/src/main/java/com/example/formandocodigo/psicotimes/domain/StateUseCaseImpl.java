@@ -5,6 +5,7 @@ import com.example.formandocodigo.psicotimes.data.disk.StateUseDiskImpl;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by FormandoCodigo on 15/12/2017.
@@ -19,13 +20,18 @@ public class StateUseCaseImpl implements StateUseCase {
     }
 
     @Override
-    public ArrayList<StateUse> getStateUseAll() {
-        return new ArrayList<>(stateUseDisk.getStateUseAll());
+    public List<StateUse> findStateUseByIdAll(Integer id) {
+        return stateUseDisk.findStateUseByIdAll(id);
     }
 
     @Override
-    public ArrayList<StateUse> getStateUseByDate() {
-        return new ArrayList<>(stateUseDisk.getStateUseByDate());
+    public List<StateUse> getStateUseAll() {
+        return stateUseDisk.getStateUseAll();
+    }
+
+    @Override
+    public List<StateUse> getStateUseByDate() {
+        return stateUseDisk.getStateUseByDate();
     }
 
 }

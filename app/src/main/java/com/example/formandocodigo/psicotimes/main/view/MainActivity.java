@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
 import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.R;
@@ -38,26 +39,52 @@ import com.example.formandocodigo.psicotimes.view.RecordDayActivity;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.BindAnim;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MainView {
+
+    private MainPresenter presenter;
+
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+    @BindView(R.id.fab_sync)
+    FloatingActionButton fabSync;
+    @BindView(R.id.fab_update_data)
+    FloatingActionButton fabUpdateData;
+
+    @BindAnim(R.anim.open_fab)
+    Animation fOpen;
+    @BindAnim(R.anim.hidden_fab)
+    Animation fHidden;
+    @BindAnim(R.anim.rotate_fab)
+    Animation fRotateD;
+    @BindAnim(R.anim.return_fab)
+    Animation fRotateI;
+
+    private Boolean open = false;
 
     private PieChart pieChart;
     private LineChart lineChart;
@@ -68,7 +95,7 @@ public class MainActivity extends AppCompatActivity
     Call<StateUserOrderResponse> stateUserCall;
     Call<AppOrderResponse> appCall;
 
-    private MainPresenter presenter;
+    private int id = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,15 +104,20 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        ButterKnife.bind(this);
+
         pieChart = findViewById(R.id.pie_chart_statistics);
+        lineChart = findViewById(R.id.line_chart_top_record);
         barChart = findViewById(R.id.bar_chart_quantity_use);
         pieChart.setUsePercentValues(true);
 
-        Legend l = pieChart.getLegend();
-        l.setEnabled(false);
+        pieChart.getLegend().setEnabled(false);
+        barChart.getLegend().setEnabled(false);
 
-        Legend l1 = barChart.getLegend();
-        l1.setEnabled(false);
+        //Sets charts
+        pieChart.getDescription().setEnabled(false);
+        lineChart.getDescription().setEnabled(false);
+        barChart.getDescription().setEnabled(false);
 
         service = RetrofitBuilder.createService(OrderService.class);
 
@@ -93,13 +125,32 @@ public class MainActivity extends AppCompatActivity
 
         initializeService();
 
-        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (open) {
+                    hiddenFab();
+                } else {
+                    showFab();
+                }
+            }
+        });
+
+        fabUpdateData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hiddenFab();
                 syncUp();
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
+            }
+        });
+
+        fabUpdateData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hiddenFab();
+                //updateApp();
             }
         });
 
@@ -168,8 +219,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            updateApp();
-            return true;
+            // Implement user profile
         }
 
         return super.onOptionsItemSelected(item);
@@ -217,6 +267,24 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void showFab() {
+        fab.startAnimation(fRotateD);
+        fabSync.startAnimation(fOpen);
+        fabUpdateData.startAnimation(fOpen);
+
+        open = true;
+    }
+
+    @Override
+    public void hiddenFab() {
+        fab.startAnimation(fRotateI);
+        fabSync.startAnimation(fHidden);
+        fabUpdateData.startAnimation(fHidden);
+
+        open = false;
+    }
+
     private void initializeService() {
         if (checkForPermission(this)) {
             startService(new Intent(MainActivity.this, StateUseService.class));
@@ -259,6 +327,7 @@ public class MainActivity extends AppCompatActivity
     private void initializeGraphics() {
         getAppAll();
         setPieChart();
+        setLineChart();
         setBarChart();
     }
 
@@ -329,15 +398,40 @@ public class MainActivity extends AppCompatActivity
     private void setLineChart() {
         ArrayList<Entry> componet1 = new ArrayList<>();
 
-        LineDataSet dataSet;
+        LineDataSet setComp1;
 
         if (stateUses.size() > 0) {
-            List<StateUse> stateUseByQuantity = stateUseListByQuantity();
+            List<StateUse> stateUseByQuantity = presenter.findAllById(id);
 
             for (StateUse s : stateUseByQuantity) {
-                componet1.add(new Entry());
+                componet1.add(new Entry(Converts.getDayTimesTamp(s.getCreated_at()), s.getQuantity()));
             }
+
+            setComp1 = new LineDataSet(componet1, stateUseByQuantity.get(0).getNameApplication());
+        } else {
+            float[] yData = { 5, 10, 15, 30, 40 };
+
+            for (int i = 0; i < yData.length; i++) {
+                componet1.add(new Entry(i, yData[i]));
+            }
+
+            setComp1 = new LineDataSet(componet1, "Default value");
         }
+
+        setComp1.addColor(ColorTemplate.VORDIPLOM_COLORS[0]);
+
+        setComp1.setAxisDependency(YAxis.AxisDependency.RIGHT);
+
+        List<ILineDataSet> dataSets = new ArrayList<>();
+        dataSets.add(setComp1);
+
+        LineData data = new LineData(dataSets);
+
+        lineChart.setData(data);
+        lineChart.getXAxis().setEnabled(false);
+        lineChart.getAxisLeft().setEnabled(false);
+        lineChart.getAxisRight().setEnabled(false);
+        lineChart.invalidate();
     }
 
     private void setBarChart() {
@@ -373,9 +467,15 @@ public class MainActivity extends AppCompatActivity
 
         dataSet.setColors(colors);
 
+        dataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+
         BarData data = new BarData(dataSet);
 
         barChart.setData(data);
+        barChart.setFitBars(true);
+        barChart.getXAxis().setEnabled(false);
+        barChart.getAxisLeft().setEnabled(false);
+        barChart.getAxisRight().setEnabled(false);
         barChart.invalidate();
     }
 
@@ -398,6 +498,8 @@ public class MainActivity extends AppCompatActivity
 
         List<StateUse> top10 = limitStateUses(list, 10);
 
+        id = top10.get(0).getId();
+
         return top10;
     }
 
@@ -406,9 +508,7 @@ public class MainActivity extends AppCompatActivity
         Collections.sort(list, new SortStateUseByQuantity());
         Collections.reverse(list);
 
-        List<StateUse> top5 = limitStateUses(list, 5);
-
-        return top5;
+        return limitStateUses(list, 5);
     }
 
     private List<StateUse> limitStateUses(List<StateUse> list, int limit) {

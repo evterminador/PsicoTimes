@@ -10,4 +10,6 @@
     <color name="colorSecondaryText">#757575</color>
     <color name="editTextColorWhite">#ffffff</color>
     <color name="editTextColorBlack">#000000</color>
+    <color name="fabColorSync">#F37F30</color>
+    <color name="facColorData">#D93AF3</color>
 </resources>

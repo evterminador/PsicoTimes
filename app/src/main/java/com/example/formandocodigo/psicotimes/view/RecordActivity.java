@@ -140,7 +140,7 @@ public class RecordActivity extends AppCompatActivity {
 
     private void getAppAll() {
         StateUseCase stateUseCase = new StateUseCaseImpl();
-        stateUses = stateUseCase.getStateUseAll();
+        stateUses = new ArrayList<>(stateUseCase.getStateUseAll());
     }
 
     private void changedMode() {

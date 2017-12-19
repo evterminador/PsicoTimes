@@ -14,6 +14,7 @@ import java.util.List;
  */
 
 public interface MainRepository {
+    List<StateUse> findByIdAll(Integer id);
     List<StateUse> findAll();
     List<StateUse> findCacheAll(Activity activity);
     HashMap<String, String> getUserEmailAndPassword(Activity activity);

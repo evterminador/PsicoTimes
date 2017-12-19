@@ -43,6 +43,11 @@ public class MainInteractorImpl implements MainInteractor {
     }
 
     @Override
+    public List<StateUse> findAllId(Integer id) {
+        return repository.findByIdAll(id);
+    }
+
+    @Override
     public void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call) {
         call = service.appOrder();
 

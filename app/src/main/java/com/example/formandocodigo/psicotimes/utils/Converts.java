@@ -1,5 +1,7 @@
 package com.example.formandocodigo.psicotimes.utils;
 
+import android.util.Log;
+
 import com.example.formandocodigo.psicotimes.login.repository.net.entity.ApiError;
 import com.example.formandocodigo.psicotimes.login.repository.net.RetrofitBuilder;
 
@@ -93,5 +95,14 @@ public class Converts {
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
         calendar.set(Calendar.MILLISECOND, 999);
+    }
+
+    public static int getDayTimesTamp(Timestamp timestamp) {
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(timestamp);
+
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        return day;
     }
 }

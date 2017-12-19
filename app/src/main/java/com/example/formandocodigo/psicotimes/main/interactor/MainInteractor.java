@@ -17,6 +17,11 @@ import retrofit2.Call;
 
 public interface MainInteractor {
     List<StateUse> findAll();
+
+    List<StateUse> findAllId(Integer id);
+
     void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call);
+
+
     void syncUp(Activity activity, OrderService service, Call<StateUserOrderResponse> call);
 }

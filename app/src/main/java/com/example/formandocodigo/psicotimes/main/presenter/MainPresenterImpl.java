@@ -34,6 +34,11 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
+    public List<StateUse> findAllById(Integer id) {
+        return interactor.findAllId(id);
+    }
+
+    @Override
     public void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call) {
         interactor.updateApp(activity, service, call);
     }
