@@ -7,7 +7,7 @@ package com.example.formandocodigo.psicotimes.utils;
 public final class Continual {
 
     public static final class Net {
-        public static final String BASE_URL = "http://192.168.1.7:8000/api/";
+        public static final String BASE_URL = "http://192.168.1.3:8000/api/";
     }
 
     public static final class Shared {

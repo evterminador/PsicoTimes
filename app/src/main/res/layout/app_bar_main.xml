@@ -10,44 +10,30 @@
 
     <include layout="@layout/content_main" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:pressedTranslationZ="20sp"
-        app:srcCompat="@drawable/ic_service_hand_40px" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_sync"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:layout_marginBottom="80dp"
-        app:pressedTranslationZ="10sp"
-        app:srcCompat="@drawable/ic_sync"
-        app:backgroundTint="@color/fabColorSync"
-        android:tint="@color/editTextColorWhite"
-        android:visibility="invisible"
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/menu_fab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        app:menu_labels_ellipsize="end"
+        app:menu_labels_singleLine="true"
+        app:menu_backgroundColor="#ccffffff"
+        app:menu_colorNormal="@color/colorAccent"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_update_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:layout_marginBottom="140dp"
-        app:pressedTranslationZ="10sp"
-        app:srcCompat="@drawable/ic_data_storage_40px"
-        app:backgroundTint="@color/facColorData"
-        android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_sync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_sync"
+            android:tint="@color/editTextColorWhite"
+            app:fab_colorNormal="@color/fabColorSync"
+            app:fab_colorPressed="#B05C23"
+            app:fab_size="mini"
+            android:visibility="visible"
+            app:fab_label="Sincronizar" />
 
-
+    </com.github.clans.fab.FloatingActionMenu>
 
 </android.support.design.widget.CoordinatorLayout>

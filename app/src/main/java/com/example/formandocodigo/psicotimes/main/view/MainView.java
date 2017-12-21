@@ -8,6 +8,4 @@ public interface MainView {
     void updateAppSuccess(String message);
     void updateAppError(String error);
     void syncError(String error);
-    void showFab();
-    void hiddenFab();
 }

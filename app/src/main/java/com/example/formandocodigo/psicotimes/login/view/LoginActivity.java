@@ -85,7 +85,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             finish();
         }
 
-
         service = RetrofitBuilder.createService(ApiService.class);
         validator = new AwesomeValidation(ValidationStyle.TEXT_INPUT_LAYOUT);
         setupRules();

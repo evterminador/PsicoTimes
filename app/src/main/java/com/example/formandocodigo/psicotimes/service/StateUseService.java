@@ -5,7 +5,9 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
@@ -29,21 +31,46 @@ public class StateUseService extends Service implements StateUseServiceView {
     private long initialTime;
     StateUseCacheImpl save;
 
+    private Handler serviceLoop = null;
+    private Runnable run = null;
+
     public StateUseService() {}
 
     @Override
     public void onCreate() {
         super.onCreate();
+
         save = new StateUseCacheImpl(this, new Serializer(), new FileManager());
+
+        initialTime = getAppLastUse();
+        save.setLastCacheUpdateTimeMillis();
+
+        serviceLoop = new Handler();
+        run = new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(StateUseService.this, "Guardando", Toast.LENGTH_SHORT).show();
+                initializeApp();
+                saveApplication();
+
+                initialTime = getAppLastUse();
+                save.setLastCacheUpdateTimeMillis();
+
+                serviceLoop.postDelayed(run, 10000);
+            }
+        };
+
+        serviceLoop.postDelayed(run, 15000);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //return super.onStartCommand(intent, flags, startId);
-        Toast.makeText(this, "Service starting", Toast.LENGTH_SHORT).show();
-        initialTime = getAppLastUse();
-        save.setLastCacheUpdateTimeMillis();
-        initializeApp();
+        //Toast.makeText(this, "Service starting", Toast.LENGTH_SHORT).show();
+        //initialTime = getAppLastUse();
+        //save.setLastCacheUpdateTimeMillis();
+        //initializeApp();
+
         return  START_STICKY;
     }
 
@@ -51,6 +78,7 @@ public class StateUseService extends Service implements StateUseServiceView {
     public void onDestroy() {
         super.onDestroy();
         saveApplication();
+        serviceLoop.removeCallbacks(run);
         Toast.makeText(this, "Service done", Toast.LENGTH_LONG).show();
     }
 
@@ -117,6 +145,7 @@ public class StateUseService extends Service implements StateUseServiceView {
 
     private void saveApplication() {
         save.putAll(stateUses);
+        stateUses.clear();
     }
 
     private boolean repeatApp(UsageStats stats, String nPackage) {
@@ -125,7 +154,9 @@ public class StateUseService extends Service implements StateUseServiceView {
                 for (int x = 0; x < stateUses.size(); x++) {
                     if (stateUses.get(x).getNameApplication().equalsIgnoreCase(nPackage)) {
                         stateUses.get(x).setUseTime(stats.getTotalTimeInForeground());
-                        stateUses.get(x).setQuantity(stateUses.get(x).getQuantity() + 1);
+                        if (stats.getLastTimeUsed() > initialTime) {
+                            stateUses.get(x).setQuantity(stateUses.get(x).getQuantity() + 1);
+                        }
                         return true;
                     }
                 }

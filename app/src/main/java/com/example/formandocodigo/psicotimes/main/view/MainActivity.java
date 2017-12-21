@@ -1,5 +1,6 @@
 package com.example.formandocodigo.psicotimes.main.view;
 
+import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,7 +9,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Process;
 import android.provider.Settings;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -36,10 +36,10 @@ import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.service.StateUseService;
 import com.example.formandocodigo.psicotimes.view.RecordActivity;
 import com.example.formandocodigo.psicotimes.view.RecordDayActivity;
+import com.github.clans.fab.FloatingActionButton;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -53,13 +53,13 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindAnim;
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 
@@ -68,12 +68,9 @@ public class MainActivity extends AppCompatActivity
 
     private MainPresenter presenter;
 
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
-    @BindView(R.id.fab_sync)
     FloatingActionButton fabSync;
-    @BindView(R.id.fab_update_data)
-    FloatingActionButton fabUpdateData;
+
+    AVLoadingIndicatorView avi;
 
     @BindAnim(R.anim.open_fab)
     Animation fOpen;
@@ -83,8 +80,6 @@ public class MainActivity extends AppCompatActivity
     Animation fRotateD;
     @BindAnim(R.anim.return_fab)
     Animation fRotateI;
-
-    private Boolean open = false;
 
     private PieChart pieChart;
     private LineChart lineChart;
@@ -103,6 +98,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        avi = findViewById(R.id.avi);
+
+        fabSync = findViewById(R.id.fab_sync);
 
         ButterKnife.bind(this);
 
@@ -125,32 +124,12 @@ public class MainActivity extends AppCompatActivity
 
         initializeService();
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (open) {
-                    hiddenFab();
-                } else {
-                    showFab();
-                }
-            }
-        });
-
-        fabUpdateData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hiddenFab();
                 syncUp();
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
-            }
-        });
-
-        fabUpdateData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hiddenFab();
-                //updateApp();
             }
         });
 
@@ -164,18 +143,18 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         initializeGraphics();
+
+        initializeApp();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopService(new Intent(MainActivity.this, StateUseService.class));
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        initializeService();
         initializeGraphics();
     }
 
@@ -190,7 +169,6 @@ public class MainActivity extends AppCompatActivity
             appCall.cancel();
             appCall = null;
         }
-        stopService(new Intent(MainActivity.this, StateUseService.class));
     }
 
     @Override
@@ -267,30 +245,45 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    public void showFab() {
-        fab.startAnimation(fRotateD);
-        fabSync.startAnimation(fOpen);
-        fabUpdateData.startAnimation(fOpen);
+    private void initializeApp() {
+        Thread tr = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        open = true;
-    }
-
-    @Override
-    public void hiddenFab() {
-        fab.startAnimation(fRotateI);
-        fabSync.startAnimation(fHidden);
-        fabUpdateData.startAnimation(fHidden);
-
-        open = false;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateApp();
+                    }
+                });
+            }
+        });
+        tr.start();
     }
 
     private void initializeService() {
         if (checkForPermission(this)) {
-            startService(new Intent(MainActivity.this, StateUseService.class));
+
+            boolean isService = isMyServiceRunning(StateUseService.class);
+
+            if (isService) {
+                Toast.makeText(this, "Iniciando Modulos", Toast.LENGTH_LONG).show();
+            } else {
+                startService(new Intent(MainActivity.this, StateUseService.class));
+            }
         } else {
             requestPermission();
         }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean checkForPermission(Context context) {
@@ -484,7 +477,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateApp() {
+        avi.smoothToShow();
         presenter.updateApp(this, service, appCall);
+        //avi.hide();
     }
 
     private void syncUp() {
