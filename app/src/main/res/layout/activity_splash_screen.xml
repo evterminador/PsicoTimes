@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:padding="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:weightSum="1"
+    tools:context="com.example.formandocodigo.psicotimes.post.SplashScreenActivity">
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3">
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/avi"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:indicatorName="BallClipRotatePulseIndicator"
+            android:visibility="visible" />
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/avi_pacman"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:indicatorName="PacmanIndicator"
+            android:visibility="gone" />
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/avi_state_use"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:indicatorName="BallScaleMultipleIndicator"
+            android:visibility="gone"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="0.7"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/screen_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Iniciando modulos"
+            android:textSize="20sp"
+            android:textColor="@color/editTextColorWhite"
+            android:gravity="center"
+            android:layout_marginEnd="6dp"/>
+
+        <com.eyalbira.loadingdots.LoadingDots
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:LoadingDots_auto_play="true"
+            app:LoadingDots_dots_color="@android:color/white"
+            app:LoadingDots_dots_count="3"
+            app:LoadingDots_dots_size="8dp"
+            app:LoadingDots_loop_duration="800"
+            app:LoadingDots_loop_start_delay="100"
+            app:LoadingDots_jump_duration="200"
+            app:LoadingDots_jump_height="4dp" />
+    </LinearLayout>
+
+</LinearLayout>

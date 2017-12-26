@@ -1,8 +1,8 @@
-package com.example.formandocodigo.psicotimes.main.net;
+package com.example.formandocodigo.psicotimes.utils.net;
 
-import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
-import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrder;
-import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.StateUserOrder;
+import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -20,4 +20,6 @@ public interface OrderService {
 
     @GET("fetch/app")
     Call<AppOrderResponse> appOrder();
+
+
 }

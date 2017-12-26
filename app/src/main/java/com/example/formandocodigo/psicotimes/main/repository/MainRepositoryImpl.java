@@ -18,8 +18,8 @@ import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
 import com.example.formandocodigo.psicotimes.entity.App;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.entity.StateUser;
-import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
-import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.utils.Continual;
 import com.example.formandocodigo.psicotimes.main.presenter.MainPresenter;
 

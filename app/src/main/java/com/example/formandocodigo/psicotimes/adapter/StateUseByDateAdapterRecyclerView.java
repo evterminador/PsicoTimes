@@ -1,6 +1,8 @@
 package com.example.formandocodigo.psicotimes.adapter;
 
 import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,10 +48,17 @@ public class StateUseByDateAdapterRecyclerView extends RecyclerView.Adapter<Stat
         StateUse stateUse = stateUses.get(position);
         holder.txtNum.setText("#"+c);
         holder.txtNameHistoric.setText(stateUse.getNameApplication());
-        Picasso.with(activity).load(stateUse.getImageApp()).into(holder.imgAppHistoric);
+        if (stateUse.getImageApp() != null || !stateUse.getImageApp().equals("")) {
+            try {
+                Drawable icon = activity.getPackageManager().getApplicationIcon(stateUse.getImageApp());
+                holder.imgAppHistoric.setImageDrawable(icon);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
         holder.txtMode.setText("Fecha de creación:");
-        holder.imgIconHistoric.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_today));
-        holder.txtValueHistoric.setText(Converts.convertTimestampToString(stateUse.getCreated_at()));
+        holder.imgIconHistoric.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_access_time));
+        holder.txtValueHistoric.setText(Converts.convertLongToTimeChar(stateUse.getUseTime()));
         holder.imgIconHistoric.setColorFilter(activity.getResources().getColor(android.R.color.holo_green_light));
         c++;
     }

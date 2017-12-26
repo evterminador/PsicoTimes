@@ -8,12 +8,6 @@
     tools:context="com.example.formandocodigo.psicotimes.main.view.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/avi"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:indicatorName="BallClipRotatePulseIndicator"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

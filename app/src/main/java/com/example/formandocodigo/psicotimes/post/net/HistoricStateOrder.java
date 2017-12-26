@@ -1,4 +1,4 @@
-package com.example.formandocodigo.psicotimes.main.net.entity;
+package com.example.formandocodigo.psicotimes.post.net;
 
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.google.gson.annotations.SerializedName;
@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by FormandoCodigo on 03/12/2017.
+ * Created by FormandoCodigo on 26/12/2017.
  */
 
-public class StateUserOrder {
+public class HistoricStateOrder {
 
     @SerializedName("email")
     private String email;

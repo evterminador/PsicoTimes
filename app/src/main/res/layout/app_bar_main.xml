@@ -10,30 +10,4 @@
 
     <include layout="@layout/content_main" />
 
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/menu_fab"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom"
-        app:menu_labels_ellipsize="end"
-        app:menu_labels_singleLine="true"
-        app:menu_backgroundColor="#ccffffff"
-        app:menu_colorNormal="@color/colorAccent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true">
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_sync"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_sync"
-            android:tint="@color/editTextColorWhite"
-            app:fab_colorNormal="@color/fabColorSync"
-            app:fab_colorPressed="#B05C23"
-            app:fab_size="mini"
-            android:visibility="visible"
-            app:fab_label="Sincronizar" />
-
-    </com.github.clans.fab.FloatingActionMenu>
-
 </android.support.design.widget.CoordinatorLayout>

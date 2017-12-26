@@ -5,9 +5,9 @@ import android.app.Activity;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.main.interactor.MainInteractor;
 import com.example.formandocodigo.psicotimes.main.interactor.MainInteractorImpl;
-import com.example.formandocodigo.psicotimes.main.net.OrderService;
-import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
-import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
+import com.example.formandocodigo.psicotimes.utils.net.OrderService;
+import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.main.view.MainView;
 
 import java.util.List;

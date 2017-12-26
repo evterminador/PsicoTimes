@@ -19,24 +19,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.animation.Animation;
 import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.R;
-import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseByQuantity;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseByUseTime;
 import com.example.formandocodigo.psicotimes.utils.Converts;
 import com.example.formandocodigo.psicotimes.main.presenter.MainPresenter;
 import com.example.formandocodigo.psicotimes.main.presenter.MainPresenterImpl;
-import com.example.formandocodigo.psicotimes.main.net.OrderService;
-import com.example.formandocodigo.psicotimes.main.net.RetrofitBuilder;
-import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
+import com.example.formandocodigo.psicotimes.utils.net.OrderService;
+import com.example.formandocodigo.psicotimes.utils.net.RetrofitBuilder;
+import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.service.StateUseService;
+import com.example.formandocodigo.psicotimes.utils.net.NetworkStatus;
 import com.example.formandocodigo.psicotimes.view.RecordActivity;
 import com.example.formandocodigo.psicotimes.view.RecordDayActivity;
-import com.github.clans.fab.FloatingActionButton;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -53,13 +52,11 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindAnim;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 
@@ -67,19 +64,6 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
     private MainPresenter presenter;
-
-    FloatingActionButton fabSync;
-
-    AVLoadingIndicatorView avi;
-
-    @BindAnim(R.anim.open_fab)
-    Animation fOpen;
-    @BindAnim(R.anim.hidden_fab)
-    Animation fHidden;
-    @BindAnim(R.anim.rotate_fab)
-    Animation fRotateD;
-    @BindAnim(R.anim.return_fab)
-    Animation fRotateI;
 
     private PieChart pieChart;
     private LineChart lineChart;
@@ -98,10 +82,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        avi = findViewById(R.id.avi);
-
-        fabSync = findViewById(R.id.fab_sync);
 
         ButterKnife.bind(this);
 
@@ -124,14 +104,14 @@ public class MainActivity extends AppCompatActivity
 
         initializeService();
 
-        fabSync.setOnClickListener(new View.OnClickListener() {
+        /*fabSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 syncUp();
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
-        });
+        });*/
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -144,7 +124,9 @@ public class MainActivity extends AppCompatActivity
 
         initializeGraphics();
 
-        initializeApp();
+        if (isOnline()) {
+            //initializeApp();
+        }
     }
 
     @Override
@@ -189,11 +171,29 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem statusNetwork = menu.findItem(R.id.status_network);
+
+        if (isOnline()) {
+               statusNetwork.setVisible(false);
+        } else {
+            statusNetwork.setVisible(true);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (id == R.id.status_network) {
+            /*Intent intent = new Intent(Settings.INTENT_CATEGORY_USAGE_ACCESS_CONFIG);
+            startActivity(intent);*/
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
@@ -243,6 +243,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void syncError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+    }
+
+    private boolean isOnline() {
+        return NetworkStatus.isOnline(this);
     }
 
     private void initializeApp() {
@@ -477,9 +481,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateApp() {
-        avi.smoothToShow();
         presenter.updateApp(this, service, appCall);
-        //avi.hide();
     }
 
     private void syncUp() {

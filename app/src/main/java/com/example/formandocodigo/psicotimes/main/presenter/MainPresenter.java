@@ -3,9 +3,9 @@ package com.example.formandocodigo.psicotimes.main.presenter;
 import android.app.Activity;
 
 import com.example.formandocodigo.psicotimes.entity.StateUse;
-import com.example.formandocodigo.psicotimes.main.net.OrderService;
-import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
-import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
+import com.example.formandocodigo.psicotimes.utils.net.OrderService;
+import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
 
 import java.util.List;
 

@@ -23,6 +23,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     private static Continual.SQLite.App app = new Continual.SQLite.App();
     private static Continual.SQLite.StateUse stateUse = new Continual.SQLite.StateUse();
+    private static Continual.SQLite.Statistics statistics = new Continual.SQLite.Statistics();
 
     private static final String CREATE_APP_TABLE = "create table " +
             app.TABLE_NAME + " ( " +
@@ -46,6 +47,14 @@ public class SQLiteManager extends SQLiteOpenHelper {
             stateUse.COLUMN_UPDATED_AT + " text, " +
             "foreign key (id_app) references app (id) " +
             ") ";
+
+    private static final String CREATE_STATISTICS_TABLE = "create table " +
+            statistics.TABLE_NAME + " ( " +
+            statistics.COLUMN_QUANTITY + " integer, " +
+            statistics.COLUMN_TIME_USE + " integer, " +
+            statistics.COLUMN_CREATED_AT + " text, " +
+            statistics.COLUMN_UPDATED_AT + " text " +
+            ")";
 
     private static SQLiteManager instance;
 
@@ -74,6 +83,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(CREATE_APP_TABLE);
         sqLiteDatabase.execSQL(CREATE_STATE_USES_TABLE);
+        sqLiteDatabase.execSQL(CREATE_STATISTICS_TABLE);
     }
 
     @Override
@@ -121,7 +131,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            c.close();
+            if (c != null) c.close();
         }
         return all;
     }
@@ -149,7 +159,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            c.close();
+            if (c != null) c.close();
         }
         return all;
     }
@@ -191,7 +201,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            c.close();
+            if (c != null) c.close();
         }
         return list;
     }
@@ -231,6 +241,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (c != null) c.close();
         }
         return list;
     }
@@ -240,7 +252,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
         Cursor c = null;
 
         try {
-            final String sql = "select a." + app.COLUMN_NAME +
+            final String sql = "select " + "a." + app.COLUMN_ID +
+                    ", a." + app.COLUMN_NAME +
                     ", a." + app.COLUMN_IMAGE +
                     ", s." + stateUse.COLUMN_TIME_USE +
                     ", s." + stateUse.COLUMN_QUANTITY +
@@ -270,7 +283,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            c.close();
+            if (c != null) c.close();
         }
         return list;
     }
@@ -317,7 +330,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
         values.put(app.COLUMN_DESCRIPTION, a.getDescription());
         values.put(app.COLUMN_UPDATED_AT, Converts.convertTimestampToString(a.getUpdated_at()));
 
-        db.update(app.TABLE_NAME, values, app.COLUMN_ID + " = " + a.getId(), null);
+        db.update(app.TABLE_NAME, values, app.COLUMN_ID + " = ?"
+                , new String[] { String.valueOf(a.getId()) });
     }
 
     public void deleteStateUSer(StateUser stateUser) {

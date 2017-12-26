@@ -1,7 +1,5 @@
 package com.example.formandocodigo.psicotimes.data.disk;
 
-import android.util.Log;
-
 import com.example.formandocodigo.psicotimes.entity.App;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.entity.StateUser;
@@ -62,7 +60,6 @@ public class StateUseDiskImpl implements StateUseDisk {
                 if (data.size() > 0) {
                     for (StateUser s : stateUserList) {
                         if (!isExistsUpdateStateUser(data, s)) {
-                            Log.i("MainActivity", "agrega");
                             SQLiteManager.Instance().insertStateUser(s);
                             c++;
                         }
@@ -155,9 +152,9 @@ public class StateUseDiskImpl implements StateUseDisk {
 
     private boolean isExistsUpdateApp(ArrayList<App> a1, App a2) {
         for (App a : a1) {
-            if (a.getId().equals(a2.getId())) {
+            if (a.getId().equals(a2.getId()) && (a.getUpdated_at() != a2.getUpdated_at())) {
                 try {
-                    SQLiteManager.Instance().updateApp(a);
+                    SQLiteManager.Instance().updateApp(a2);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return true;

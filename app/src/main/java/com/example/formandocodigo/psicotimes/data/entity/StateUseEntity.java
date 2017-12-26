@@ -15,6 +15,9 @@ public class StateUseEntity {
     @SerializedName("nameApplication")
     private String nameApplication;
 
+    @SerializedName("image")
+    private String image;
+
     @SerializedName("useTime")
     private Long useTime;
 
@@ -50,6 +53,14 @@ public class StateUseEntity {
 
     public void setNameApplication(String nameApplication) {
         this.nameApplication = nameApplication;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Long getUseTime() {

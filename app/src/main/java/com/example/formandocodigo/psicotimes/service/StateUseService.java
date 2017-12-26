@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
@@ -15,9 +14,11 @@ import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 import com.example.formandocodigo.psicotimes.data.cache.FileManager;
 import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
 import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
+import com.example.formandocodigo.psicotimes.utils.Converts;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -112,7 +113,7 @@ public class StateUseService extends Service implements StateUseServiceView {
 
             CharSequence c;
             try {
-                timeUse = new Timestamp(sta.getLastTimeStamp());
+                timeUse = new Timestamp(sta.getLastTimeUsed());
                 c = pm.getApplicationLabel(pm.getApplicationInfo(sta.getPackageName(), PackageManager.GET_META_DATA));
                 String nPk = String.valueOf(c);
 
@@ -121,10 +122,13 @@ public class StateUseService extends Service implements StateUseServiceView {
                     if (!repeatApp(sta, nPk)) {
                         stateUse = new StateUseEntity();
 
-                        stateUse.setNameApplication(c.toString());
+                        stateUse.setNameApplication(nPk);
+                        stateUse.setImage(sta.getPackageName());
                         stateUse.setUseTime(sta.getTotalTimeInForeground());
                         stateUse.setLastUseTime(timeUse);
                         stateUse.setQuantity(1);
+                        stateUse.setCreated_at(new Timestamp(beginTime));
+                        stateUse.setUpdated_at(new Timestamp(beginTime));
 
                         stateUses.add(stateUse);
                     }
@@ -152,22 +156,28 @@ public class StateUseService extends Service implements StateUseServiceView {
         try {
             if (stateUses.size() > 0) {
                 for (int x = 0; x < stateUses.size(); x++) {
-                    if (stateUses.get(x).getNameApplication().equalsIgnoreCase(nPackage)) {
+                    if (stateUses.get(x).getNameApplication().equalsIgnoreCase(nPackage)
+                            && stateUses.get(x).getCreated_at().after(getCurrentDay())) {
                         stateUses.get(x).setUseTime(stats.getTotalTimeInForeground());
-                        if (stats.getLastTimeUsed() > initialTime) {
-                            stateUses.get(x).setQuantity(stateUses.get(x).getQuantity() + 1);
-                        }
+                        stateUses.get(x).setQuantity(stateUses.get(x).getQuantity() + 1);
+                        stateUses.get(x).setUpdated_at(new Timestamp(System.currentTimeMillis()));
                         return true;
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return true;
         }
         return false;
     }
 
-    void lastAppUseTime() {
-        
+    private Timestamp getCurrentDay() {
+        Calendar c = Calendar.getInstance();
+
+        Converts.setTimeToBeginningOfDay(c);
+
+        return new Timestamp(c.getTimeInMillis());
     }
+
 }

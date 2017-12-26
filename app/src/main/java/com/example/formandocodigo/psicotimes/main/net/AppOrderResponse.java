@@ -1,4 +1,4 @@
-package com.example.formandocodigo.psicotimes.main.net.entity;
+package com.example.formandocodigo.psicotimes.main.net;
 
 import com.example.formandocodigo.psicotimes.data.entity.AppEntity;
 import com.example.formandocodigo.psicotimes.entity.App;

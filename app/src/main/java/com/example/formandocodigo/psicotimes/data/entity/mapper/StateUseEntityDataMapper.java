@@ -23,6 +23,7 @@ public class StateUseEntityDataMapper {
             stateUse = new StateUse();
             stateUse.setId(stateUseEntity.getId());
             stateUse.setNameApplication(stateUseEntity.getNameApplication());
+            stateUse.setImageApp(stateUseEntity.getImage());
             stateUse.setUseTime(stateUseEntity.getUseTime());
             stateUse.setLastUseTime(stateUseEntity.getLastUseTime());
             stateUse.setQuantity(stateUseEntity.getQuantity());

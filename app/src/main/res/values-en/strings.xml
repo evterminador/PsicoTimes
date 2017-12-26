@@ -29,4 +29,5 @@
     <string name="exception_message_state_use_not_found">Cannot retrieve state use data. Check your internet connection</string>
     <string name="toolbar_tittle_create_profile">Create profile</string>
     <string name="error_field_number">This field accept numbers</string>
+    <string name="status_network">disconnected</string>
 </resources>

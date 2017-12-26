@@ -15,13 +15,14 @@ import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
 import com.example.formandocodigo.psicotimes.R;
-import com.example.formandocodigo.psicotimes.login.repository.net.entity.ApiError;
-import com.example.formandocodigo.psicotimes.login.repository.net.entity.RegisterResponse;
-import com.example.formandocodigo.psicotimes.login.repository.net.ApiService;
-import com.example.formandocodigo.psicotimes.login.repository.net.RetrofitBuilder;
+import com.example.formandocodigo.psicotimes.login.net.entity.ApiError;
+import com.example.formandocodigo.psicotimes.login.net.entity.RegisterResponse;
+import com.example.formandocodigo.psicotimes.login.net.ApiService;
+import com.example.formandocodigo.psicotimes.login.net.RetrofitBuilder;
 import com.example.formandocodigo.psicotimes.login.repository.LoginRepositoryImpl;
 import com.example.formandocodigo.psicotimes.utils.Converts;
 import com.example.formandocodigo.psicotimes.main.view.MainActivity;
+import com.example.formandocodigo.psicotimes.post.SplashScreenActivity;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -80,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         fillSpinner();
 
         if (repository.isExistsPreferences()) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, SplashScreenActivity.class);
             startActivity(intent);
             finish();
         }

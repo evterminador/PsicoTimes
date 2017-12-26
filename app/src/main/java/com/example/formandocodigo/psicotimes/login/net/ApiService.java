@@ -1,6 +1,6 @@
-package com.example.formandocodigo.psicotimes.login.repository.net;
+package com.example.formandocodigo.psicotimes.login.net;
 
-import com.example.formandocodigo.psicotimes.login.repository.net.entity.RegisterResponse;
+import com.example.formandocodigo.psicotimes.login.net.entity.RegisterResponse;
 
 import java.util.Date;
 

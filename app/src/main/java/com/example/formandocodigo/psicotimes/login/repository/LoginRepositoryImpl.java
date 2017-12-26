@@ -3,7 +3,7 @@ package com.example.formandocodigo.psicotimes.login.repository;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.formandocodigo.psicotimes.login.repository.net.entity.RegisterResponse;
+import com.example.formandocodigo.psicotimes.login.net.entity.RegisterResponse;
 import com.example.formandocodigo.psicotimes.utils.Continual;
 
 import java.sql.Timestamp;

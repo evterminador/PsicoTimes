@@ -17,10 +17,10 @@ import com.basgeekball.awesomevalidation.utility.RegexTemplate;
 import com.example.formandocodigo.psicotimes.R;
 import com.example.formandocodigo.psicotimes.login.repository.CreateProfileRepositoryImpl;
 import com.example.formandocodigo.psicotimes.login.repository.LoginRepositoryImpl;
-import com.example.formandocodigo.psicotimes.login.repository.net.ApiService;
-import com.example.formandocodigo.psicotimes.login.repository.net.RetrofitBuilder;
-import com.example.formandocodigo.psicotimes.login.repository.net.entity.ApiError;
-import com.example.formandocodigo.psicotimes.login.repository.net.entity.RegisterResponse;
+import com.example.formandocodigo.psicotimes.login.net.ApiService;
+import com.example.formandocodigo.psicotimes.login.net.RetrofitBuilder;
+import com.example.formandocodigo.psicotimes.login.net.entity.ApiError;
+import com.example.formandocodigo.psicotimes.login.net.entity.RegisterResponse;
 import com.example.formandocodigo.psicotimes.utils.Converts;
 import com.example.formandocodigo.psicotimes.main.view.MainActivity;
 

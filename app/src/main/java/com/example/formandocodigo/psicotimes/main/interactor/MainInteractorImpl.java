@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.formandocodigo.psicotimes.entity.App;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
-import com.example.formandocodigo.psicotimes.main.net.OrderService;
-import com.example.formandocodigo.psicotimes.main.net.entity.AppOrderResponse;
-import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrder;
-import com.example.formandocodigo.psicotimes.main.net.entity.StateUserOrderResponse;
+import com.example.formandocodigo.psicotimes.utils.net.OrderService;
+import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
+import com.example.formandocodigo.psicotimes.main.net.StateUserOrder;
+import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.main.presenter.MainPresenter;
 import com.example.formandocodigo.psicotimes.main.repository.MainRepository;
 import com.example.formandocodigo.psicotimes.main.repository.MainRepositoryImpl;

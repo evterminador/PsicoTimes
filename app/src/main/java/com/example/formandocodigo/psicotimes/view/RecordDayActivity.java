@@ -10,14 +10,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.formandocodigo.psicotimes.R;
 import com.example.formandocodigo.psicotimes.adapter.StateUseByDateAdapterRecyclerView;
-import com.example.formandocodigo.psicotimes.domain.StateUseCase;
-import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
+import com.example.formandocodigo.psicotimes.data.cache.FileManager;
+import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
+import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
+import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseByDate;
 import com.example.formandocodigo.psicotimes.utils.Converts;
+import com.example.formandocodigo.psicotimes.utils.StateUseAll;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -39,6 +43,8 @@ public class RecordDayActivity extends AppCompatActivity {
     ConstraintLayout ctlDay;
     @BindView(R.id.ctl_month)
     ConstraintLayout ctlMonth;
+    @BindView(R.id.txt_total_use)
+    TextView txtTotalUse;
 
     RecyclerView stateUsesRecycler;
 
@@ -108,12 +114,12 @@ public class RecordDayActivity extends AppCompatActivity {
         changedMode();
         StateUseByDateAdapterRecyclerView recyclerView;
         if (mode == 1) {
-            recyclerView = new StateUseByDateAdapterRecyclerView(stateUseListByMonth(),
+            recyclerView = new StateUseByDateAdapterRecyclerView(stateUses,
                     R.layout.cardview_state_use_historic,
                     this,
                     mode);
         } else {
-            recyclerView = new StateUseByDateAdapterRecyclerView(stateUseListByDay(),
+            recyclerView = new StateUseByDateAdapterRecyclerView(stateUses,
                     R.layout.cardview_state_use_historic,
                     this,
                     mode);
@@ -127,6 +133,8 @@ public class RecordDayActivity extends AppCompatActivity {
         Collections.sort(list, new SortStateUseByDate());
 
         Timestamp fecha = new Timestamp(System.currentTimeMillis());
+
+        txtTotalUse.setText(getTotalApp(list));
 
         String date = dateFormat.format(fecha.getTime());
         try {
@@ -175,8 +183,21 @@ public class RecordDayActivity extends AppCompatActivity {
     }
 
     private void getStateUsesAll() {
-        StateUseCase useCase = new StateUseCaseImpl();
-        stateUses = new ArrayList<>(useCase.getStateUseByDate());
+        StateUseAll stateUseAll = new StateUseAll(this);
+
+        stateUses = stateUseAll.getStateUseAll();
+    }
+
+    private String getTotalApp(ArrayList<StateUse> list) {
+        String date = "2h12m16s";
+        if (stateUses.size() > 0) {
+            long count = 0;
+            for (StateUse s : list) {
+                count += s.getUseTime();
+            }
+            date = Converts.convertLongToTimeChar(count);
+        }
+        return date;
     }
 
     private void changedMode() {
