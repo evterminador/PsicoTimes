@@ -29,15 +29,17 @@
                 android:layout_weight="0.5"
                 android:background="@drawable/border_select_historic"
                 android:elevation="4dp"
-                android:padding="4dp">
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView1"
+                app:layout_constraintTop_toBottomOf="@+id/textView1">
 
                 <TextView
                     android:id="@+id/textView1"
                     android:layout_width="wrap_content"
                     android:layout_height="21dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:text="Por dia:"
-                    app:layout_constraintEnd_toStartOf="@+id/txt_total_use"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="MissingConstraints" />
@@ -47,7 +49,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginTop="32dp"
                     android:drawableLeft="@drawable/ic_timelapse"
                     android:drawableTint="#1EFF8A"
@@ -66,15 +68,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:padding="4dp">
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                app:layout_constraintTop_toBottomOf="@+id/textView3">
 
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="21dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:text="Por Mes:"
-                    app:layout_constraintEnd_toStartOf="@+id/textView4"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="MissingConstraints" />
@@ -84,7 +88,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginTop="32dp"
                     android:drawableLeft="@drawable/ic_today"
                     android:text="16/11/2017"

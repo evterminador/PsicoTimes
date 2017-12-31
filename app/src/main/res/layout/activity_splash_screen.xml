@@ -36,6 +36,13 @@
             android:layout_height="match_parent"
             app:indicatorName="BallScaleMultipleIndicator"
             android:visibility="gone"/>
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/avi_historic_state"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:indicatorName="SquareSpinIndicator"
+            android:visibility="gone"/>
     </FrameLayout>
 
     <LinearLayout

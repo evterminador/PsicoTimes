@@ -15,7 +15,7 @@ public class StateUserOrderResponse {
     @Json(name = "message")
     String message;
 
-    @SerializedName("appOrder")
+    @SerializedName("app_order")
     List<StateUserEntity> stateUses;
 
     public String getMessage() {

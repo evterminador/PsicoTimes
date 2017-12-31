@@ -11,6 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         cardview:layout_constraintBottom_toTopOf="@+id/img_icon_historic"
+        cardview:layout_constraintEnd_toStartOf="@+id/txt_date_historic"
+        cardview:layout_constraintStart_toStartOf="@+id/txt_date_historic"
         cardview:layout_constraintTop_toTopOf="@+id/img_icon_historic">
 
         <TextView
@@ -31,87 +33,103 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginBottom="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             cardview:layout_constraintBottom_toBottomOf="parent"
-            cardview:layout_constraintEnd_toStartOf="@+id/txt_name_historic"
             cardview:layout_constraintStart_toEndOf="@+id/txt_num"
             cardview:layout_constraintTop_toTopOf="parent"
             cardview:srcCompat="@drawable/ic_facebook"
             tools:ignore="MissingConstraints" />
 
         <TextView
-            android:id="@+id/txt_name_historic"
+            android:id="@+id/txt_name_top_historic"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:text="Facebook"
-            android:textSize="14sp"
-            cardview:layout_constraintBottom_toBottomOf="parent"
-            cardview:layout_constraintEnd_toStartOf="@+id/txt_mode"
-            cardview:layout_constraintStart_toEndOf="@+id/img_app_historic"
+            android:textAlignment="textEnd"
+            android:textSize="12sp"
+            cardview:layout_constraintBottom_toTopOf="@+id/txt_date_historic"
+            cardview:layout_constraintEnd_toEndOf="parent"
+            cardview:layout_constraintStart_toEndOf="@+id/textView6"
             cardview:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txt_mode"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="16dp"
-            android:text="Tiempo de Uso:"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Fecha:"
             android:textAlignment="viewStart"
             android:textSize="12sp"
-            cardview:layout_constraintEnd_toStartOf="@+id/txt_position_historic"
-            cardview:layout_constraintStart_toStartOf="@+id/img_icon_historic"
-            cardview:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/img_icon_historic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="2dp"
-            android:layout_marginTop="6dp"
-            android:tint="@android:color/holo_green_light"
-            cardview:layout_constraintBottom_toBottomOf="parent"
-            cardview:layout_constraintEnd_toStartOf="@+id/txt_value_historic"
-            cardview:layout_constraintTop_toBottomOf="@+id/txt_mode"
-            cardview:srcCompat="@drawable/ic_access_time"
+            cardview:layout_constraintBottom_toTopOf="@+id/textView8"
+            cardview:layout_constraintStart_toEndOf="@+id/img_app_historic"
+            cardview:layout_constraintTop_toBottomOf="@+id/textView6"
+            cardview:layout_constraintVertical_bias="0.0"
             tools:ignore="MissingConstraints" />
 
         <TextView
-            android:id="@+id/txt_value_historic"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="4dp"
-            android:text="2h 1m 2s"
-            android:textAlignment="textStart"
-            android:textSize="12sp"
-            cardview:layout_constraintBottom_toBottomOf="parent"
-            cardview:layout_constraintEnd_toStartOf="@+id/txt_position_historic"
-            cardview:layout_constraintTop_toBottomOf="@+id/txt_mode" />
-
-        <TextView
-            android:id="@+id/txt_position_historic"
+            android:id="@+id/txt_date_historic"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="24dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="16dp"
-            android:drawableStart="@drawable/ic_expand_less"
+            android:layout_marginStart="8dp"
+            android:text="16 de mayo"
+            android:textAlignment="textEnd"
+            android:textSize="12sp"
+            cardview:layout_constraintBottom_toBottomOf="parent"
+            cardview:layout_constraintEnd_toEndOf="parent"
+            cardview:layout_constraintHorizontal_bias="0.0"
+            cardview:layout_constraintStart_toEndOf="@+id/txt_mode"
+            cardview:layout_constraintTop_toBottomOf="@+id/textView6"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/txt_use_time_historic"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:drawableTint="@color/colorAccentDark"
-            android:text="10"
+            android:text="2h 12m 6s"
+            android:textAlignment="textEnd"
             android:textColor="@color/colorAccentDark"
             android:textSize="12sp"
             cardview:layout_constraintBottom_toBottomOf="parent"
             cardview:layout_constraintEnd_toEndOf="parent"
+            cardview:layout_constraintStart_toEndOf="@+id/textView8"
+            cardview:layout_constraintTop_toBottomOf="@+id/txt_date_historic"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="App top:"
+            android:textSize="12sp"
+            cardview:layout_constraintBottom_toTopOf="@+id/txt_date_historic"
+            cardview:layout_constraintStart_toStartOf="@+id/txt_mode"
             cardview:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"/>
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Tiempo de uso (G):"
+            android:textSize="12sp"
+            cardview:layout_constraintBottom_toBottomOf="parent"
+            cardview:layout_constraintStart_toStartOf="@+id/txt_mode" />
 
     </android.support.constraint.ConstraintLayout>
 

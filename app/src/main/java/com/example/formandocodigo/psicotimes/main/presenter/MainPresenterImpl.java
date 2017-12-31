@@ -39,6 +39,11 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
+    public Integer quantityUnlockScreen(Activity activity) {
+        return interactor.quantityUnlockScreen(activity);
+    }
+
+    @Override
     public void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call) {
         interactor.updateApp(activity, service, call);
     }

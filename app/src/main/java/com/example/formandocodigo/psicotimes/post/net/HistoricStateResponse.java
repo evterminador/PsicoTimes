@@ -1,9 +1,11 @@
 package com.example.formandocodigo.psicotimes.post.net;
 
+import com.example.formandocodigo.psicotimes.data.entity.HistoricStateEntity;
 import com.google.gson.annotations.SerializedName;
 import com.squareup.moshi.Json;
 
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,22 +16,14 @@ public class HistoricStateResponse {
     @Json(name = "message")
     String message;
 
-    @Json(name = "historicOrder")
-    Map<String, String> info;
+    @SerializedName("historic_order")
+    HistoricStateEntity historicStateEntity;
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Map<String, String> getInfo() {
-        return info;
-    }
-
-    public void setInfo(Map<String, String> info) {
-        this.info = info;
+    public HistoricStateEntity getHistoricStateEntity() {
+        return historicStateEntity;
     }
 }

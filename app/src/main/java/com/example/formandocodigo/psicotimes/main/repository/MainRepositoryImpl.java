@@ -9,6 +9,7 @@ import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
 import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
 import com.example.formandocodigo.psicotimes.data.disk.StateUseDiskImpl;
 import com.example.formandocodigo.psicotimes.data.entity.AppEntity;
+import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 import com.example.formandocodigo.psicotimes.data.entity.StateUserEntity;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.AppEntityDataMapper;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
@@ -53,16 +54,15 @@ public class MainRepositoryImpl implements MainRepository {
     }
 
     @Override
-    public List<StateUse> findCacheAll(Activity activity) {
-        List<StateUse> stateUses = new ArrayList<>();
+    public List<StateUseEntity> findCacheAll(Activity activity) {
+        List<StateUseEntity> stateUses = new ArrayList<>();
 
         if (useCache == null) {
             useCache = new StateUseCacheImpl(activity, new Serializer(), new FileManager());
         }
 
-        StateUseEntityDataMapper stateUseMapper = new StateUseEntityDataMapper();
         if (useCache.getAll() != null) {
-            stateUses = stateUseMapper.transformArrayList(useCache.getAll());
+            stateUses = useCache.getAll();
         }
         return stateUses;
     }
@@ -113,6 +113,12 @@ public class MainRepositoryImpl implements MainRepository {
         } else {
             presenter.syncError("Error al tratar de grabar");
         }
+    }
+
+    @Override
+    public Integer quantityUnlockScreen(Activity activity) {
+        SharedPreferences preferences = activity.getSharedPreferences(Continual.Shared.LockScreen.FILE_NAME, Context.MODE_PRIVATE);
+        return preferences.getInt(Continual.Shared.LockScreen.KEY_SCREEN, 0);
     }
 
     private ArrayList<StateUser> transformStateUserEntityToStateUser(List<StateUserEntity> stateUserEntities) {

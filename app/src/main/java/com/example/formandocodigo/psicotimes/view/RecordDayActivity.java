@@ -13,12 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.formandocodigo.psicotimes.R;
+import com.example.formandocodigo.psicotimes.adapter.HistoricStateAdapterRecyclerView;
 import com.example.formandocodigo.psicotimes.adapter.StateUseByDateAdapterRecyclerView;
-import com.example.formandocodigo.psicotimes.data.cache.FileManager;
-import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
-import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
+import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
+import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
+import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
+import com.example.formandocodigo.psicotimes.sort.SortHistoricStateByDate;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseByDate;
 import com.example.formandocodigo.psicotimes.utils.Converts;
 import com.example.formandocodigo.psicotimes.utils.StateUseAll;
@@ -29,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -112,19 +115,30 @@ public class RecordDayActivity extends AppCompatActivity {
 
     private void fillBody(int mode) {
         changedMode();
-        StateUseByDateAdapterRecyclerView recyclerView;
+
         if (mode == 1) {
-            recyclerView = new StateUseByDateAdapterRecyclerView(stateUses,
-                    R.layout.cardview_state_use_historic,
-                    this,
-                    mode);
+            HistoricStateAdapterRecyclerView recyclerView = new HistoricStateAdapterRecyclerView(historicStateListByMonth(),
+                    R.layout.cardview_historic_state,
+                    this);
+
+            stateUsesRecycler.setAdapter(recyclerView);
         } else {
-            recyclerView = new StateUseByDateAdapterRecyclerView(stateUses,
+            StateUseByDateAdapterRecyclerView recyclerView = new StateUseByDateAdapterRecyclerView(stateUses,
                     R.layout.cardview_state_use_historic,
-                    this,
-                    mode);
+                    this);
+            stateUsesRecycler.setAdapter(recyclerView);
+
+            Timestamp fecha = new Timestamp(System.currentTimeMillis());
+
+            txtTotalUse.setText(getTotalApp(stateUses));
+
+            String date = dateFormat.format(fecha.getTime());
+            try {
+                fecha = Converts.convertStringToTimestamp(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
-        stateUsesRecycler.setAdapter(recyclerView);
     }
 
     private ArrayList<StateUse> stateUseListByDay() {
@@ -154,38 +168,21 @@ public class RecordDayActivity extends AppCompatActivity {
         return newList;
     }
 
-    public ArrayList<StateUse> stateUseListByMonth() {
-        ArrayList<StateUse> list = stateUses;
-        ArrayList<StateUse> newList = new ArrayList<>();
-        Collections.sort(list, new SortStateUseByDate());
+    public ArrayList<HistoricState> historicStateListByMonth() {
+        StateUseCaseImpl useCase = new StateUseCaseImpl();
 
-        Calendar calendar = Converts.getCalendarForNow();
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+        ArrayList<HistoricState> list = new ArrayList<>(useCase.getHistoricStateAll());
 
-        Timestamp fecha = new Timestamp(calendar.getTimeInMillis());
+        Collections.sort(list, new SortHistoricStateByDate());
+        Collections.reverse(list);
 
-        String date = dateFormat.format(fecha.getTime());
-        try {
-            fecha = Converts.convertStringToTimestamp(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (stateUses.size() > 0) {
-            for (StateUse s : list) {
-                if (s.getCreated_at().after(fecha)) {
-                    newList.add(s);
-                }
-            }
-        }
-
-        return newList;
+        return list;
     }
 
     private void getStateUsesAll() {
         StateUseAll stateUseAll = new StateUseAll(this);
 
-        stateUses = stateUseAll.getStateUseAll();
+        stateUses = transformStateUseEntityToStateUse(stateUseAll.getStateUseEntityAll());
     }
 
     private String getTotalApp(ArrayList<StateUse> list) {
@@ -221,5 +218,15 @@ public class RecordDayActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(tittle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(upButton);
+    }
+
+    private ArrayList<StateUse> transformStateUseEntityToStateUse(List<StateUseEntity> stateUseEntities) {
+        ArrayList<StateUse> list;
+
+        StateUseEntityDataMapper mapper = new StateUseEntityDataMapper();
+
+        list = new ArrayList<>(mapper.transformArrayList((ArrayList<StateUseEntity>) stateUseEntities));
+
+        return list;
     }
 }

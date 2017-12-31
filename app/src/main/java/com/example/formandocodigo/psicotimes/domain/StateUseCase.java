@@ -1,5 +1,6 @@
 package com.example.formandocodigo.psicotimes.domain;
 
+import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface StateUseCase {
     List<StateUse> getStateUseAll();
 
     List<StateUse> getStateUseByDate();
+
+    List<HistoricState> getHistoricStateAll();
 }

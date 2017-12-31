@@ -7,8 +7,8 @@ import java.sql.Timestamp;
  */
 
 public class StateUser {
-    private Integer id_app;
-    private Integer id_users;
+    private Integer appId;
+    private Integer userId;
     private Long timeUse;
     private Integer quantity;
     private Timestamp lastUseTime;
@@ -20,20 +20,20 @@ public class StateUser {
         super();
     }
 
-    public Integer getId_app() {
-        return id_app;
+    public Integer getAppId() {
+        return appId;
     }
 
-    public void setId_app(Integer id_app) {
-        this.id_app = id_app;
+    public void setAppId(Integer appId) {
+        this.appId = appId;
     }
 
-    public Integer getId_users() {
-        return id_users;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setId_users(Integer id_users) {
-        this.id_users = id_users;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Long getTimeUse() {

@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.example.formandocodigo.psicotimes.R;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.utils.Converts;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -27,13 +26,11 @@ public class StateUseByDateAdapterRecyclerView extends RecyclerView.Adapter<Stat
     private int resource;
     private Activity activity;
     private int c;
-    private int mode;
 
-    public StateUseByDateAdapterRecyclerView(ArrayList<StateUse> stateUses, int resource, Activity activity, int mode) {
+    public StateUseByDateAdapterRecyclerView(ArrayList<StateUse> stateUses, int resource, Activity activity) {
         this.stateUses = stateUses;
         this.resource = resource;
         this.activity = activity;
-        this.mode = mode;
         c = 1;
     }
 
@@ -56,7 +53,7 @@ public class StateUseByDateAdapterRecyclerView extends RecyclerView.Adapter<Stat
                 e.printStackTrace();
             }
         }
-        holder.txtMode.setText("Fecha de creación:");
+        holder.txtMode.setText("Tiempo de uso:");
         holder.imgIconHistoric.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_access_time));
         holder.txtValueHistoric.setText(Converts.convertLongToTimeChar(stateUse.getUseTime()));
         holder.imgIconHistoric.setColorFilter(activity.getResources().getColor(android.R.color.holo_green_light));

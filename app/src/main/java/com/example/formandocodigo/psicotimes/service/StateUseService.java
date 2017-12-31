@@ -3,7 +3,11 @@ package com.example.formandocodigo.psicotimes.service;
 import android.app.Service;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.IBinder;
@@ -14,9 +18,12 @@ import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 import com.example.formandocodigo.psicotimes.data.cache.FileManager;
 import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
 import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
+import com.example.formandocodigo.psicotimes.utils.Continual;
 import com.example.formandocodigo.psicotimes.utils.Converts;
+import com.example.formandocodigo.psicotimes.utils.permission.UsageStatsPermission;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -34,6 +41,10 @@ public class StateUseService extends Service implements StateUseServiceView {
 
     private Handler serviceLoop = null;
     private Runnable run = null;
+    private Runnable runLock = null;
+
+    private StateUseServiceReceiver lockScreenReceiver;
+    private int countLookScreen = 0;
 
     public StateUseService() {}
 
@@ -50,18 +61,47 @@ public class StateUseService extends Service implements StateUseServiceView {
         run = new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(StateUseService.this, "Guardando", Toast.LENGTH_SHORT).show();
-                initializeApp();
-                saveApplication();
+                //Toast.makeText(StateUseService.this, "Guardando", Toast.LENGTH_SHORT).show();
 
-                initialTime = getAppLastUse();
-                save.setLastCacheUpdateTimeMillis();
+                Toast.makeText(StateUseService.this, String.valueOf(countLookScreen), Toast.LENGTH_LONG).show();
+
+                if (checkPermission()) {
+                    initializeApp();
+                    saveApplication();
+
+                    initialTime = getAppLastUse();
+                    save.setLastCacheUpdateTimeMillis();
+                } else {
+                    Toast.makeText(StateUseService.this, "Permiso revocado", Toast.LENGTH_LONG).show();
+                    onDestroy();
+                }
 
                 serviceLoop.postDelayed(run, 10000);
             }
         };
 
         serviceLoop.postDelayed(run, 15000);
+
+        lockScreenReceiver = new StateUseServiceReceiver();
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+
+        registerReceiver(lockScreenReceiver, filter);
+    }
+
+    public class StateUseServiceReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                // screen is turn off
+                //("Screen locked");
+            } else {
+                //Handle resuming events if user is present/screen is unlocked
+                countLookScreen++;
+                //("Screen unlocked");
+            }
+        }
     }
 
     @Override
@@ -79,7 +119,10 @@ public class StateUseService extends Service implements StateUseServiceView {
     public void onDestroy() {
         super.onDestroy();
         saveApplication();
+        //saveLookScreen();
         serviceLoop.removeCallbacks(run);
+        //serviceLoop.removeCallbacks(runLock);
+        unregisterReceiver(lockScreenReceiver);
         Toast.makeText(this, "Service done", Toast.LENGTH_LONG).show();
     }
 
@@ -100,7 +143,7 @@ public class StateUseService extends Service implements StateUseServiceView {
         long beginTime = System.currentTimeMillis();
         long endTime = initialTime;
 
-        List<UsageStats> stats = manager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, beginTime - endTime, beginTime);
+        List<UsageStats> stats = manager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,  endTime, beginTime);
 
         Iterator i = stats.iterator();
 
@@ -152,6 +195,40 @@ public class StateUseService extends Service implements StateUseServiceView {
         stateUses.clear();
     }
 
+    private void saveLookScreen() {
+        SharedPreferences preferences = getSharedPreferences(Continual.Shared.LockScreen.FILE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = preferences.edit();
+
+        String date = preferences.getString(Continual.Shared.LockScreen.KEY_CREATED_AT, null);
+
+        try {
+            Timestamp getDate = Converts.convertStringToTimestamp(date);
+
+            if (getDate.before(getCurrentDay())) {
+                countLookScreen = 0;
+                edit.putString(Continual.Shared.LockScreen.KEY_CREATED_AT, Converts.convertTimestampToString(new Timestamp(System.currentTimeMillis())));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        int lock = preferences.getInt(Continual.Shared.LockScreen.KEY_SCREEN, -1);
+
+        if (lock > 0) {
+            countLookScreen += lock;
+        }
+
+        edit.putInt(Continual.Shared.LockScreen.KEY_SCREEN, countLookScreen);
+
+        if (date == null) {
+            edit.putString(Continual.Shared.LockScreen.KEY_CREATED_AT, Converts.convertTimestampToString(new Timestamp(System.currentTimeMillis())));
+        }
+
+        if (edit.commit()) {
+            countLookScreen = 0;
+        }
+    }
+
     private boolean repeatApp(UsageStats stats, String nPackage) {
         try {
             if (stateUses.size() > 0) {
@@ -170,6 +247,10 @@ public class StateUseService extends Service implements StateUseServiceView {
             return true;
         }
         return false;
+    }
+
+    protected Boolean checkPermission() {
+        return UsageStatsPermission.isExistsPermission(this);
     }
 
     private Timestamp getCurrentDay() {

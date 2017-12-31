@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.formandocodigo.psicotimes.entity.App;
+import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.entity.StateUser;
 import com.example.formandocodigo.psicotimes.utils.Continual;
@@ -38,18 +39,20 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     private static final String CREATE_STATE_USES_TABLE = "create table " +
             stateUse.TABLE_NAME + " ( " +
-            stateUse.COLUMN_ID_USERS + " integer, " +
-            stateUse.COLUMN_ID_APP + " integer, " +
+            stateUse.COLUMN_USER_ID + " integer, " +
+            stateUse.COLUMN_APP_ID + " integer, " +
             stateUse.COLUMN_TIME_USE + " integer not null, " +
             stateUse.COLUMN_QUANTITY + " integer not null, " +
             stateUse.COLUMN_LAST_USE_TIME + " text not null, " +
             stateUse.COLUMN_CREATED_AT + " text, " +
             stateUse.COLUMN_UPDATED_AT + " text, " +
-            "foreign key (id_app) references app (id) " +
+            "foreign key ("+ stateUse.COLUMN_APP_ID +") references " + app.TABLE_NAME + " (" + app.COLUMN_ID + ") " +
             ") ";
 
     private static final String CREATE_STATISTICS_TABLE = "create table " +
             statistics.TABLE_NAME + " ( " +
+            statistics.COLUMN_ID + " integer primary key AUTOINCREMENT, " +
+            statistics.COLUMN_NAME_APP_TOP + " text, " +
             statistics.COLUMN_QUANTITY + " integer, " +
             statistics.COLUMN_TIME_USE + " integer, " +
             statistics.COLUMN_CREATED_AT + " text, " +
@@ -108,7 +111,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<App> getAllApp () {
+    public ArrayList<App> getAppAll () {
         ArrayList<App> all = new ArrayList<>();
         Cursor c = null;
 
@@ -136,7 +139,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         return all;
     }
 
-    public ArrayList<StateUser> getAllStateUser() {
+    public ArrayList<StateUser> getStateUserAll() {
         ArrayList<StateUser> all = new ArrayList<>();
         Cursor c = null;
 
@@ -146,8 +149,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
             StateUser stateUser;
             while (c.moveToNext()) {
                 stateUser = new StateUser();
-                stateUser.setId_users(c.getInt(0));
-                stateUser.setId_app(c.getInt(1));
+                stateUser.setUserId(c.getInt(0));
+                stateUser.setAppId(c.getInt(1));
                 stateUser.setTimeUse(c.getLong(2));
                 stateUser.setQuantity(c.getInt(3));
                 stateUser.setLastUseTime(Converts.convertStringToTimestamp(c.getString(4)));
@@ -179,7 +182,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
                     ", s." + stateUse.COLUMN_UPDATED_AT +
                     " from " + stateUse.TABLE_NAME + " as s " +
                     "inner join " + app.TABLE_NAME + " as a " +
-                    "on a." + app.COLUMN_ID + " = s." + stateUse.COLUMN_ID_APP + " " +
+                    "on a." + app.COLUMN_ID + " = s." + stateUse.COLUMN_APP_ID + " " +
                     "group by a." + app.COLUMN_NAME;
 
             c = this.getReadableDatabase().rawQuery(sql, null);
@@ -220,7 +223,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
                     ", s." + stateUse.COLUMN_UPDATED_AT +
                     " from " + stateUse.TABLE_NAME + " as s " +
                     "inner join " + app.TABLE_NAME + " as a " +
-                    "on a." + app.COLUMN_ID + " = s." + stateUse.COLUMN_ID_APP + " " +
+                    "on a." + app.COLUMN_ID + " = s." + stateUse.COLUMN_APP_ID + " " +
                     "where a." + app.COLUMN_ID + " = " + id;
 
             c = this.getReadableDatabase().rawQuery(sql, null);
@@ -262,7 +265,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
                     ", s." + stateUse.COLUMN_UPDATED_AT +
                     " from " + stateUse.TABLE_NAME + " as s " +
                     "inner join " + app.TABLE_NAME + " as a " +
-                    "on a." + app.COLUMN_ID + " = s." + stateUse.COLUMN_ID_APP;
+                    "on a." + app.COLUMN_ID + " = s." + stateUse.COLUMN_APP_ID;
 
             c = this.getReadableDatabase().rawQuery(sql, null);
 
@@ -293,8 +296,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
 
-        values.put(stateUse.COLUMN_ID_USERS, stateUser.getId_users());
-        values.put(stateUse.COLUMN_ID_APP, stateUser.getId_app());
+        values.put(stateUse.COLUMN_USER_ID, stateUser.getUserId());
+        values.put(stateUse.COLUMN_APP_ID, stateUser.getAppId());
         values.put(stateUse.COLUMN_TIME_USE, stateUser.getTimeUse());
         values.put(stateUse.COLUMN_QUANTITY, stateUser.getQuantity());
         values.put(stateUse.COLUMN_LAST_USE_TIME, Converts.convertTimestampToString(stateUser.getLastUseTime()));
@@ -314,9 +317,9 @@ public class SQLiteManager extends SQLiteOpenHelper {
         values.put(stateUse.COLUMN_UPDATED_AT, Converts.convertTimestampToString(stateUser.getUpdated_at()));
 
         db.update(stateUse.TABLE_NAME, values,
-                stateUse.COLUMN_ID_APP + "= ? " + " AND " +
+                stateUse.COLUMN_APP_ID + "= ? " + " AND " +
                         stateUse.COLUMN_CREATED_AT + " = ? "
-                , new String[] { String.valueOf(stateUser.getId_app()), Converts.convertTimestampToString(stateUser.getCreated_at()) });
+                , new String[] { String.valueOf(stateUser.getAppId()), Converts.convertTimestampToString(stateUser.getCreated_at()) });
     }
 
     public void updateApp(App a) {
@@ -334,14 +337,76 @@ public class SQLiteManager extends SQLiteOpenHelper {
                 , new String[] { String.valueOf(a.getId()) });
     }
 
-    public void deleteStateUSer(StateUser stateUser) {
+    public void deleteStateUser(StateUser stateUser) {
         db = this.getWritableDatabase();
 
         db.delete(stateUse.TABLE_NAME,
-                stateUse.COLUMN_ID_APP + "= ? " + " and " +
+                stateUse.COLUMN_APP_ID + "= ? " + " and " +
                         stateUse.COLUMN_CREATED_AT + " = ? ",
-                new String[] { String.valueOf(stateUser.getId_app()),
+                new String[] { String.valueOf(stateUser.getAppId()),
                         Converts.convertTimestampToString(stateUser.getCreated_at()) });
+    }
+
+    /**
+     * Return ArrayList<HistoricState>
+     * */
+    public ArrayList<HistoricState> getHistoricStateAll() {
+        ArrayList<HistoricState> list = new ArrayList<>();
+        Cursor c = null;
+
+        try {
+            String sql = "select * from " + statistics.TABLE_NAME;
+
+            c = this.getReadableDatabase().rawQuery(sql, null);
+
+            HistoricState historicState;
+            while (c.moveToNext()) {
+                historicState = new HistoricState();
+
+                historicState.setId(c.getInt(0));
+                historicState.setNameAppTop(c.getString(1));
+                historicState.setQuantity(c.getInt(2));
+                historicState.setTimeUse(c.getLong(3));
+                historicState.setCreated_at(Converts.convertStringToTimestamp(c.getString(4)));
+                historicState.setUpdated_at(Converts.convertStringToTimestamp(c.getString(5)));
+
+                list.add(historicState);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null) c.close();
+        }
+        return list;
+    }
+
+    public void insertHistoricState(HistoricState historicState) {
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(statistics.COLUMN_NAME_APP_TOP, historicState.getNameAppTop());
+        values.put(statistics.COLUMN_QUANTITY, historicState.getQuantity());
+        values.put(statistics.COLUMN_TIME_USE, historicState.getTimeUse());
+        values.put(statistics.COLUMN_CREATED_AT, Converts.convertTimestampToString(historicState.getCreated_at()));
+        values.put(statistics.COLUMN_UPDATED_AT, Converts.convertTimestampToString(historicState.getUpdated_at()));
+
+        db.insert(statistics.TABLE_NAME, null, values);
+    }
+
+    public void updateHistoricState(HistoricState historicState) {
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(statistics.COLUMN_NAME_APP_TOP, historicState.getNameAppTop());
+        values.put(statistics.COLUMN_QUANTITY, historicState.getQuantity());
+        values.put(statistics.COLUMN_TIME_USE, historicState.getTimeUse());
+        values.put(statistics.COLUMN_UPDATED_AT, Converts.convertTimestampToString(historicState.getUpdated_at()));
+
+        db.update(statistics.TABLE_NAME, values,
+                statistics.COLUMN_CREATED_AT + " = ?",
+                new String[] { Converts.convertTimestampToString(historicState.getCreated_at()) });
     }
 
 }

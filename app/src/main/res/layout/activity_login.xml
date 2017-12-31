@@ -72,13 +72,18 @@
                     android:id="@+id/txt_birth_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Fecha de nacimiento (dd/mm/yyyy)"
+                    android:hint="Fecha de nacimiento"
                     android:theme="@style/EditTextWhite">
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/txt_birth_date_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text"/>
+                        android:clickable="true"
+                        android:cursorVisible="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"/>
+
                 </android.support.design.widget.TextInputLayout>
 
                 <LinearLayout

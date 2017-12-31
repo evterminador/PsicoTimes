@@ -17,13 +17,13 @@ public interface ApiService {
 
     @POST("register")
     @FormUrlEncoded
-    Call<RegisterResponse> register(@Field("name") String name, @Field("email") String email, @Field("birthDate") Date birthDate, @Field("dni") String dni,
-                                    @Field("sex") String sex, @Field("occupation") String occupation,
-                                    @Field("state") Boolean isWorking, @Field("useTime") Integer timeUse);
+    Call<RegisterResponse> register(@Field("name") String name, @Field("email") String email, @Field("birth_date") Date birthDate, @Field("dni") String dni,
+                                    @Field("sex") String sex, @Field("state") String occupation,
+                                    @Field("working") Boolean isWorking, @Field("use_time") Integer timeUse);
 
     @POST("post/profile")
     @FormUrlEncoded
-    Call<RegisterResponse> profile(@Field("email") String email, @Field("birthDate") Date birthDate, @Field("dni") String dni,
-                                   @Field("sex") String sex, @Field("occupation") String occupation,
-                                   @Field("state") Boolean isWorking, @Field("useTime") Integer timeUse);
+    Call<RegisterResponse> profile(@Field("email") String email, @Field("birth_date") Date birthDate, @Field("dni") String dni,
+                                   @Field("sex") String sex, @Field("state") String occupation,
+                                   @Field("working") Boolean isWorking, @Field("use_time") Integer timeUse);
 }

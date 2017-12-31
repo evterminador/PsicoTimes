@@ -5,7 +5,7 @@ import com.example.formandocodigo.psicotimes.entity.StateUse;
 import java.util.Comparator;
 
 /**
- * Created by FormandoCodigo on 10/12/2017.
+ * Created by FormandoCodigo on 27/12/2017.
  */
 
 public class SortStateUseByUseTime implements Comparator<StateUse> {

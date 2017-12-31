@@ -6,7 +6,7 @@ import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import com.example.formandocodigo.psicotimes.entity.StateUse;
+import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -27,14 +27,14 @@ public class StateUseAll {
         this.activity = activity;
     }
 
-    public ArrayList<StateUse> getStateUseAll() {
-        ArrayList<StateUse> stateUses = new ArrayList<>();
+    public ArrayList<StateUseEntity> getStateUseEntityAll() {
+        ArrayList<StateUseEntity> stateUseEntities = new ArrayList<>();
 
         UsageStatsManager manager = (UsageStatsManager) activity.getSystemService(Context.USAGE_STATS_SERVICE);
         long beginTime = System.currentTimeMillis();
         long endTime = initialTime();
 
-        List<UsageStats> stats = manager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, beginTime - endTime, beginTime);
+        List<UsageStats> stats = manager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, endTime, beginTime);
 
         Iterator i = stats.iterator();
 
@@ -52,30 +52,32 @@ public class StateUseAll {
 
                 String npk = String.valueOf(c);
 
-                StateUse  stateUse;
-                if (!repeatApp(stateUses, sta, npk)) {
-                    stateUse = new StateUse();
+                if (sta.getLastTimeUsed() > endTime) {
+                    StateUseEntity  stateUseEntity;
+                    if (!repeatApp(stateUseEntities, sta, npk)) {
+                        stateUseEntity = new StateUseEntity();
 
-                    stateUse.setNameApplication(npk);
-                    stateUse.setImageApp(sta.getPackageName());
-                    stateUse.setUseTime(sta.getTotalTimeInForeground());
-                    stateUse.setLastUseTime(timeUse);
+                        stateUseEntity.setNameApplication(npk);
+                        stateUseEntity.setImage(sta.getPackageName());
+                        stateUseEntity.setUseTime(sta.getTotalTimeInForeground());
+                        stateUseEntity.setLastUseTime(timeUse);
 
-                    stateUses.add(stateUse);
+                        stateUseEntities.add(stateUseEntity);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return stateUses;
+        return stateUseEntities;
     }
 
-    private boolean repeatApp(ArrayList<StateUse> stateUses, UsageStats stats, String nPackage) {
+    private boolean repeatApp(ArrayList<StateUseEntity> stateUseEntities, UsageStats stats, String nPackage) {
         try {
-            if (stateUses.size() > 0) {
-                for (int x = 0; x < stateUses.size(); x++) {
-                    if (stateUses.get(x).getNameApplication().equalsIgnoreCase(nPackage)) {
-                        stateUses.get(x).setUseTime(stats.getTotalTimeInForeground());
+            if (stateUseEntities.size() > 0) {
+                for (int x = 0; x < stateUseEntities.size(); x++) {
+                    if (stateUseEntities.get(x).getNameApplication().equalsIgnoreCase(nPackage)) {
+                        stateUseEntities.get(x).setUseTime(stats.getTotalTimeInForeground());
                         return true;
                     }
                 }
@@ -89,8 +91,11 @@ public class StateUseAll {
 
     private long initialTime() {
         Calendar calendar = Calendar.getInstance();
-        Converts.setTimeToBeginningOfDay(calendar);
-
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
         return calendar.getTimeInMillis();
     }
 }

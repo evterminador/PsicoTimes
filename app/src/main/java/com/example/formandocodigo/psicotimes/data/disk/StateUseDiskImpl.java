@@ -1,6 +1,7 @@
 package com.example.formandocodigo.psicotimes.data.disk;
 
 import com.example.formandocodigo.psicotimes.entity.App;
+import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.entity.StateUser;
 
@@ -22,7 +23,7 @@ public class StateUseDiskImpl implements StateUseDisk {
         int result;
 
         try {
-            ArrayList<App> data = SQLiteManager.Instance().getAllApp();
+            ArrayList<App> data = SQLiteManager.Instance().getAppAll();
 
             int c = 0;
             if (appList.size() > 0) {
@@ -53,7 +54,7 @@ public class StateUseDiskImpl implements StateUseDisk {
         int result;
 
         try {
-            ArrayList<StateUser> data = SQLiteManager.Instance().getAllStateUser();
+            ArrayList<StateUser> data = SQLiteManager.Instance().getStateUserAll();
 
             int c = 0;
             if (stateUserList.size() > 0) {
@@ -80,10 +81,41 @@ public class StateUseDiskImpl implements StateUseDisk {
     }
 
     @Override
+    public Integer putHistoricStateAll(ArrayList<HistoricState> historicStateList) {
+        int result;
+
+        try {
+            ArrayList<HistoricState> data = SQLiteManager.Instance().getHistoricStateAll();
+
+            int c = 0;
+            if (historicStateList.size() > 0) {
+                if (data.size() > 0) {
+                    for (HistoricState h : historicStateList) {
+                        if (!isExistsUpdateHistoricState(data, h)) {
+                            SQLiteManager.Instance().insertHistoricState(h);
+                            c++;
+                        }
+                    }
+                } else {
+                    for (HistoricState h : historicStateList) {
+                        SQLiteManager.Instance().insertHistoricState(h);
+                        c++;
+                    }
+                }
+            }
+            result = c;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+        return result;
+    }
+
+    @Override
     public List<StateUser> getStateUserAll() {
         List<StateUser> list = null;
         try {
-            list = SQLiteManager.Instance().getAllStateUser();
+            list = SQLiteManager.Instance().getStateUserAll();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,7 +126,18 @@ public class StateUseDiskImpl implements StateUseDisk {
     public List<App> getAppAll() {
         List<App> list = new ArrayList<>();
         try {
-            list = SQLiteManager.Instance().getAllApp();
+            list = SQLiteManager.Instance().getAppAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
+    public List<HistoricState> getHistoricStateAll() {
+        List<HistoricState> list = new ArrayList<>();
+        try {
+            list = SQLiteManager.Instance().getHistoricStateAll();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -137,7 +180,7 @@ public class StateUseDiskImpl implements StateUseDisk {
 
     private boolean isExistsUpdateStateUser(ArrayList<StateUser> o1, StateUser o2) {
         for (StateUser s : o1) {
-            if (s.getId_app().equals(o2.getId_app()) && s.getCreated_at().equals(o2.getCreated_at())) {
+            if (s.getAppId().equals(o2.getAppId()) && s.getCreated_at().equals(o2.getCreated_at())) {
                 try {
                     SQLiteManager.Instance().updateStateUser(o2);
                 } catch (Exception e) {
@@ -155,6 +198,21 @@ public class StateUseDiskImpl implements StateUseDisk {
             if (a.getId().equals(a2.getId()) && (a.getUpdated_at() != a2.getUpdated_at())) {
                 try {
                     SQLiteManager.Instance().updateApp(a2);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return true;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isExistsUpdateHistoricState(ArrayList<HistoricState> h1, HistoricState h2) {
+        for (HistoricState h : h1) {
+            if (h.getCreated_at().equals(h2.getCreated_at())) {
+                try {
+                    SQLiteManager.Instance().updateHistoricState(h2);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return true;

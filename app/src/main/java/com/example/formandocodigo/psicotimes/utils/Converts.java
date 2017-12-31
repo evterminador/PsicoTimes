@@ -62,13 +62,19 @@ public class Converts {
     }
 
     public static String convertTimestampToString(Timestamp timestamp) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        return dateFormat.format(timestamp);
+    }
+
+    public static String convertTimestampToStringShort(Timestamp timestamp) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         return dateFormat.format(timestamp);
     }
 
     public static Timestamp convertStringToTimestamp(String value) throws ParseException {
-        SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         Date date = dateFormat.parse(value);
 

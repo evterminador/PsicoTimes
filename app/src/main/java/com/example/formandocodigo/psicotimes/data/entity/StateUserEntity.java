@@ -10,19 +10,19 @@ import java.sql.Timestamp;
  */
 
 public class StateUserEntity {
-    @SerializedName("id_app")
-    private Integer id_app;
+    @SerializedName("app_id")
+    private Integer appId;
 
-    @SerializedName("id_users")
-    private Integer id_users;
+    @SerializedName("user_id")
+    private Integer userId;
 
-    @SerializedName("timeUse")
+    @SerializedName("time_use")
     private Long timeUse;
 
     @SerializedName("quantity")
     private Integer quantity;
 
-    @SerializedName("lastUseTime")
+    @SerializedName("last_use_time")
     private String lastUseTime;
 
     @SerializedName("created_at")
@@ -35,20 +35,20 @@ public class StateUserEntity {
         super();
     }
 
-    public Integer getId_app() {
-        return id_app;
+    public Integer getAppId() {
+        return appId;
     }
 
-    public void setId_app(Integer id_app) {
-        this.id_app = id_app;
+    public void setAppId(Integer appId) {
+        this.appId = appId;
     }
 
-    public Integer getId_users() {
-        return id_users;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setId_users(Integer id_users) {
-        this.id_users = id_users;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Long getTimeUse() {

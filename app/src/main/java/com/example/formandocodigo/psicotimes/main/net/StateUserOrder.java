@@ -1,5 +1,6 @@
 package com.example.formandocodigo.psicotimes.main.net;
 
+import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.google.gson.annotations.SerializedName;
 
@@ -17,8 +18,8 @@ public class StateUserOrder {
     @SerializedName("token")
     private String token;
 
-    @SerializedName("stateUse")
-    private List<StateUse> stateUses;
+    @SerializedName("state_use")
+    private List<StateUseEntity> stateUseEntities;
 
     public String getEmail() {
         return email;
@@ -36,11 +37,11 @@ public class StateUserOrder {
         this.token = token;
     }
 
-    public List<StateUse> getStateUses() {
-        return stateUses;
+    public List<StateUseEntity> getStateUseEntities() {
+        return stateUseEntities;
     }
 
-    public void setStateUses(List<StateUse> stateUses) {
-        this.stateUses = stateUses;
+    public void setStateUseEntities(List<StateUseEntity> stateUseEntities) {
+        this.stateUseEntities = stateUseEntities;
     }
 }

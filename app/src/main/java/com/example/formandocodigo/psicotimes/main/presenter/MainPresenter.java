@@ -20,6 +20,8 @@ public interface MainPresenter {
 
     List<StateUse> findAllById(Integer id);
 
+    Integer quantityUnlockScreen(Activity activity);
+
     void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call);
 
     void updateAppSuccess(String message);

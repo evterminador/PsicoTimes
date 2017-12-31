@@ -21,8 +21,8 @@ public class StateUserEntityDataMapper {
         StateUser stateUser = null;
         if (stateUserEntity != null) {
             stateUser = new StateUser();
-            stateUser.setId_app(stateUserEntity.getId_app());
-            stateUser.setId_users(stateUserEntity.getId_users());
+            stateUser.setAppId(stateUserEntity.getAppId());
+            stateUser.setUserId(stateUserEntity.getUserId());
             stateUser.setTimeUse(stateUserEntity.getTimeUse());
             stateUser.setQuantity(stateUserEntity.getQuantity());
             try {

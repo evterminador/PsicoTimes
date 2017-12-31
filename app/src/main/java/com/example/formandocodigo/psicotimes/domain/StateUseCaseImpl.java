@@ -2,6 +2,7 @@ package com.example.formandocodigo.psicotimes.domain;
 
 import com.example.formandocodigo.psicotimes.data.disk.StateUseDisk;
 import com.example.formandocodigo.psicotimes.data.disk.StateUseDiskImpl;
+import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 
 import java.util.ArrayList;
@@ -32,6 +33,11 @@ public class StateUseCaseImpl implements StateUseCase {
     @Override
     public List<StateUse> getStateUseByDate() {
         return stateUseDisk.getStateUseByDate();
+    }
+
+    @Override
+    public List<HistoricState> getHistoricStateAll() {
+        return stateUseDisk.getHistoricStateAll();
     }
 
 }

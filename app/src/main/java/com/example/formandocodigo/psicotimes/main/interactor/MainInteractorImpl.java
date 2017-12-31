@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.utils.net.OrderService;
 import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
@@ -47,6 +48,11 @@ public class MainInteractorImpl implements MainInteractor {
     }
 
     @Override
+    public Integer quantityUnlockScreen(Activity activity) {
+        return repository.quantityUnlockScreen(activity);
+    }
+
+    @Override
     public void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call) {
         call = service.appOrder();
 
@@ -74,20 +80,20 @@ public class MainInteractorImpl implements MainInteractor {
 
     @Override
     public void syncUp(Activity activity, OrderService service,  Call<StateUserOrderResponse> call) {
-        List<StateUse> stateUses = repository.findCacheAll(activity);
+        List<StateUseEntity> stateUseEntities = repository.findCacheAll(activity);
 
-        if (stateUses != null) {
+        if (stateUseEntities != null) {
             StateUserOrder order = new StateUserOrder();
 
             HashMap<String, String> data = repository.getUserEmailAndPassword(activity);
 
             order.setToken(data.get("token"));
             order.setEmail(data.get("email"));
-            order.setStateUses(stateUses);
+            order.setStateUseEntities(stateUseEntities);
 
             call = service.stateUserOrder(order);
 
-            Toast.makeText(activity, "Sincronizando " + stateUses.size() + " elementos", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Sincronizando " + stateUseEntities.size() + " elementos", Toast.LENGTH_LONG).show();
 
             call.enqueue(new Callback<StateUserOrderResponse>() {
 

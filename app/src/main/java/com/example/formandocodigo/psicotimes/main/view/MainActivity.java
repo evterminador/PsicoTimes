@@ -1,13 +1,11 @@
 package com.example.formandocodigo.psicotimes.main.view;
 
 import android.app.ActivityManager;
-import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Process;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -19,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.R;
@@ -34,11 +33,14 @@ import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.service.StateUseService;
 import com.example.formandocodigo.psicotimes.utils.net.NetworkStatus;
+import com.example.formandocodigo.psicotimes.utils.permission.UsageStatsPermission;
 import com.example.formandocodigo.psicotimes.view.RecordActivity;
 import com.example.formandocodigo.psicotimes.view.RecordDayActivity;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -57,16 +59,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
+    @BindView(R.id.txt_quantity_unlock_screen)
+    TextView txtQuantityUnlockScreen;
+
     private MainPresenter presenter;
 
     private PieChart pieChart;
-    private LineChart lineChart;
     private BarChart barChart;
     List<StateUse> stateUses = new ArrayList<>();
 
@@ -86,7 +91,6 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         pieChart = findViewById(R.id.pie_chart_statistics);
-        lineChart = findViewById(R.id.line_chart_top_record);
         barChart = findViewById(R.id.bar_chart_quantity_use);
         pieChart.setUsePercentValues(true);
 
@@ -95,7 +99,6 @@ public class MainActivity extends AppCompatActivity
 
         //Sets charts
         pieChart.getDescription().setEnabled(false);
-        lineChart.getDescription().setEnabled(false);
         barChart.getDescription().setEnabled(false);
 
         service = RetrofitBuilder.createService(OrderService.class);
@@ -138,6 +141,7 @@ public class MainActivity extends AppCompatActivity
     protected void onRestart() {
         super.onRestart();
         initializeGraphics();
+        initializeService();
     }
 
     @Override
@@ -209,20 +213,14 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_record_date) {
+        if (id == R.id.nav_record_date) {
             Intent intent = new Intent(MainActivity.this, RecordDayActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_record) {
             Intent intent = new Intent(MainActivity.this, RecordActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        }  else if (id == R.id.nav_send) {
+            finish();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -270,9 +268,7 @@ public class MainActivity extends AppCompatActivity
 
             boolean isService = isMyServiceRunning(StateUseService.class);
 
-            if (isService) {
-                Toast.makeText(this, "Iniciando Modulos", Toast.LENGTH_LONG).show();
-            } else {
+            if (!isService) {
                 startService(new Intent(MainActivity.this, StateUseService.class));
             }
         } else {
@@ -291,9 +287,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private boolean checkForPermission(Context context) {
-        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.getPackageName());
-        return mode == AppOpsManager.MODE_ALLOWED;
+        return UsageStatsPermission.isExistsPermission(context);
     }
 
     private void requestPermission() {
@@ -324,7 +318,7 @@ public class MainActivity extends AppCompatActivity
     private void initializeGraphics() {
         getAppAll();
         setPieChart();
-        setLineChart();
+        setQuantityUnLockChart();
         setBarChart();
     }
 
@@ -392,8 +386,11 @@ public class MainActivity extends AppCompatActivity
         pieChart.invalidate();
     }
 
-    private void setLineChart() {
-        ArrayList<Entry> componet1 = new ArrayList<>();
+    private void setQuantityUnLockChart() {
+        Integer quantity = presenter.quantityUnlockScreen(this);
+        txtQuantityUnlockScreen.setText(String.valueOf(quantity));
+
+        /*ArrayList<Entry> componet1 = new ArrayList<>();
 
         LineDataSet setComp1;
 
@@ -428,7 +425,7 @@ public class MainActivity extends AppCompatActivity
         lineChart.getXAxis().setEnabled(false);
         lineChart.getAxisLeft().setEnabled(false);
         lineChart.getAxisRight().setEnabled(false);
-        lineChart.invalidate();
+        lineChart.invalidate();*/
     }
 
     private void setBarChart() {
@@ -495,8 +492,6 @@ public class MainActivity extends AppCompatActivity
 
         List<StateUse> top10 = limitStateUses(list, 10);
 
-        id = top10.get(0).getId();
-
         return top10;
     }
 
@@ -521,6 +516,9 @@ public class MainActivity extends AppCompatActivity
 
     protected ArrayList<Integer> getChartsColors() {
         ArrayList<Integer> colors = new ArrayList<>();
+
+        for (int c : ColorTemplate.MATERIAL_COLORS)
+            colors.add(c);
 
         for (int c : ColorTemplate.VORDIPLOM_COLORS)
             colors.add(c);

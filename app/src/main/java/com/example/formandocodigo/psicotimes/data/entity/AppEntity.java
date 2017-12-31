@@ -10,7 +10,7 @@ public class AppEntity {
     @SerializedName("id")
     private Integer id;
 
-    @SerializedName("nameApplication")
+    @SerializedName("name_application")
     private String name;
 
     @SerializedName("relevance")

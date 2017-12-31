@@ -1,6 +1,8 @@
 package com.example.formandocodigo.psicotimes.login.view;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,7 +10,9 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import com.basgeekball.awesomevalidation.AwesomeValidation;
@@ -21,12 +25,12 @@ import com.example.formandocodigo.psicotimes.login.net.ApiService;
 import com.example.formandocodigo.psicotimes.login.net.RetrofitBuilder;
 import com.example.formandocodigo.psicotimes.login.repository.LoginRepositoryImpl;
 import com.example.formandocodigo.psicotimes.utils.Converts;
-import com.example.formandocodigo.psicotimes.main.view.MainActivity;
 import com.example.formandocodigo.psicotimes.post.SplashScreenActivity;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -57,10 +61,18 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     Spinner spiSex;
     @BindView(R.id.spinner_occupation)
     Spinner spiOccupation;
+    @BindView(R.id.rbt_yes)
+    RadioButton rbtYes;
+    @BindView(R.id.rbt_no)
+    RadioButton rbtNo;
     @BindView(R.id.login_progress)
     ProgressBar loginProgress;
 
-    String sex, occupation;
+    @BindView(R.id.txt_birth_date_edit)
+    TextInputEditText txtBirthDatePicker;
+
+    String sex, state;
+    Boolean isWorking = false;
 
     AwesomeValidation validator;
 
@@ -86,6 +98,28 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             finish();
         }
 
+        Calendar calendar = Calendar.getInstance();
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                calendar.set(Calendar.YEAR, i);
+                calendar.set(Calendar.MONTH, i1);
+                calendar.set(Calendar.DAY_OF_MONTH, i2);
+                updateLabel(calendar);
+            }
+        };
+
+        txtBirthDatePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(LoginActivity.this, date,
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
+                ).show();
+            }
+        });
+
         service = RetrofitBuilder.createService(ApiService.class);
         validator = new AwesomeValidation(ValidationStyle.TEXT_INPUT_LAYOUT);
         setupRules();
@@ -104,6 +138,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     void onButtonStartClick(View e) {
         showProgressBar();
         selectsSpinner();
+        selectedWorking();
         String name = txtName.getEditText().getText().toString();
         String email = txtEmail.getEditText().getText().toString();
         DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
@@ -127,7 +162,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
                 e1.printStackTrace();
             }
 
-            call = service.register(name, email, birthDate, dni, sex, occupation, false, timeUse);
+            call = service.register(name, email, birthDate, dni, sex, state, isWorking, timeUse);
             call.enqueue(new Callback<RegisterResponse>() {
 
                 @Override
@@ -138,7 +173,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
                         Log.w(TAG, "onResponse: " + response.body());
                         repository.signIn(response.body());
 
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        startActivity(new Intent(LoginActivity.this, SplashScreenActivity.class));
                     } else {
                         handleErrors(response.errorBody());
                     }
@@ -174,10 +209,10 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             if (error.getKey().equals("email")) {
                 txtEmail.setError(error.getValue().get(0));
             }
-            if (error.getKey().equals("birthDate")) {
+            if (error.getKey().equals("birth_date")) {
                 txtBirthDate.setError(error.getValue().get(0));
             }
-            if (error.getKey().equals("timeUse")) {
+            if (error.getKey().equals("time_use")) {
                 txtUseTime.setError(error.getValue().get(0));
             }
         }
@@ -195,7 +230,15 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     private void selectsSpinner() {
         sex = spiSex.getSelectedItem().toString();
-        occupation = spiOccupation.getSelectedItem().toString();
+        state = spiOccupation.getSelectedItem().toString();
+    }
+
+    private void selectedWorking() {
+        if (rbtYes.isSelected()) {
+            isWorking = true;
+        } else if (rbtNo.isSelected()) {
+            isWorking = false;
+        }
     }
 
     private void fillSpinner() {
@@ -214,6 +257,10 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         spiSex.setAdapter(stringArrayAdapter);
     }
 
+    private void updateLabel(Calendar calendar) {
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 
+        txtBirthDatePicker.setText(format.format(calendar.getTime()));
+    }
 
 }

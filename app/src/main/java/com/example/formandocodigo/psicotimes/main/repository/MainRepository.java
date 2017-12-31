@@ -2,6 +2,7 @@ package com.example.formandocodigo.psicotimes.main.repository;
 
 import android.app.Activity;
 
+import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
 import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
@@ -16,8 +17,9 @@ import java.util.List;
 public interface MainRepository {
     List<StateUse> findByIdAll(Integer id);
     List<StateUse> findAll();
-    List<StateUse> findCacheAll(Activity activity);
+    List<StateUseEntity> findCacheAll(Activity activity);
     HashMap<String, String> getUserEmailAndPassword(Activity activity);
     void storeApp(Activity activity, AppOrderResponse response);
     void storeStateUser(Activity activity, StateUserOrderResponse response);
+    Integer quantityUnlockScreen(Activity activity);
 }

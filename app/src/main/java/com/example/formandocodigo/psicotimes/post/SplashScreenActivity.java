@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.R;
 import com.example.formandocodigo.psicotimes.data.cache.FileManager;
@@ -13,15 +15,22 @@ import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
 import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
 import com.example.formandocodigo.psicotimes.data.disk.StateUseDiskImpl;
 import com.example.formandocodigo.psicotimes.data.entity.AppEntity;
+import com.example.formandocodigo.psicotimes.data.entity.HistoricStateEntity;
+import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 import com.example.formandocodigo.psicotimes.data.entity.StateUserEntity;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.AppEntityDataMapper;
-import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
+import com.example.formandocodigo.psicotimes.data.entity.mapper.HistoricStateEntityDataMapper;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUserEntityDataMapper;
 import com.example.formandocodigo.psicotimes.domain.StateUseCase;
 import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
 import com.example.formandocodigo.psicotimes.entity.App;
-import com.example.formandocodigo.psicotimes.entity.StateUse;
+import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.entity.StateUser;
+import com.example.formandocodigo.psicotimes.post.net.HistoricStateOrder;
+import com.example.formandocodigo.psicotimes.post.net.HistoricStateResponse;
+import com.example.formandocodigo.psicotimes.sort.SortStateUseEntityByUseTime;
+import com.example.formandocodigo.psicotimes.utils.Converts;
+import com.example.formandocodigo.psicotimes.utils.StateUseAll;
 import com.example.formandocodigo.psicotimes.utils.net.OrderService;
 import com.example.formandocodigo.psicotimes.utils.net.RetrofitBuilder;
 import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
@@ -30,9 +39,12 @@ import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.main.view.MainActivity;
 import com.example.formandocodigo.psicotimes.utils.Continual;
 import com.example.formandocodigo.psicotimes.utils.net.NetworkStatus;
+import com.example.formandocodigo.psicotimes.utils.permission.UsageStatsPermission;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -48,12 +60,16 @@ import retrofit2.Response;
 
 public class SplashScreenActivity extends Activity implements SplashScreenView {
 
+    private final String TAG = "SplashScreenActivity";
+
     private StateUseCacheImpl useCache = null;
+    private StateUseDiskImpl disk;
     private StateUseCase useCase;
 
     AVLoadingIndicatorView avi;
     AVLoadingIndicatorView aviPacman;
     AVLoadingIndicatorView aviStateUse;
+    AVLoadingIndicatorView aviHistoricState;
 
     @BindView(R.id.screen_status)
     TextView txtScreenStatus;
@@ -61,6 +77,7 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
     OrderService service;
     Call<StateUserOrderResponse> stateUserCall;
     Call<AppOrderResponse> appCall;
+    Call<HistoricStateResponse> historicCall;
 
     private int attempt = 0;
     private int attemptLimit = 5;
@@ -76,11 +93,12 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
         avi = findViewById(R.id.avi);
         aviPacman = findViewById(R.id.avi_pacman);
         aviStateUse = findViewById(R.id.avi_state_use);
+        aviHistoricState = findViewById(R.id.avi_historic_state);
 
         useCase = new StateUseCaseImpl();
+        disk = new StateUseDiskImpl();
 
         service = RetrofitBuilder.createService(OrderService.class);
-
 
         Thread tr = new Thread(new Runnable() {
             @Override
@@ -90,10 +108,6 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                    }
-
-                    if (attempt >= attemptLimit) {
-                        initializeActivity();
                     }
 
                     if (NetworkStatus.isOnline(SplashScreenActivity.this)) {
@@ -119,8 +133,19 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
                             });
                             serviceStateUser();
                             isUpdateSuccess = 2;
-                        } else {
-                            initializeActivity();
+                        } else if (isUpdateSuccess == 2) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    aviStateUse.hide();
+                                    aviHistoricState.show();
+                                    txtScreenStatus.setText("Actualizando estado General");
+                                }
+                            });
+                            serviceHistoricState();
+                            isUpdateSuccess = 3;
+                        }else {
+                            attempt = attemptLimit;
                         }
                     } else {
                         attempt = attemptLimit;
@@ -132,6 +157,10 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
                         });
                     }
                     attempt++;
+                }
+
+                if (attempt >= attemptLimit) {
+                    initializeActivity();
                 }
             }
         });
@@ -150,13 +179,16 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
             appCall.cancel();
             appCall = null;
         }
+        if (historicCall != null) {
+            historicCall.cancel();
+            historicCall = null;
+        }
     }
 
     /**
      * Initialize activity
      * */
     protected void initializeActivity() {
-        attempt = attemptLimit;
         finish();
         startActivity(new Intent(this, MainActivity.class));
     }
@@ -182,9 +214,9 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
     }
 
     private void serviceStateUser() {
-        List<StateUse> stateUses = findCacheAll(this);
+        List<StateUseEntity> stateUseEntities = findCacheAll(this);
 
-        if (stateUses != null) {
+        if (stateUseEntities != null && stateUseEntities.size() > 0) {
 
             StateUserOrder order = new StateUserOrder();
 
@@ -192,7 +224,7 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
 
             order.setToken(data.get("token"));
             order.setEmail(data.get("email"));
-            order.setStateUses(stateUses);
+            order.setStateUseEntities(stateUseEntities);
 
             stateUserCall = service.stateUserOrder(order);
 
@@ -203,7 +235,7 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
                     if (response.isSuccessful()) {
                         storeStateUser(response.body());
                     } else {
-                        updateStateUserError("No se pudo conectar sincronizar o no hay elementos");
+                        updateStateUserError("No se pudo sincronizar error en la red");
                         //handleErrors(response.errorBody());
                     }
                 }
@@ -214,12 +246,70 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
                     t.printStackTrace();
                 }
             });
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    txtScreenStatus.setText("Ups! No hay elementos");
+                }
+            });
+        }
+    }
+
+    private void serviceHistoricState() {
+        if (checkPermission()) {
+            StateUseAll stateUseAll = new StateUseAll(this);
+            List<StateUseEntity> stateUseEntities = stateUseAll.getStateUseEntityAll();
+
+            if (stateUseEntities != null && stateUseEntities.size() > 0) {
+                HistoricStateOrder order = new HistoricStateOrder();
+
+                order.setEmail(getUserEmailAndPassword(this).get("email"));
+                order.setToken(getUserEmailAndPassword(this).get("token"));
+
+                HistoricStateEntity historicStateEntity = new HistoricStateEntity();
+
+                Timestamp current = new Timestamp(System.currentTimeMillis());
+
+                historicStateEntity.setNameTop(getUseNameAppTop(new ArrayList<>(stateUseEntities)));
+                historicStateEntity.setQuantity(stateUseEntities.size());
+                historicStateEntity.setTimeUse(getTotalUseTime(stateUseEntities));
+                historicStateEntity.setCreated_at(Converts.convertTimestampToString(current));
+                historicStateEntity.setUpdated_at(Converts.convertTimestampToString(current));
+
+                order.setHistoricState(historicStateEntity);
+
+                historicCall = service.historicOrder(order);
+
+                historicCall.enqueue(new Callback<HistoricStateResponse>() {
+                    @Override
+                    public void onResponse(Call<HistoricStateResponse> call, Response<HistoricStateResponse> response) {
+                        if (response.isSuccessful()) {
+                            storeHistoricState(response.body());
+                        } else {
+                            updateHistoricStateError("No pudimos conectarnos con el servicio inténtelo más tarde");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<HistoricStateResponse> call, Throwable t) {
+                        txtScreenStatus.setText(t.getMessage());
+                        t.printStackTrace();
+                    }
+                });
+
+            }
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    txtScreenStatus.setText("Oh! La app no tiene permisos de uso");
+                }
+            });
         }
     }
 
     private void storeApp(AppOrderResponse response) {
-        StateUseDiskImpl disk = new StateUseDiskImpl();
-
         ArrayList<App> res = transformAppEntityToApp(response.getApplications());
 
         int result = disk.putApplicationAll(res);
@@ -236,8 +326,6 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
     }
 
     private void storeStateUser(StateUserOrderResponse response) {
-        StateUseDiskImpl disk = new StateUseDiskImpl();
-
         if (useCache == null) {
             useCache = new StateUseCacheImpl(this, new Serializer(), new FileManager());
         }
@@ -250,7 +338,42 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
             txtScreenStatus.setText(response.getMessage());
             useCache.evictAll();
         } else {
-            txtScreenStatus.setText("Error al tratar de grabar");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    txtScreenStatus.setText("Error al tratar de grabar");
+                }
+            });
+        }
+    }
+
+    private void storeHistoricState(HistoricStateResponse response) {
+        ArrayList<HistoricState> res = new ArrayList<>();
+
+        res.add(transformHistoricStateEntityToHistoricState(response.getHistoricStateEntity()));
+
+        int result = disk.putHistoricStateAll(res);
+
+        String message = response.getMessage();
+
+        if (message.equalsIgnoreCase("Error")) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    txtScreenStatus.setText("Tuvimos problemas en la nube");
+                }
+            });
+        } else {
+            if (result != -1) {
+                txtScreenStatus.setText(response.getMessage());
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        txtScreenStatus.setText("Lo sentimos no pudimos guardar su info");
+                    }
+                });
+            }
         }
     }
 
@@ -262,21 +385,24 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
         txtScreenStatus.setText(error);
     }
 
+    private void updateHistoricStateError(String error) {
+        txtScreenStatus.setText(error);
+    }
+
     /**
      *  Return {List<StateUse> of cache the system}
      * */
-    private List<StateUse> findCacheAll(Activity activity) {
-        List<StateUse> stateUses = new ArrayList<>();
+    private List<StateUseEntity> findCacheAll(Activity activity) {
+        List<StateUseEntity> stateUseEntities = new ArrayList<>();
 
         if (useCache == null) {
             useCache = new StateUseCacheImpl(activity, new Serializer(), new FileManager());
         }
 
-        StateUseEntityDataMapper stateUseMapper = new StateUseEntityDataMapper();
         if (useCache.getAll() != null) {
-            stateUses = stateUseMapper.transformArrayList(useCache.getAll());
+            stateUseEntities = useCache.getAll();
         }
-        return stateUses;
+        return stateUseEntities;
     }
 
     public HashMap<String, String> getUserEmailAndPassword(Activity activity) {
@@ -291,6 +417,26 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
         data.put("token", token);
 
         return data;
+    }
+
+    private Boolean checkPermission() {
+        return UsageStatsPermission.isExistsPermission(this);
+    }
+
+    private String getUseNameAppTop(List<StateUseEntity> list) {
+        Collections.sort(list, new SortStateUseEntityByUseTime());
+        Collections.reverse(list);
+
+        return list.get(0).getNameApplication();
+    }
+
+    private long getTotalUseTime(List<StateUseEntity> stateUseEntities) {
+        long total = 0;
+
+        for (StateUseEntity s : stateUseEntities) {
+            total += s.getUseTime();
+        }
+        return total;
     }
 
     private ArrayList<App> transformAppEntityToApp(List<AppEntity> appEntities) {
@@ -311,6 +457,16 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
         stateUsers = new ArrayList<>(mapper.transformArrayList((ArrayList<StateUserEntity>) stateUserEntities));
 
         return stateUsers;
+    }
+
+    private HistoricState transformHistoricStateEntityToHistoricState(HistoricStateEntity historicStateEntity) {
+        HistoricState historicState;
+
+        HistoricStateEntityDataMapper mapper = new HistoricStateEntityDataMapper();
+
+        historicState = mapper.transform(historicStateEntity);
+
+        return historicState;
     }
 
 }

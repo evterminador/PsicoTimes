@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import com.basgeekball.awesomevalidation.AwesomeValidation;
@@ -53,13 +54,17 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
     Spinner spiSex;
     @BindView(R.id.spinner_occupation)
     Spinner spiOccupation;
+    @BindView(R.id.rbt_yes)
+    RadioButton rbtYes;
+    @BindView(R.id.rbt_no)
+    RadioButton rbtNo;
     @BindView(R.id.btn_send_profile)
     Button btnSendProfile;
     @BindView(R.id.pgr_bar_profile)
     ProgressBar pgrBarProfile;
 
     String sex, occupation;
-    Boolean isWorking;
+    Boolean isWorking = false;
 
     AwesomeValidation validator;
 
@@ -95,6 +100,7 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
     void onButtonSendCreateProfile(View v) {
         showProgressBar();
         selectsSpinner();
+        selectedWorking();
         DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String getDate = txtBirthDate.getEditText().getText().toString();
         String dni = txtDni.getEditText().getText().toString();
@@ -116,7 +122,7 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
                 e.printStackTrace();
             }
 
-            call = service.profile(email, birthDate, sex, dni, occupation, false, timeUse);
+            call = service.profile(email, birthDate, sex, dni, occupation, isWorking, timeUse);
 
             call.enqueue(new Callback<RegisterResponse>() {
                 @Override
@@ -182,10 +188,10 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
         ApiError apiError = Converts.convertErrors(response);
 
         for (Map.Entry<String, List<String>> error : apiError.getErrors().entrySet()) {
-            if (error.getKey().equals("birthDate")) {
+            if (error.getKey().equals("birth_date")) {
                 txtBirthDate.setError(error.getValue().get(0));
             }
-            if (error.getKey().equals("timeUse")) {
+            if (error.getKey().equals("time_use")) {
                 txtUseTime.setError(error.getValue().get(0));
             }
             if (error.getKey().equals("dni")) {
@@ -197,6 +203,14 @@ public class CreateProfileActivity extends AppCompatActivity implements CreatePr
     private void selectsSpinner() {
         sex = spiSex.getSelectedItem().toString();
         occupation = spiOccupation.getSelectedItem().toString();
+    }
+
+    private void selectedWorking() {
+        if (rbtYes.isSelected()) {
+            isWorking = true;
+        } else if (rbtNo.isSelected()) {
+            isWorking = false;
+        }
     }
 
     public void setupRules() {

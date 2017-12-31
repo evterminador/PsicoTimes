@@ -12,16 +12,16 @@ public class StateUseEntity {
     @SerializedName("id")
     private Integer id;
 
-    @SerializedName("nameApplication")
+    @SerializedName("name_application")
     private String nameApplication;
 
     @SerializedName("image")
     private String image;
 
-    @SerializedName("useTime")
+    @SerializedName("use_time")
     private Long useTime;
 
-    @SerializedName("lastUseTime")
+    @SerializedName("last_use_time")
     private Timestamp lastUseTime;
 
     @SerializedName("quantity")

@@ -20,6 +20,8 @@ public interface MainInteractor {
 
     List<StateUse> findAllId(Integer id);
 
+    Integer quantityUnlockScreen(Activity activity);
+
     void updateApp(Activity activity, OrderService service, Call<AppOrderResponse> call);
 
 
