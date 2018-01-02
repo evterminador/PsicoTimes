@@ -1,7 +1,6 @@
 package com.example.formandocodigo.psicotimes.main.net;
 
 import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
-import com.example.formandocodigo.psicotimes.entity.StateUse;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

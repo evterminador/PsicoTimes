@@ -5,7 +5,6 @@ import com.example.formandocodigo.psicotimes.data.disk.StateUseDiskImpl;
 import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

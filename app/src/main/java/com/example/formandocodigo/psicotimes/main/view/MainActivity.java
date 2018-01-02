@@ -37,22 +37,15 @@ import com.example.formandocodigo.psicotimes.utils.permission.UsageStatsPermissi
 import com.example.formandocodigo.psicotimes.view.RecordActivity;
 import com.example.formandocodigo.psicotimes.view.RecordDayActivity;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
@@ -78,8 +71,6 @@ public class MainActivity extends AppCompatActivity
     OrderService service;
     Call<StateUserOrderResponse> stateUserCall;
     Call<AppOrderResponse> appCall;
-
-    private int id = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,10 +117,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         initializeGraphics();
-
-        if (isOnline()) {
-            //initializeApp();
-        }
     }
 
     @Override
@@ -140,6 +127,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onRestart() {
         super.onRestart();
+
+        //startActivity(new Intent(MainActivity.this, SplashScreenActivity.class));
+        //finish();
         initializeGraphics();
         initializeService();
     }
@@ -389,43 +379,6 @@ public class MainActivity extends AppCompatActivity
     private void setQuantityUnLockChart() {
         Integer quantity = presenter.quantityUnlockScreen(this);
         txtQuantityUnlockScreen.setText(String.valueOf(quantity));
-
-        /*ArrayList<Entry> componet1 = new ArrayList<>();
-
-        LineDataSet setComp1;
-
-        if (stateUses.size() > 0) {
-            List<StateUse> stateUseByQuantity = presenter.findAllById(id);
-
-            for (StateUse s : stateUseByQuantity) {
-                componet1.add(new Entry(Converts.getDayTimesTamp(s.getCreated_at()), s.getQuantity()));
-            }
-
-            setComp1 = new LineDataSet(componet1, stateUseByQuantity.get(0).getNameApplication());
-        } else {
-            float[] yData = { 5, 10, 15, 30, 40 };
-
-            for (int i = 0; i < yData.length; i++) {
-                componet1.add(new Entry(i, yData[i]));
-            }
-
-            setComp1 = new LineDataSet(componet1, "Default value");
-        }
-
-        setComp1.addColor(ColorTemplate.VORDIPLOM_COLORS[0]);
-
-        setComp1.setAxisDependency(YAxis.AxisDependency.RIGHT);
-
-        List<ILineDataSet> dataSets = new ArrayList<>();
-        dataSets.add(setComp1);
-
-        LineData data = new LineData(dataSets);
-
-        lineChart.setData(data);
-        lineChart.getXAxis().setEnabled(false);
-        lineChart.getAxisLeft().setEnabled(false);
-        lineChart.getAxisRight().setEnabled(false);
-        lineChart.invalidate();*/
     }
 
     private void setBarChart() {

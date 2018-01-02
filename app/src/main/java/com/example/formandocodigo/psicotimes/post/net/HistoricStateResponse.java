@@ -4,10 +4,6 @@ import com.example.formandocodigo.psicotimes.data.entity.HistoricStateEntity;
 import com.google.gson.annotations.SerializedName;
 import com.squareup.moshi.Json;
 
-
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by FormandoCodigo on 26/12/2017.
  */

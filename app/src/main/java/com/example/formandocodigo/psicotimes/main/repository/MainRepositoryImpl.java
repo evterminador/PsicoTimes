@@ -12,7 +12,6 @@ import com.example.formandocodigo.psicotimes.data.entity.AppEntity;
 import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
 import com.example.formandocodigo.psicotimes.data.entity.StateUserEntity;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.AppEntityDataMapper;
-import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUserEntityDataMapper;
 import com.example.formandocodigo.psicotimes.domain.StateUseCase;
 import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
@@ -118,7 +117,7 @@ public class MainRepositoryImpl implements MainRepository {
     @Override
     public Integer quantityUnlockScreen(Activity activity) {
         SharedPreferences preferences = activity.getSharedPreferences(Continual.Shared.LockScreen.FILE_NAME, Context.MODE_PRIVATE);
-        return preferences.getInt(Continual.Shared.LockScreen.KEY_SCREEN, 0);
+        return (preferences.getInt(Continual.Shared.LockScreen.KEY_SCREEN, 0));
     }
 
     private ArrayList<StateUser> transformStateUserEntityToStateUser(List<StateUserEntity> stateUserEntities) {

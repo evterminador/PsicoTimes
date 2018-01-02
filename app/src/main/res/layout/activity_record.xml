@@ -46,7 +46,8 @@
                     app:layout_constraintBottom_toTopOf="@+id/use_time_percent_increment"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="MissingConstraints" />
+                    tools:ignore="MissingConstraints"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/textView5"
@@ -73,7 +74,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/use_time_percent_value"
                     tools:ignore="MissingConstraints"
-                    tools:text="12% incremento" />
+                    tools:text="12% incremento"
+                    android:visibility="gone"/>
 
             </android.support.constraint.ConstraintLayout>
 
@@ -97,7 +99,8 @@
                     app:layout_constraintBottom_toTopOf="@+id/quantity_percent_increment"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="MissingConstraints" />
+                    tools:ignore="MissingConstraints"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/textView7"
@@ -124,7 +127,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/quantity_percent_value"
                     tools:ignore="MissingConstraints"
-                    tools:text="22% incremento" />
+                    tools:text="22% incremento"
+                    android:visibility="gone"/>
 
             </android.support.constraint.ConstraintLayout>
 

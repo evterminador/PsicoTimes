@@ -1,13 +1,12 @@
 package com.example.formandocodigo.psicotimes.post;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.R;
 import com.example.formandocodigo.psicotimes.data.cache.FileManager;
@@ -28,6 +27,7 @@ import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.entity.StateUser;
 import com.example.formandocodigo.psicotimes.post.net.HistoricStateOrder;
 import com.example.formandocodigo.psicotimes.post.net.HistoricStateResponse;
+import com.example.formandocodigo.psicotimes.service.StateUseService;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseEntityByUseTime;
 import com.example.formandocodigo.psicotimes.utils.Converts;
 import com.example.formandocodigo.psicotimes.utils.StateUseAll;
@@ -59,8 +59,6 @@ import retrofit2.Response;
  */
 
 public class SplashScreenActivity extends Activity implements SplashScreenView {
-
-    private final String TAG = "SplashScreenActivity";
 
     private StateUseCacheImpl useCache = null;
     private StateUseDiskImpl disk;
@@ -99,6 +97,8 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
         disk = new StateUseDiskImpl();
 
         service = RetrofitBuilder.createService(OrderService.class);
+
+        stopServiceState();
 
         Thread tr = new Thread(new Runnable() {
             @Override
@@ -266,6 +266,7 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
 
                 order.setEmail(getUserEmailAndPassword(this).get("email"));
                 order.setToken(getUserEmailAndPassword(this).get("token"));
+                order.setQuantityScreenUnlock(getQuantityScreenUnlock());
 
                 HistoricStateEntity historicStateEntity = new HistoricStateEntity();
 
@@ -307,6 +308,19 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
                 }
             });
         }
+    }
+
+    private int getQuantityScreenUnlock() {
+        int quantity = 0;
+        SharedPreferences preferences = getSharedPreferences(Continual.Shared.LockScreen.FILE_NAME, Context.MODE_PRIVATE);
+
+        int result = preferences.getInt(Continual.Shared.LockScreen.KEY_SCREEN, -1);
+
+        if (result > 0) {
+            quantity = result;
+        }
+
+        return (quantity);
     }
 
     private void storeApp(AppOrderResponse response) {
@@ -387,6 +401,29 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
 
     private void updateHistoricStateError(String error) {
         txtScreenStatus.setText(error);
+    }
+
+    private void stopServiceState() {
+        if (UsageStatsPermission.isExistsPermission(this)) {
+
+            boolean isService = isMyServiceRunning(StateUseService.class);
+
+            if (isService) {
+                stopService(new Intent(this, StateUseService.class));
+            }
+        } else {
+            stopService(new Intent(this, StateUseService.class));
+        }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

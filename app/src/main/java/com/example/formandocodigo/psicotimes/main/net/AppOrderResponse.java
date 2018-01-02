@@ -1,7 +1,6 @@
 package com.example.formandocodigo.psicotimes.main.net;
 
 import com.example.formandocodigo.psicotimes.data.entity.AppEntity;
-import com.example.formandocodigo.psicotimes.entity.App;
 import com.squareup.moshi.Json;
 
 import java.util.List;

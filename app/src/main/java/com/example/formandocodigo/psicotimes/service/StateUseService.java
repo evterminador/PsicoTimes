@@ -41,10 +41,12 @@ public class StateUseService extends Service implements StateUseServiceView {
 
     private Handler serviceLoop = null;
     private Runnable run = null;
-    private Runnable runLock = null;
 
     private StateUseServiceReceiver lockScreenReceiver;
     private int countLookScreen = 0;
+
+    private boolean isScreenUnlock = true;
+    private long screenUnlockRepeat;
 
     public StateUseService() {}
 
@@ -61,10 +63,6 @@ public class StateUseService extends Service implements StateUseServiceView {
         run = new Runnable() {
             @Override
             public void run() {
-                //Toast.makeText(StateUseService.this, "Guardando", Toast.LENGTH_SHORT).show();
-
-                Toast.makeText(StateUseService.this, String.valueOf(countLookScreen), Toast.LENGTH_LONG).show();
-
                 if (checkPermission()) {
                     initializeApp();
                     saveApplication();
@@ -97,8 +95,21 @@ public class StateUseService extends Service implements StateUseServiceView {
                 // screen is turn off
                 //("Screen locked");
             } else {
+                long myDateByLong = System.currentTimeMillis();
                 //Handle resuming events if user is present/screen is unlocked
-                countLookScreen++;
+                if (isScreenUnlock) {
+                    screenUnlockRepeat = System.currentTimeMillis();
+                    countLookScreen++;
+                    saveLookScreen();
+                    isScreenUnlock = false;
+                } else {
+                    if (!((myDateByLong - 300) <= screenUnlockRepeat)) {
+                        screenUnlockRepeat = System.currentTimeMillis();
+                        countLookScreen++;
+                        saveLookScreen();
+                        isScreenUnlock = false;
+                    }
+                }
                 //("Screen unlocked");
             }
         }
@@ -119,9 +130,8 @@ public class StateUseService extends Service implements StateUseServiceView {
     public void onDestroy() {
         super.onDestroy();
         saveApplication();
-        //saveLookScreen();
+        saveLookScreen();
         serviceLoop.removeCallbacks(run);
-        //serviceLoop.removeCallbacks(runLock);
         unregisterReceiver(lockScreenReceiver);
         Toast.makeText(this, "Service done", Toast.LENGTH_LONG).show();
     }
@@ -202,11 +212,15 @@ public class StateUseService extends Service implements StateUseServiceView {
         String date = preferences.getString(Continual.Shared.LockScreen.KEY_CREATED_AT, null);
 
         try {
-            Timestamp getDate = Converts.convertStringToTimestamp(date);
+            if (date != null) {
+                Timestamp getDate = Converts.convertStringToTimestamp(date);
 
-            if (getDate.before(getCurrentDay())) {
-                countLookScreen = 0;
-                edit.putString(Continual.Shared.LockScreen.KEY_CREATED_AT, Converts.convertTimestampToString(new Timestamp(System.currentTimeMillis())));
+                if (getDate.before(getCurrentDay())) {
+                    countLookScreen = 0;
+                    edit.putString(Continual.Shared.LockScreen.KEY_CREATED_AT, Converts.convertTimestampToString(new Timestamp(System.currentTimeMillis())));
+                    edit.putInt(Continual.Shared.LockScreen.KEY_SCREEN, 0);
+                    edit.apply();
+                }
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -224,9 +238,9 @@ public class StateUseService extends Service implements StateUseServiceView {
             edit.putString(Continual.Shared.LockScreen.KEY_CREATED_AT, Converts.convertTimestampToString(new Timestamp(System.currentTimeMillis())));
         }
 
-        if (edit.commit()) {
-            countLookScreen = 0;
-        }
+        edit.apply();
+
+        countLookScreen = 0;
     }
 
     private boolean repeatApp(UsageStats stats, String nPackage) {
