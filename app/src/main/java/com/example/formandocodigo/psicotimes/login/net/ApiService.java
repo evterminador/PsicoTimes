@@ -15,15 +15,15 @@ import retrofit2.http.POST;
 
 public interface ApiService {
 
+    @POST("login")
+    @FormUrlEncoded
+    Call<RegisterResponse> login(@Field("email") String email, @Field("password") String password);
+
     @POST("register")
     @FormUrlEncoded
-    Call<RegisterResponse> register(@Field("name") String name, @Field("email") String email, @Field("birth_date") Date birthDate, @Field("dni") String dni,
-                                    @Field("sex") String sex, @Field("state") String occupation,
-                                    @Field("working") Boolean isWorking, @Field("use_time") Integer timeUse);
-
-    @POST("post/profile")
-    @FormUrlEncoded
-    Call<RegisterResponse> profile(@Field("email") String email, @Field("birth_date") Date birthDate, @Field("dni") String dni,
+    Call<RegisterResponse> profile(@Field("name") String name, @Field("email") String email,
+                                   @Field("password") String password, @Field("password_confirmation") String confirmPassword,
+                                   @Field("birth_date") Date birthDate, @Field("dni") String dni,
                                    @Field("sex") String sex, @Field("state") String occupation,
                                    @Field("working") Boolean isWorking, @Field("use_time") Integer timeUse);
 }

@@ -1,10 +1,10 @@
 package com.example.formandocodigo.psicotimes.data.disk;
 
-import com.example.formandocodigo.psicotimes.entity.App;
+import com.example.formandocodigo.psicotimes.entity.AppTop;
 import com.example.formandocodigo.psicotimes.entity.HistoricState;
-import com.example.formandocodigo.psicotimes.entity.StateUse;
-import com.example.formandocodigo.psicotimes.entity.StateUser;
+import com.example.formandocodigo.psicotimes.entity.StatisticsDetail;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,21 +13,21 @@ import java.util.List;
  */
 
 public interface StateUseDisk {
-    Integer putApplicationAll(ArrayList<App> applicationList);
-
-    Integer putStateUserAll(ArrayList<StateUser> stateUserList);
+    Integer putAppTopAll(ArrayList<AppTop> applicationList);
 
     Integer putHistoricStateAll(ArrayList<HistoricState> historicStateList);
 
-    List<StateUser> getStateUserAll();
+    Integer putStatisticsDetailAll(ArrayList<StatisticsDetail> statisticsDetails);
 
-    List<App> getAppAll();
+    List<AppTop> getAppTopAll();
+
+    List<StatisticsDetail> getStatisticsDetailByDate(Timestamp date);
+
+    List<StatisticsDetail> getStatisticsDetailByDate(Timestamp t1, Timestamp t2);
 
     List<HistoricState> getHistoricStateAll();
 
-    List<StateUse> findStateUseByIdAll(Integer id);
+    List<StatisticsDetail> getStatisticsDetailCurrentDate();
 
-    List<StateUse> getStateUseAll();
-
-    List<StateUse> getStateUseByDate();
+    HistoricState findHistoricState(int id);
 }

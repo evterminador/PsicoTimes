@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/height_cardview_historic"
+    android:layout_marginBottom="4dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        cardview:layout_constraintBottom_toTopOf="@+id/img_icon"
+        cardview:layout_constraintTop_toTopOf="@+id/img_icon">
+
+        <TextView
+            android:id="@+id/txt_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="#1"
+            cardview:layout_constraintBottom_toBottomOf="parent"
+            cardview:layout_constraintStart_toStartOf="parent"
+            cardview:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints" />
+
+        <ImageView
+            android:id="@+id/img_app"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            cardview:layout_constraintBottom_toBottomOf="parent"
+            cardview:layout_constraintEnd_toStartOf="@+id/txt_name_app"
+            cardview:layout_constraintStart_toEndOf="@+id/txt_num"
+            cardview:layout_constraintTop_toTopOf="parent"
+            cardview:srcCompat="@drawable/ic_facebook"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/txt_name_app"
+            android:layout_width="0dp"
+            android:layout_height="18dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp"
+            android:text="Facebook"
+            android:textSize="14sp"
+            cardview:layout_constraintBottom_toBottomOf="parent"
+            cardview:layout_constraintEnd_toStartOf="@+id/txt_mode_time_use"
+            cardview:layout_constraintStart_toEndOf="@+id/img_app"
+            cardview:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_mode_time_use"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp"
+            android:text="Tiempo de Uso:"
+            android:textAlignment="viewStart"
+            android:textSize="12sp"
+            cardview:layout_constraintEnd_toStartOf="@+id/txt_mode_nro"
+            cardview:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/img_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginTop="6dp"
+            android:tint="@android:color/holo_green_light"
+            cardview:layout_constraintBottom_toBottomOf="parent"
+            cardview:layout_constraintEnd_toStartOf="@+id/txt_value_time_use"
+            cardview:layout_constraintStart_toStartOf="@+id/txt_mode_time_use"
+            cardview:layout_constraintTop_toBottomOf="@+id/txt_mode_time_use"
+            cardview:srcCompat="@drawable/ic_access_time"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/txt_value_time_use"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="4dp"
+            android:text="2h 1m 2s"
+            android:textAlignment="textEnd"
+            android:textSize="12sp"
+            cardview:layout_constraintBottom_toBottomOf="parent"
+            cardview:layout_constraintEnd_toStartOf="@+id/imageView2"
+            cardview:layout_constraintStart_toEndOf="@+id/img_icon"
+            cardview:layout_constraintTop_toBottomOf="@+id/txt_mode_time_use" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginTop="6dp"
+            android:tint="@android:color/holo_green_light"
+            cardview:layout_constraintBottom_toBottomOf="parent"
+            cardview:layout_constraintEnd_toStartOf="@+id/txt_value_quantity"
+            cardview:layout_constraintStart_toStartOf="@+id/txt_mode_nro"
+            cardview:layout_constraintTop_toBottomOf="@+id/txt_mode_nro"
+            cardview:srcCompat="@drawable/ic_natural_user_interface_50px" />
+
+        <TextView
+            android:id="@+id/txt_value_quantity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="4dp"
+            android:text="20"
+            android:textAlignment="textEnd"
+            android:textSize="12sp"
+            cardview:layout_constraintBottom_toBottomOf="parent"
+            cardview:layout_constraintEnd_toEndOf="parent"
+            cardview:layout_constraintStart_toEndOf="@+id/imageView2"
+            cardview:layout_constraintTop_toBottomOf="@+id/txt_mode_nro" />
+
+        <TextView
+            android:id="@+id/txt_mode_nro"
+            android:layout_width="57dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp"
+            android:text="Nro. veces"
+            android:textSize="12sp"
+            cardview:layout_constraintEnd_toEndOf="parent"
+            cardview:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>

@@ -1,71 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:appTop="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.formandocodigo.psicotimes.view.RecordDayActivity">
+    tools:context="com.example.formandocodigo.psicotimes.view.RecordDetailActivity">
 
-    <include layout="@layout/actionbar_toolbar" />
+    <include layout="@layout/actionbar_toolbar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="1"
-        appTop:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.25"
+            android:layout_weight="0.3"
             android:padding="@dimen/activity_horizontal_margin"
             android:orientation="vertical">
 
-            <LinearLayout
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="1">
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Desde..."
-                    android:layout_weight="0.5">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/txt_from_picker"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:cursorVisible="false"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"/>
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Hasta..."
-                    android:layout_weight="0.5">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/txt_to_picker"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:cursorVisible="false"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"/>
-
-                </android.support.design.widget.TextInputLayout>
-
-            </LinearLayout>
+                android:text="Total de tiempo de uso"
+                android:textAlignment="textEnd"
+                android:textSize="16sp"/>
 
             <TextView
-                android:id="@+id/txt_total_time_use_day"
+                android:id="@+id/txt_date_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="13-06-2017"
+                android:textAlignment="textEnd"/>
+
+            <TextView
+                android:id="@+id/txt_total_time_use_detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="02:00:00"
@@ -88,24 +60,23 @@
 
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/activity_vertical_margin">
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp">
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/record_date_recycler"
+                    android:id="@+id/statistics_recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"/>
+
             </ScrollView>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.75"
+            android:layout_weight="0.7"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_vertical_margin"
+            android:padding="@dimen/activity_vertical_margin"
             android:weightSum="1">
 
             <LinearLayout
@@ -117,9 +88,9 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/txt_quantity_nro_apps_day"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:id="@+id/txt_quantity_nro_apps_detail"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_marginTop="3dp"
                     android:background="@drawable/circle_main"
                     android:text="1"
@@ -130,7 +101,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="Total de nro. veces de apps"
-                    android:textSize="12sp"
                     android:textAlignment="center"/>
             </LinearLayout>
 
@@ -142,9 +112,9 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/txt_quantity_unlock_screen_day"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:id="@+id/txt_quantity_unlock_screen_detail"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_marginTop="3dp"
                     android:background="@drawable/circle_main"
                     android:text="1"
@@ -155,9 +125,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="Nº de desbloqueos"
-                    android:textSize="12sp"
                     android:textAlignment="center"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>

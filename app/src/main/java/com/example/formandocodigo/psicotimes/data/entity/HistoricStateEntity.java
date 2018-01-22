@@ -20,6 +20,9 @@ public class HistoricStateEntity {
     @SerializedName("time_use")
     private long timeUse;
 
+    @SerializedName("nro_unlock")
+    private int nroUnlock;
+
     @SerializedName("created_at")
     private String created_at;
 
@@ -59,6 +62,14 @@ public class HistoricStateEntity {
 
     public void setTimeUse(long timeUse) {
         this.timeUse = timeUse;
+    }
+
+    public int getNroUnlock() {
+        return nroUnlock;
+    }
+
+    public void setNroUnlock(int nroUnlock) {
+        this.nroUnlock = nroUnlock;
     }
 
     public String getCreated_at() {

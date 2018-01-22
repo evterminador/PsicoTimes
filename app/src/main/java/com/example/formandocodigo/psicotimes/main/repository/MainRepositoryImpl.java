@@ -4,26 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.formandocodigo.psicotimes.data.cache.FileManager;
-import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
-import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
-import com.example.formandocodigo.psicotimes.data.disk.StateUseDiskImpl;
-import com.example.formandocodigo.psicotimes.data.entity.AppEntity;
-import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
-import com.example.formandocodigo.psicotimes.data.entity.StateUserEntity;
-import com.example.formandocodigo.psicotimes.data.entity.mapper.AppEntityDataMapper;
-import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUserEntityDataMapper;
 import com.example.formandocodigo.psicotimes.domain.StateUseCase;
 import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
-import com.example.formandocodigo.psicotimes.entity.App;
+import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
-import com.example.formandocodigo.psicotimes.entity.StateUser;
-import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
-import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
+import com.example.formandocodigo.psicotimes.entity.StatisticsDetail;
 import com.example.formandocodigo.psicotimes.utils.Continual;
 import com.example.formandocodigo.psicotimes.main.presenter.MainPresenter;
+import com.example.formandocodigo.psicotimes.utils.Converts;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,7 +26,6 @@ import java.util.List;
 public class MainRepositoryImpl implements MainRepository {
 
     private MainPresenter presenter;
-    private StateUseCacheImpl useCache = null;
     private StateUseCase useCase;
 
     public MainRepositoryImpl(MainPresenter presenter) {
@@ -44,26 +35,19 @@ public class MainRepositoryImpl implements MainRepository {
 
     @Override
     public List<StateUse> findByIdAll(Integer id) {
-        return useCase.findStateUseByIdAll(id);
+        List<StateUse> list = new ArrayList<>();
+        return list; //useCase.findStateUseByIdAll(id);
     }
 
     @Override
     public List<StateUse> findAll() {
-        return useCase.getStateUseAll();
+        List<StateUse> list = new ArrayList<>();
+        return list; //useCase.getStateUseAll();
     }
 
     @Override
-    public List<StateUseEntity> findCacheAll(Activity activity) {
-        List<StateUseEntity> stateUses = new ArrayList<>();
-
-        if (useCache == null) {
-            useCache = new StateUseCacheImpl(activity, new Serializer(), new FileManager());
-        }
-
-        if (useCache.getAll() != null) {
-            stateUses = useCache.getAll();
-        }
-        return stateUses;
+    public List<StatisticsDetail> getStatisticsDetailCurrentDate() {
+        return useCase.getStatisticsDetailCurrentDate();
     }
 
 
@@ -83,61 +67,36 @@ public class MainRepositoryImpl implements MainRepository {
     }
 
     @Override
-    public void storeApp(Activity activity, AppOrderResponse response) {
-        StateUseDiskImpl disk = new StateUseDiskImpl();
-
-        ArrayList<App> res = transformAppEntityToApp(response.getApplications());
-
-        int result = disk.putApplicationAll(res);
-        if (result != -1) {
-            presenter.updateAppSuccess("Aplicaciones añadidas: " + result);
-        } else {
-            presenter.updateAppError("Error al grabar las aplicaiones");
-        }
-    }
-
-    @Override
-    public void storeStateUser(Activity activity, StateUserOrderResponse response) {
-        StateUseDiskImpl disk = new StateUseDiskImpl();
-
-        if (useCache == null) {
-            useCache = new StateUseCacheImpl(activity, new Serializer(), new FileManager());
-        }
-
-        ArrayList<StateUser> res = transformStateUserEntityToStateUser(response.getStateUses());
-
-        if (disk.putStateUserAll(res) != -1) {
-            presenter.syncSuccess(response.getMessage());
-            useCache.evictAll();
-        } else {
-            presenter.syncError("Error al tratar de grabar");
-        }
-    }
-
-    @Override
-    public Integer quantityUnlockScreen(Activity activity) {
+    public int quantityUnlockScreen(Activity activity) {
         SharedPreferences preferences = activity.getSharedPreferences(Continual.Shared.LockScreen.FILE_NAME, Context.MODE_PRIVATE);
         return (preferences.getInt(Continual.Shared.LockScreen.KEY_SCREEN, 0));
     }
 
-    private ArrayList<StateUser> transformStateUserEntityToStateUser(List<StateUserEntity> stateUserEntities) {
-        ArrayList<StateUser> stateUsers;
+    @Override
+    public int quantityNroApps(Activity activity) {
+        List<HistoricState> historicStates = useCase.getHistoricStateAll();
 
-        StateUserEntityDataMapper mapper = new StateUserEntityDataMapper();
+        for (HistoricState h : historicStates) {
+            if (h.getCreated_at().after(getCurrentDay()))
+                return h.getQuantity();
+        }
 
-        stateUsers = new ArrayList<>(mapper.transformArrayList((ArrayList<StateUserEntity>) stateUserEntities));
-
-        return stateUsers;
+        return 0;
     }
 
-    private ArrayList<App> transformAppEntityToApp(List<AppEntity> appEntities) {
-        ArrayList<App> apps;
+    private Timestamp getCurrentDay() {
+        Calendar c = Calendar.getInstance();
 
-        AppEntityDataMapper mapper = new AppEntityDataMapper();
+        Converts.setTimeToBeginningOfDay(c);
 
-        apps = new ArrayList<>(mapper.transformArrayList((ArrayList<AppEntity>) appEntities));
-
-        return apps;
+        return new Timestamp(c.getTimeInMillis());
     }
 
+    private Timestamp getEndDay() {
+        Calendar c = Calendar.getInstance();
+
+        Converts.setTimeToEndOfDay(c);
+
+        return new Timestamp(c.getTimeInMillis());
+    }
 }

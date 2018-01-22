@@ -25,13 +25,11 @@ public class StateUseByDateAdapterRecyclerView extends RecyclerView.Adapter<Stat
     private ArrayList<StateUse> stateUses;
     private int resource;
     private Activity activity;
-    private int c;
 
     public StateUseByDateAdapterRecyclerView(ArrayList<StateUse> stateUses, int resource, Activity activity) {
         this.stateUses = stateUses;
         this.resource = resource;
         this.activity = activity;
-        c = 1;
     }
 
     @Override
@@ -43,7 +41,7 @@ public class StateUseByDateAdapterRecyclerView extends RecyclerView.Adapter<Stat
     @Override
     public void onBindViewHolder(StateUseByDateViewHolder holder, int position) {
         StateUse stateUse = stateUses.get(position);
-        holder.txtNum.setText("#"+c);
+        holder.txtNum.setText("#"+(position + 1));
         holder.txtNameHistoric.setText(stateUse.getNameApplication());
         if (stateUse.getImageApp() != null || !stateUse.getImageApp().equals("")) {
             try {
@@ -57,7 +55,6 @@ public class StateUseByDateAdapterRecyclerView extends RecyclerView.Adapter<Stat
         holder.imgIconHistoric.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_access_time));
         holder.txtValueHistoric.setText(Converts.convertLongToTimeChar(stateUse.getUseTime()));
         holder.imgIconHistoric.setColorFilter(activity.getResources().getColor(android.R.color.holo_green_light));
-        c++;
     }
 
     @Override

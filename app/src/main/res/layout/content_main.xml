@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:appTop="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    appTop:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.formandocodigo.psicotimes.main.view.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
@@ -14,26 +14,87 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pie_chart_statistics"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.45"
-            android:padding="@dimen/activity_horizontal_margin" />
+            android:layout_weight="0.25"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Total de tiempo de uso hoy"
+                android:textAlignment="textEnd"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/txt_total_time_use_today"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="02:00:00"
+                android:textAlignment="textEnd"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Las apps mas usadas"
+                android:textSize="16sp"/>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/statistics_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </ScrollView>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.55"
+            android:layout_weight="0.75"
             android:orientation="horizontal"
             android:padding="@dimen/activity_vertical_margin"
             android:weightSum="1">
 
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/bar_chart_quantity_use"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="0.5" />
+                android:layout_weight="0.5"
+                android:orientation="vertical"
+                android:weightSum="1"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/txt_quantity_nro_apps"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/circle_main"
+                    android:text="1"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Total de nro. veces de apps"
+                    android:textAlignment="center"/>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,8 +105,8 @@
 
                 <TextView
                     android:id="@+id/txt_quantity_unlock_screen"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_marginTop="3dp"
                     android:background="@drawable/circle_main"
                     android:text="1"

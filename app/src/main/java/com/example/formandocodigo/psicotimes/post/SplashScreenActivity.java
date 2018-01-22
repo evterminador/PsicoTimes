@@ -13,29 +13,24 @@ import com.example.formandocodigo.psicotimes.data.cache.FileManager;
 import com.example.formandocodigo.psicotimes.data.cache.StateUseCacheImpl;
 import com.example.formandocodigo.psicotimes.data.cache.serializer.Serializer;
 import com.example.formandocodigo.psicotimes.data.disk.StateUseDiskImpl;
-import com.example.formandocodigo.psicotimes.data.entity.AppEntity;
 import com.example.formandocodigo.psicotimes.data.entity.HistoricStateEntity;
 import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
-import com.example.formandocodigo.psicotimes.data.entity.StateUserEntity;
-import com.example.formandocodigo.psicotimes.data.entity.mapper.AppEntityDataMapper;
 import com.example.formandocodigo.psicotimes.data.entity.mapper.HistoricStateEntityDataMapper;
-import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUserEntityDataMapper;
+import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
 import com.example.formandocodigo.psicotimes.domain.StateUseCase;
 import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
-import com.example.formandocodigo.psicotimes.entity.App;
+import com.example.formandocodigo.psicotimes.entity.AppTop;
 import com.example.formandocodigo.psicotimes.entity.HistoricState;
-import com.example.formandocodigo.psicotimes.entity.StateUser;
+import com.example.formandocodigo.psicotimes.entity.StateUse;
+import com.example.formandocodigo.psicotimes.entity.StatisticsDetail;
 import com.example.formandocodigo.psicotimes.post.net.HistoricStateOrder;
 import com.example.formandocodigo.psicotimes.post.net.HistoricStateResponse;
 import com.example.formandocodigo.psicotimes.service.StateUseService;
+import com.example.formandocodigo.psicotimes.sort.SortStateUseEntityByDate;
 import com.example.formandocodigo.psicotimes.sort.SortStateUseEntityByUseTime;
 import com.example.formandocodigo.psicotimes.utils.Converts;
-import com.example.formandocodigo.psicotimes.utils.StateUseAll;
 import com.example.formandocodigo.psicotimes.utils.net.OrderService;
 import com.example.formandocodigo.psicotimes.utils.net.RetrofitBuilder;
-import com.example.formandocodigo.psicotimes.main.net.AppOrderResponse;
-import com.example.formandocodigo.psicotimes.main.net.StateUserOrder;
-import com.example.formandocodigo.psicotimes.main.net.StateUserOrderResponse;
 import com.example.formandocodigo.psicotimes.main.view.MainActivity;
 import com.example.formandocodigo.psicotimes.utils.Continual;
 import com.example.formandocodigo.psicotimes.utils.net.NetworkStatus;
@@ -44,6 +39,7 @@ import com.wang.avi.AVLoadingIndicatorView;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,16 +61,12 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
     private StateUseCase useCase;
 
     AVLoadingIndicatorView avi;
-    AVLoadingIndicatorView aviPacman;
-    AVLoadingIndicatorView aviStateUse;
     AVLoadingIndicatorView aviHistoricState;
 
     @BindView(R.id.screen_status)
     TextView txtScreenStatus;
 
     OrderService service;
-    Call<StateUserOrderResponse> stateUserCall;
-    Call<AppOrderResponse> appCall;
     Call<HistoricStateResponse> historicCall;
 
     private int attempt = 0;
@@ -89,8 +81,6 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
         ButterKnife.bind(this);
 
         avi = findViewById(R.id.avi);
-        aviPacman = findViewById(R.id.avi_pacman);
-        aviStateUse = findViewById(R.id.avi_state_use);
         aviHistoricState = findViewById(R.id.avi_historic_state);
 
         useCase = new StateUseCaseImpl();
@@ -105,46 +95,26 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
             public void run() {
                 while (attempt <= attemptLimit) {
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(6000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
 
                     if (NetworkStatus.isOnline(SplashScreenActivity.this)) {
                         if (isUpdateSuccess == 0) {
+                            isUpdateSuccess = 1;
+                        } else if (isUpdateSuccess == 1) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     avi.hide();
-                                    aviPacman.show();
-                                    txtScreenStatus.setText("Consumiendo data");
-                                }
-                            });
-                            serviceApp();
-                            isUpdateSuccess = 1;
-                        } else if (isUpdateSuccess == 1){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    aviPacman.hide();
-                                    aviStateUse.show();
-                                    txtScreenStatus.setText("Buscando estados de uso");
-                                }
-                            });
-                            serviceStateUser();
-                            isUpdateSuccess = 2;
-                        } else if (isUpdateSuccess == 2) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    aviStateUse.hide();
                                     aviHistoricState.show();
                                     txtScreenStatus.setText("Actualizando estado General");
                                 }
                             });
                             serviceHistoricState();
-                            isUpdateSuccess = 3;
-                        }else {
+                            isUpdateSuccess = 2;
+                        } else {
                             attempt = attemptLimit;
                         }
                     } else {
@@ -160,25 +130,19 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
                 }
 
                 if (attempt >= attemptLimit) {
+                    //storeAppTop();
+                    storeStatisticsDetail();
+
                     initializeActivity();
                 }
             }
         });
         tr.start();
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (stateUserCall != null)  {
-            stateUserCall.cancel();
-            stateUserCall = null;
-        }
-        if (appCall != null) {
-            appCall.cancel();
-            appCall = null;
-        }
         if (historicCall != null) {
             historicCall.cancel();
             historicCall = null;
@@ -193,92 +157,63 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
         startActivity(new Intent(this, MainActivity.class));
     }
 
-    private void serviceApp() {
-        appCall = service.appOrder();
-
-        appCall.enqueue(new Callback<AppOrderResponse>() {
-            @Override
-            public void onResponse(Call<AppOrderResponse> call, Response<AppOrderResponse> response) {
-                if (response.isSuccessful()) {
-                    storeApp(response.body());
-                } else {
-                    updateAppError(response.errorBody().toString());
-                }
-            }
-            @Override
-            public void onFailure(Call<AppOrderResponse> call, Throwable t) {
-                txtScreenStatus.setText(t.getMessage());
-                t.printStackTrace();
-            }
-        });
-    }
-
-    private void serviceStateUser() {
-        List<StateUseEntity> stateUseEntities = findCacheAll(this);
-
-        if (stateUseEntities != null && stateUseEntities.size() > 0) {
-
-            StateUserOrder order = new StateUserOrder();
-
-            HashMap<String, String> data = getUserEmailAndPassword(this);
-
-            order.setToken(data.get("token"));
-            order.setEmail(data.get("email"));
-            order.setStateUseEntities(stateUseEntities);
-
-            stateUserCall = service.stateUserOrder(order);
-
-            stateUserCall.enqueue(new Callback<StateUserOrderResponse>() {
-
-                @Override
-                public void onResponse(Call<StateUserOrderResponse> call, Response<StateUserOrderResponse> response) {
-                    if (response.isSuccessful()) {
-                        storeStateUser(response.body());
-                    } else {
-                        updateStateUserError("No se pudo sincronizar error en la red");
-                        //handleErrors(response.errorBody());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<StateUserOrderResponse> call, Throwable t) {
-                    txtScreenStatus.setText(t.getMessage());
-                    t.printStackTrace();
-                }
-            });
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    txtScreenStatus.setText("Ups! No hay elementos");
-                }
-            });
-        }
-    }
-
     private void serviceHistoricState() {
         if (checkPermission()) {
-            StateUseAll stateUseAll = new StateUseAll(this);
-            List<StateUseEntity> stateUseEntities = stateUseAll.getStateUseEntityAll();
+            List<StateUseEntity> stateUseEntities = findCacheAll(this);
 
             if (stateUseEntities != null && stateUseEntities.size() > 0) {
                 HistoricStateOrder order = new HistoricStateOrder();
 
                 order.setEmail(getUserEmailAndPassword(this).get("email"));
                 order.setToken(getUserEmailAndPassword(this).get("token"));
-                order.setQuantityScreenUnlock(getQuantityScreenUnlock());
 
-                HistoricStateEntity historicStateEntity = new HistoricStateEntity();
+                List<HistoricStateEntity> historicStateEntities = new ArrayList<>();
 
-                Timestamp current = new Timestamp(System.currentTimeMillis());
+                StateUseEntity min = Collections.min(stateUseEntities, new SortStateUseEntityByDate());
+                StateUseEntity max = Collections.max(stateUseEntities, new SortStateUseEntityByDate());
 
-                historicStateEntity.setNameTop(getUseNameAppTop(new ArrayList<>(stateUseEntities)));
-                historicStateEntity.setQuantity(stateUseEntities.size());
-                historicStateEntity.setTimeUse(getTotalUseTime(stateUseEntities));
-                historicStateEntity.setCreated_at(Converts.convertTimestampToString(current));
-                historicStateEntity.setUpdated_at(Converts.convertTimestampToString(current));
+                Calendar minD = Calendar.getInstance();
+                Calendar maxD = Calendar.getInstance();
 
-                order.setHistoricState(historicStateEntity);
+                minD.setTimeInMillis(min.getCreated_at().getTime());
+                maxD.setTimeInMillis(max.getCreated_at().getTime());
+
+                Converts.setTimeToBeginningOfDay(minD);
+                Converts.setTimeToEndOfDay(maxD);
+
+                long diff = maxD.getTimeInMillis() - minD.getTimeInMillis();
+                long diffInDays = diff / (24 * 60 * 60 * 1000);
+
+                HistoricStateEntity historic;
+                Calendar aux = Calendar.getInstance();
+                for (int i = 0; i <= diffInDays; i++) {
+                    aux.setTimeInMillis(minD.getTimeInMillis());
+
+                    Converts.setTimeToEndOfDay(aux);
+                    List<StateUseEntity> entities = new ArrayList<>();
+                    for (StateUseEntity s : stateUseEntities) {
+                        if (s.getCreated_at().getTime() > minD.getTimeInMillis() && s.getCreated_at().getTime() < aux.getTimeInMillis()) {
+                            entities.add(s);
+                        }
+                    }
+
+                    Timestamp current = new Timestamp(System.currentTimeMillis());
+                    if (entities.size() > 0) {
+                        historic =  new HistoricStateEntity();
+
+                        historic.setNameTop(getUseNameAppTop(new ArrayList<>(entities)));
+                        historic.setQuantity(entities.size());
+                        historic.setTimeUse(getTotalUseTime(entities));
+                        historic.setNroUnlock(getQuantityScreenUnlock());
+                        historic.setCreated_at(Converts.convertTimestampToString(entities.get(0).getCreated_at()));
+                        historic.setUpdated_at(Converts.convertTimestampToString(current));
+
+                        historicStateEntities.add(historic);
+                    }
+                    minD.add(Calendar.DAY_OF_YEAR, 1);
+                }
+
+                order.setHistoricStateEntities(historicStateEntities);
 
                 historicCall = service.historicOrder(order);
 
@@ -323,48 +258,8 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
         return (quantity);
     }
 
-    private void storeApp(AppOrderResponse response) {
-        ArrayList<App> res = transformAppEntityToApp(response.getApplications());
-
-        int result = disk.putApplicationAll(res);
-
-        if (result != -1) {
-            if (result == 0) {
-                txtScreenStatus.setText("Se ve, que entra muy seguido");
-            } else {
-                txtScreenStatus.setText("Data actualizada: " + result + " apps");
-            }
-        } else {
-            txtScreenStatus.setText("Ups! no pudimos guardar la data. Verifique su conexión");
-        }
-    }
-
-    private void storeStateUser(StateUserOrderResponse response) {
-        if (useCache == null) {
-            useCache = new StateUseCacheImpl(this, new Serializer(), new FileManager());
-        }
-
-        ArrayList<StateUser> res = transformStateUserEntityToStateUser(response.getStateUses());
-
-        int result = disk.putStateUserAll(res);
-
-        if (result != -1) {
-            txtScreenStatus.setText(response.getMessage());
-            useCache.evictAll();
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    txtScreenStatus.setText("Error al tratar de grabar");
-                }
-            });
-        }
-    }
-
     private void storeHistoricState(HistoricStateResponse response) {
-        ArrayList<HistoricState> res = new ArrayList<>();
-
-        res.add(transformHistoricStateEntityToHistoricState(response.getHistoricStateEntity()));
+        ArrayList<HistoricState> res = transformHistoricStateEntityToHistoricState(response.getHistoricStateEntities());
 
         int result = disk.putHistoricStateAll(res);
 
@@ -391,12 +286,26 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
         }
     }
 
-    private void updateAppError(String error) {
-        txtScreenStatus.setText(error);
+    private void storeAppTop(){
+        List<StateUseEntity> stateUseEntities = findCacheAll(this);
+
+        if (stateUseEntities != null && stateUseEntities.size() > 0) {
+
+        }
     }
 
-    private void updateStateUserError(String error) {
-        txtScreenStatus.setText(error);
+    private void storeStatisticsDetail() {
+        List<StateUseEntity> stateUseEntities = findCacheAll(this);
+
+        if (stateUseEntities != null && stateUseEntities.size() > 0) {
+            ArrayList<StatisticsDetail> list = transformStateUseEntityToStatisticsDetail(stateUseEntities);
+
+            int result = disk.putStatisticsDetailAll(list);
+
+            if (result != -1) {
+                useCache.evictAll();
+            }
+        }
     }
 
     private void updateHistoricStateError(String error) {
@@ -476,34 +385,59 @@ public class SplashScreenActivity extends Activity implements SplashScreenView {
         return total;
     }
 
-    private ArrayList<App> transformAppEntityToApp(List<AppEntity> appEntities) {
-        ArrayList<App> apps;
-
-        AppEntityDataMapper mapper = new AppEntityDataMapper();
-
-        apps = new ArrayList<>(mapper.transformArrayList((ArrayList<AppEntity>) appEntities));
-
-        return apps;
-    }
-
-    private ArrayList<StateUser> transformStateUserEntityToStateUser(List<StateUserEntity> stateUserEntities) {
-        ArrayList<StateUser> stateUsers;
-
-        StateUserEntityDataMapper mapper = new StateUserEntityDataMapper();
-
-        stateUsers = new ArrayList<>(mapper.transformArrayList((ArrayList<StateUserEntity>) stateUserEntities));
-
-        return stateUsers;
-    }
-
-    private HistoricState transformHistoricStateEntityToHistoricState(HistoricStateEntity historicStateEntity) {
-        HistoricState historicState;
+    private ArrayList<HistoricState> transformHistoricStateEntityToHistoricState(List<HistoricStateEntity> historicStateEntities) {
+        ArrayList<HistoricState> list;
 
         HistoricStateEntityDataMapper mapper = new HistoricStateEntityDataMapper();
 
-        historicState = mapper.transform(historicStateEntity);
+        list = new ArrayList<>(mapper.transformArrayList((ArrayList<HistoricStateEntity>) historicStateEntities));
 
-        return historicState;
+        return list;
+    }
+
+    private ArrayList<StatisticsDetail> transformStateUseEntityToStatisticsDetail(List<StateUseEntity> stateUseEntities) {
+        ArrayList<StateUse> list;
+        ArrayList<StatisticsDetail> statisticsDetails = null;
+
+        StateUseEntityDataMapper mapper = new StateUseEntityDataMapper();
+
+        list = new ArrayList<>(mapper.transform(stateUseEntities));
+
+        if (list.size() > 0) {
+            statisticsDetails = new ArrayList<>();
+
+            StatisticsDetail detail;
+            for (StateUse s : list) {
+                detail = new StatisticsDetail();
+                detail.setNameApp(s.getNameApplication());
+                detail.setImage(s.getImageApp());
+                detail.setQuantity(s.getQuantity());
+                detail.setTimeUse(s.getUseTime());
+                detail.setLastUseTime(s.getLastUseTime());
+                detail.setCreated_at(s.getCreated_at());
+                detail.setUpdated_at(s.getUpdated_at());
+
+                statisticsDetails.add(detail);
+            }
+        }
+
+        return statisticsDetails;
+    }
+
+    private ArrayList<AppTop> transformStateUseEntityToAppTop(ArrayList<StateUseEntity> stateUseEntities) {
+        ArrayList<StateUse> list;
+        ArrayList<AppTop> appTops = null;
+
+        StateUseEntityDataMapper mapper = new StateUseEntityDataMapper();
+
+        list = new ArrayList<>(mapper.transform(stateUseEntities));
+        if (list.size() > 0) {
+            appTops = new ArrayList<>();
+
+            AppTop a;
+
+        }
+        return appTops;
     }
 
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:appTop="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,28 +20,28 @@
             android:id="@+id/avi"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:indicatorName="BallClipRotatePulseIndicator"
+            appTop:indicatorName="BallClipRotatePulseIndicator"
             android:visibility="visible" />
 
         <com.wang.avi.AVLoadingIndicatorView
             android:id="@+id/avi_pacman"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:indicatorName="PacmanIndicator"
+            appTop:indicatorName="PacmanIndicator"
             android:visibility="gone" />
 
         <com.wang.avi.AVLoadingIndicatorView
             android:id="@+id/avi_state_use"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:indicatorName="BallScaleMultipleIndicator"
+            appTop:indicatorName="BallScaleMultipleIndicator"
             android:visibility="gone"/>
 
         <com.wang.avi.AVLoadingIndicatorView
             android:id="@+id/avi_historic_state"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:indicatorName="SquareSpinIndicator"
+            appTop:indicatorName="SquareSpinIndicator"
             android:visibility="gone"/>
     </FrameLayout>
 
@@ -65,14 +65,14 @@
         <com.eyalbira.loadingdots.LoadingDots
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:LoadingDots_auto_play="true"
-            app:LoadingDots_dots_color="@android:color/white"
-            app:LoadingDots_dots_count="3"
-            app:LoadingDots_dots_size="8dp"
-            app:LoadingDots_loop_duration="800"
-            app:LoadingDots_loop_start_delay="100"
-            app:LoadingDots_jump_duration="200"
-            app:LoadingDots_jump_height="4dp" />
+            appTop:LoadingDots_auto_play="true"
+            appTop:LoadingDots_dots_color="@android:color/white"
+            appTop:LoadingDots_dots_count="3"
+            appTop:LoadingDots_dots_size="8dp"
+            appTop:LoadingDots_loop_duration="800"
+            appTop:LoadingDots_loop_start_delay="100"
+            appTop:LoadingDots_jump_duration="200"
+            appTop:LoadingDots_jump_height="4dp" />
     </LinearLayout>
 
 </LinearLayout>

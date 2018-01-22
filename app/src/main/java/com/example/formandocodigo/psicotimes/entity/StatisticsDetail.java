@@ -3,45 +3,36 @@ package com.example.formandocodigo.psicotimes.entity;
 import java.sql.Timestamp;
 
 /**
- * Created by FormandoCodigo on 13/12/2017.
+ * Created by FormandoCodigo on 17/01/2018.
  */
 
-public class StateUser {
-    private Integer appId;
-    private Integer userId;
-    private Long timeUse;
+public class StatisticsDetail {
+
+    private String nameApp;
+    private String image;
     private Integer quantity;
+    private Long timeUse;
     private Timestamp lastUseTime;
     private Timestamp created_at;
     private Timestamp updated_at;
 
-    /* Constructor */
-    public StateUser() {
-        super();
+    public StatisticsDetail() {
     }
 
-    public Integer getAppId() {
-        return appId;
+    public String getNameApp() {
+        return nameApp;
     }
 
-    public void setAppId(Integer appId) {
-        this.appId = appId;
+    public void setNameApp(String nameApp) {
+        this.nameApp = nameApp;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getImage() {
+        return image;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Long getTimeUse() {
-        return timeUse;
-    }
-
-    public void setTimeUse(Long timeUse) {
-        this.timeUse = timeUse;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Integer getQuantity() {
@@ -50,6 +41,14 @@ public class StateUser {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Long getTimeUse() {
+        return timeUse;
+    }
+
+    public void setTimeUse(Long timeUse) {
+        this.timeUse = timeUse;
     }
 
     public Timestamp getLastUseTime() {

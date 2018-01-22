@@ -6,20 +6,21 @@ import java.sql.Timestamp;
  * Created by FormandoCodigo on 13/12/2017.
  */
 
-public class App {
+public class AppTop {
     private Integer id;
     private String name;
-    private Integer relevance;
     private String image;
-    private String description;
+    private Integer quantity;
+    private Long timeUse;
+    private Integer lastPosition;
     private Timestamp created_at;
     private Timestamp updated_at;
 
-    public App(Integer id) {
+    public AppTop(Integer id) {
         this.id = id;
     }
 
-    public App() {
+    public AppTop() {
         super();
     }
 
@@ -39,14 +40,6 @@ public class App {
         this.name = name;
     }
 
-    public Integer getRelevance() {
-        return relevance;
-    }
-
-    public void setRelevance(Integer relevance) {
-        this.relevance = relevance;
-    }
-
     public String getImage() {
         return image;
     }
@@ -55,12 +48,28 @@ public class App {
         this.image = image;
     }
 
-    public String getDescription() {
-        return description;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Long getTimeUse() {
+        return timeUse;
+    }
+
+    public void setTimeUse(Long timeUse) {
+        this.timeUse = timeUse;
+    }
+
+    public Integer getLastPosition() {
+        return lastPosition;
+    }
+
+    public void setLastPosition(Integer lastPosition) {
+        this.lastPosition = lastPosition;
     }
 
     public Timestamp getCreated_at() {

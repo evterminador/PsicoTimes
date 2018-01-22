@@ -3,6 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textColor="@color/editTextColorWhite"
+    android:textColor="@color/editTextColorBlack"
     android:padding="10dp"
     android:textSize="16sp"/>

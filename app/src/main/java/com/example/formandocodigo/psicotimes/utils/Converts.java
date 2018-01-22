@@ -61,6 +61,39 @@ public class Converts {
         return day+hour+min+sec;
     }
 
+    public static String convertLongToTimeSimple(long usedTime) {
+        String day="", hour="", min="", sec="";
+
+        int d = (int) ((usedTime/1000/60/60/24));
+        if (d!=0)
+            day = d+":";
+
+        int h=(int)((usedTime/1000/60/60) % 24);
+        if (h!=0 && h<10)
+            hour = "0"+ h +":";
+        else if (h>10)
+            hour = h+":";
+        else
+            hour = "00:";
+
+        int m=(int)((usedTime/1000/60) % 60);
+        if (m!=0 && m<10)
+            min = "0" +m+":";
+        else if (m>10)
+            min = m+":";
+        else
+            min="00:";
+
+
+        int s=(int)((usedTime/1000) % 60);
+        if (s==0 && (h!=0 || m!=0))
+            sec="00";
+        else
+            sec = s+"";
+
+        return day+hour+min+sec;
+    }
+
     public static String convertTimestampToString(Timestamp timestamp) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -94,7 +127,7 @@ public class Converts {
         calendar.set(Calendar.MILLISECOND, 0);
     }
 
-    public static void setTimeToEndofDay(Calendar calendar) {
+    public static void setTimeToEndOfDay(Calendar calendar) {
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);

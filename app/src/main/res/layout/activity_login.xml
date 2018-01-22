@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:appTop="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,8 +21,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.6"
-            android:visibility="gone">
+            android:layout_weight="0.6">
 
         </RelativeLayout>
 
@@ -36,21 +35,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/txt_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/prompt_name"
-                    android:theme="@style/EditTextWhite">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:singleLine="true" />
-                </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/txt_email"
@@ -69,114 +53,19 @@
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/txt_birth_date"
+                    android:id="@+id/txt_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Fecha de nacimiento"
-                    android:theme="@style/EditTextWhite">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/txt_birth_date_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:cursorVisible="false"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"/>
-
-                </android.support.design.widget.TextInputLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="1"
-                    android:layout_marginTop="10dp">
-
-                    <Spinner
-                        android:id="@+id/spinner_sex"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:prompt="@string/sex_prompt"
-                        android:popupBackground="@color/colorPrimary"
-                        android:layout_weight="0.2"
-                        />
-
-                    <Spinner
-                        android:id="@+id/spinner_occupation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:prompt="@string/occupation_prompt"
-                        android:popupBackground="@color/colorPrimary"
-                        android:layout_weight="0.8"/>
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:textSize="18sp"
-                    android:text="Utilizas tu móvil como herramienta de trabajo?"
-                    android:textColor="@color/editTextColorWhite" />
-
-                <RadioGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp">
-
-                    <RadioButton
-                        android:id="@+id/rbt_yes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/editTextColorWhite"
-                        android:text="Si"/>
-
-                    <RadioButton
-                        android:id="@+id/rbt_no"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/editTextColorWhite"
-                        android:text="No"/>
-                </RadioGroup>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/txt_dni"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Documento de indentidad"
-                    android:theme="@style/EditTextWhite">
+                    android:hint="@string/prompt_password"
+                    android:theme="@style/EditTextWhite"
+                    appTop:passwordToggleEnabled="true"
+                    appTop:passwordToggleTint="@android:color/white">
 
                     <android.support.design.widget.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text"/>
+                        android:inputType="textPassword" />
                 </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/txt_use_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Cuanto tiempo usa el movil al dia (h)"
-                    android:theme="@style/EditTextWhite">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"/>
-                </android.support.design.widget.TextInputLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center">
-
-                    <ProgressBar
-                        android:id="@+id/pgr_bar_profile"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"/>
-                </RelativeLayout>
 
                 <Button
                     android:id="@+id/btn_start"
@@ -191,12 +80,51 @@
                     android:layout_height="match_parent"
                     android:gravity="center">
 
+                    <TextView
+                        android:id="@+id/dontHaveAccount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dont_have_account"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_size_dont_have_account" />
+
+                    <TextView
+                        android:id="@+id/createHere"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/create_here"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_size_dont_have_account"
+                        android:layout_toRightOf="@+id/dontHaveAccount"
+                        android:onClick="goCreateProfile" />
+
+                    <View
+                        android:id="@+id/separator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray"
+                        android:layout_below="@id/dontHaveAccount"
+                        android:layout_marginTop="24dp"/>
+
+
+                    <TextView
+                        android:id="@+id/txt_forgot_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/separator"
+                        android:text="@string/forgot_password"
+                        android:layout_marginTop="24dp"
+                        android:gravity="center"
+                        android:textColor="@color/editTextColorWhite"
+                        android:onClick="goForgotPassword"/>
+
                     <!-- Login progress -->
                     <ProgressBar
                         android:id="@+id/login_progress"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"/>
+                        android:layout_height="wrap_content" />
                 </RelativeLayout>
             </LinearLayout>
         </ScrollView>

@@ -3,6 +3,8 @@ package com.example.formandocodigo.psicotimes.post.net;
 import com.example.formandocodigo.psicotimes.data.entity.HistoricStateEntity;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by FormandoCodigo on 26/12/2017.
  */
@@ -15,11 +17,8 @@ public class HistoricStateOrder {
     @SerializedName("token")
     private String token;
 
-    @SerializedName("quantity_screen_unlock")
-    private int quantityScreenUnlock;
-
     @SerializedName("historic_state")
-    private HistoricStateEntity historicState;
+    private List<HistoricStateEntity> historicStateEntities;
 
     public String getEmail() {
         return email;
@@ -37,19 +36,11 @@ public class HistoricStateOrder {
         this.token = token;
     }
 
-    public int getQuantityScreenUnlock() {
-        return quantityScreenUnlock;
+    public List<HistoricStateEntity> getHistoricStateEntities() {
+        return historicStateEntities;
     }
 
-    public void setQuantityScreenUnlock(int quantityScreenUnlock) {
-        this.quantityScreenUnlock = quantityScreenUnlock;
-    }
-
-    public HistoricStateEntity getHistoricState() {
-        return historicState;
-    }
-
-    public void setHistoricState(HistoricStateEntity historicState) {
-        this.historicState = historicState;
+    public void setHistoricStateEntities(List<HistoricStateEntity> historicStateEntities) {
+        this.historicStateEntities = historicStateEntities;
     }
 }

@@ -1,11 +1,13 @@
 package com.example.formandocodigo.psicotimes.data.disk;
 
-import com.example.formandocodigo.psicotimes.entity.App;
+import com.example.formandocodigo.psicotimes.entity.AppTop;
 import com.example.formandocodigo.psicotimes.entity.HistoricState;
-import com.example.formandocodigo.psicotimes.entity.StateUse;
-import com.example.formandocodigo.psicotimes.entity.StateUser;
+import com.example.formandocodigo.psicotimes.entity.StatisticsDetail;
+import com.example.formandocodigo.psicotimes.utils.Converts;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -19,55 +21,24 @@ public class StateUseDiskImpl implements StateUseDisk {
     }
 
     @Override
-    public Integer putApplicationAll(ArrayList<App> appList) {
+    public Integer putAppTopAll(ArrayList<AppTop> appTopList) {
         int result;
 
         try {
-            ArrayList<App> data = SQLiteManager.Instance().getAppAll();
+            ArrayList<AppTop> data = SQLiteManager.Instance().getAppTopAll();
 
             int c = 0;
-            if (appList.size() > 0) {
+            if (appTopList.size() > 0) {
                 if (data.size() > 0) {
-                    for (App a : appList) {
-                        if (!isExistsUpdateApp(data, a)) {
-                            SQLiteManager.Instance().insertApp(a);
+                    for (AppTop a : appTopList) {
+                        if (!isExistsUpdateAppTop(data, a)) {
+                            SQLiteManager.Instance().insertAppTop(a);
                             c++;
                         }
                     }
                 } else {
-                    for (App a : appList) {
-                        SQLiteManager.Instance().insertApp(a);
-                        c++;
-                    }
-                }
-            }
-            result = c;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
-        return result;
-    }
-
-    @Override
-    public Integer putStateUserAll(ArrayList<StateUser> stateUserList) {
-        int result;
-
-        try {
-            ArrayList<StateUser> data = SQLiteManager.Instance().getStateUserAll();
-
-            int c = 0;
-            if (stateUserList.size() > 0) {
-                if (data.size() > 0) {
-                    for (StateUser s : stateUserList) {
-                        if (!isExistsUpdateStateUser(data, s)) {
-                            SQLiteManager.Instance().insertStateUser(s);
-                            c++;
-                        }
-                    }
-                } else {
-                    for (StateUser s : stateUserList) {
-                        SQLiteManager.Instance().insertStateUser(s);
+                    for (AppTop a : appTopList) {
+                        SQLiteManager.Instance().insertAppTop(a);
                         c++;
                     }
                 }
@@ -112,10 +83,42 @@ public class StateUseDiskImpl implements StateUseDisk {
     }
 
     @Override
-    public List<StateUser> getStateUserAll() {
-        List<StateUser> list = null;
+    public Integer putStatisticsDetailAll(ArrayList<StatisticsDetail> statisticsDetails) {
+        int result;
+
         try {
-            list = SQLiteManager.Instance().getStateUserAll();
+            ArrayList<StatisticsDetail> data = SQLiteManager.Instance().getStatisticsDetailAll();
+
+            int c = 0;
+            if (statisticsDetails.size() > 0) {
+                if (data.size() > 0) {
+                    for (StatisticsDetail s : statisticsDetails) {
+                        if (!isExistsUpdateStatisticsDetail(data, s)) {
+                            SQLiteManager.Instance().insertStatisticsDetail(s);
+                            c++;
+                        }
+                    }
+                } else {
+                    for (StatisticsDetail s : statisticsDetails) {
+                        SQLiteManager.Instance().insertStatisticsDetail(s);
+                        c++;
+                    }
+                }
+            }
+            result = c;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return  -1;
+        }
+        return result;
+    }
+
+
+    @Override
+    public List<AppTop> getAppTopAll() {
+        List<AppTop> list = new ArrayList<>();
+        try {
+            list = SQLiteManager.Instance().getAppTopAll();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -123,10 +126,31 @@ public class StateUseDiskImpl implements StateUseDisk {
     }
 
     @Override
-    public List<App> getAppAll() {
-        List<App> list = new ArrayList<>();
+    public List<StatisticsDetail> getStatisticsDetailByDate(Timestamp date) {
+        List<StatisticsDetail> list = new ArrayList<>();
         try {
-            list = SQLiteManager.Instance().getAppAll();
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(date.getTime());
+
+            list = SQLiteManager.Instance().findStatisticsDetailByDate(getBeginDay(c), getEndDay(c));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
+    public List<StatisticsDetail> getStatisticsDetailByDate(Timestamp t1, Timestamp t2) {
+        List<StatisticsDetail> list = new ArrayList<>();
+
+        try {
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(t1.getTime());
+
+            Calendar c2 = Calendar.getInstance();
+            c2.setTimeInMillis(t2.getTime());
+
+            list = SQLiteManager.Instance().findStatisticsDetailByDateSort(getBeginDay(c), getEndDay(c2));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -145,11 +169,13 @@ public class StateUseDiskImpl implements StateUseDisk {
     }
 
     @Override
-    public List<StateUse> findStateUseByIdAll(Integer id) {
-        List<StateUse> list = new ArrayList<>();
+    public List<StatisticsDetail> getStatisticsDetailCurrentDate() {
+        List<StatisticsDetail> list = new ArrayList<>();
 
         try {
-            list = SQLiteManager.Instance().findStateUseById(id);
+            Calendar c = Calendar.getInstance();
+
+            list = SQLiteManager.Instance().findStatisticsDetailByDate(getBeginDay(c), getEndDay(c));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -157,47 +183,23 @@ public class StateUseDiskImpl implements StateUseDisk {
     }
 
     @Override
-    public List<StateUse> getStateUseAll() {
-        List<StateUse> list = new ArrayList<>();
+    public HistoricState findHistoricState(int id) {
+        HistoricState historicState = null;
+
         try {
-            list = SQLiteManager.Instance().getStateUses();
+            historicState = SQLiteManager.Instance().findHistoricState(id);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return list;
+        return historicState;
     }
 
-    @Override
-    public List<StateUse> getStateUseByDate() {
-        List<StateUse> list = new ArrayList<>();
-        try {
-            list = SQLiteManager.Instance().getStateUsesByDate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
 
-    private boolean isExistsUpdateStateUser(ArrayList<StateUser> o1, StateUser o2) {
-        for (StateUser s : o1) {
-            if (s.getAppId().equals(o2.getAppId()) && s.getCreated_at().equals(o2.getCreated_at())) {
-                try {
-                    SQLiteManager.Instance().updateStateUser(o2);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return false;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isExistsUpdateApp(ArrayList<App> a1, App a2) {
-        for (App a : a1) {
+    private boolean isExistsUpdateAppTop(ArrayList<AppTop> a1, AppTop a2) {
+        for (AppTop a : a1) {
             if (a.getId().equals(a2.getId()) && (a.getUpdated_at() != a2.getUpdated_at())) {
                 try {
-                    SQLiteManager.Instance().updateApp(a2);
+                    SQLiteManager.Instance().updateAppTop(a2);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return true;
@@ -221,5 +223,40 @@ public class StateUseDiskImpl implements StateUseDisk {
             }
         }
         return false;
+    }
+
+    private boolean isExistsUpdateStatisticsDetail(ArrayList<StatisticsDetail> s1, StatisticsDetail s2) {
+        Calendar c = Calendar.getInstance();
+        Timestamp bTime;
+        Timestamp eTime;
+        for (StatisticsDetail s : s1) {
+            c.setTimeInMillis(s.getCreated_at().getTime());
+
+            bTime = getBeginDay(c);
+            eTime = getEndDay(c);
+
+            if (s.getNameApp().equalsIgnoreCase(s2.getNameApp()) && s.getCreated_at().after(bTime) && s.getCreated_at().before(eTime)) {
+                try {
+                    SQLiteManager.Instance().updateStatisticsDetail(s2, s);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return true;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Timestamp getBeginDay(Calendar c) {
+        Converts.setTimeToBeginningOfDay(c);
+
+        return new Timestamp(c.getTimeInMillis());
+    }
+
+    private Timestamp getEndDay(Calendar c) {
+        Converts.setTimeToEndOfDay(c);
+
+        return new Timestamp(c.getTimeInMillis());
     }
 }

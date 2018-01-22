@@ -2,9 +2,13 @@ package com.example.formandocodigo.psicotimes.domain;
 
 import com.example.formandocodigo.psicotimes.data.disk.StateUseDisk;
 import com.example.formandocodigo.psicotimes.data.disk.StateUseDiskImpl;
+import com.example.formandocodigo.psicotimes.entity.AppTop;
 import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.entity.StateUse;
+import com.example.formandocodigo.psicotimes.entity.StatisticsDetail;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,23 +24,33 @@ public class StateUseCaseImpl implements StateUseCase {
     }
 
     @Override
-    public List<StateUse> findStateUseByIdAll(Integer id) {
-        return stateUseDisk.findStateUseByIdAll(id);
-    }
-
-    @Override
-    public List<StateUse> getStateUseAll() {
-        return stateUseDisk.getStateUseAll();
-    }
-
-    @Override
-    public List<StateUse> getStateUseByDate() {
-        return stateUseDisk.getStateUseByDate();
+    public List<AppTop> getAppTopAll() {
+        return stateUseDisk.getAppTopAll();
     }
 
     @Override
     public List<HistoricState> getHistoricStateAll() {
         return stateUseDisk.getHistoricStateAll();
+    }
+
+    @Override
+    public HistoricState findHistoricState(int id) {
+        return stateUseDisk.findHistoricState(id);
+    }
+
+    @Override
+    public List<StatisticsDetail> getStatisticsDetailByDate(Timestamp date) {
+        return stateUseDisk.getStatisticsDetailByDate(date);
+    }
+
+    @Override
+    public List<StatisticsDetail> getStatisticsDetailByDate(Timestamp t1, Timestamp t2) {
+        return stateUseDisk.getStatisticsDetailByDate(t1, t2);
+    }
+
+    @Override
+    public List<StatisticsDetail> getStatisticsDetailCurrentDate() {
+        return stateUseDisk.getStatisticsDetailCurrentDate();
     }
 
 }

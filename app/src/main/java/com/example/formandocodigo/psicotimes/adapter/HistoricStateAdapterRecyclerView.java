@@ -1,18 +1,24 @@
 package com.example.formandocodigo.psicotimes.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Explode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.formandocodigo.psicotimes.R;
 import com.example.formandocodigo.psicotimes.entity.HistoricState;
 import com.example.formandocodigo.psicotimes.utils.Converts;
 import com.example.formandocodigo.psicotimes.utils.PackageInformation;
+import com.example.formandocodigo.psicotimes.view.RecordDetailActivity;
 
 import java.util.ArrayList;
 
@@ -25,15 +31,13 @@ public class HistoricStateAdapterRecyclerView extends RecyclerView.Adapter<Histo
     private ArrayList<HistoricState> historicStates;
     private int resource;
     private Activity activity;
-    private int c;
 
-    PackageInformation packageInformation;
+    private PackageInformation packageInformation;
 
     public HistoricStateAdapterRecyclerView(ArrayList<HistoricState> historicStates, int resource, Activity activity) {
         this.historicStates = historicStates;
         this.resource = resource;
         this.activity = activity;
-        c = 1;
         packageInformation = new PackageInformation(activity);
     }
 
@@ -46,7 +50,8 @@ public class HistoricStateAdapterRecyclerView extends RecyclerView.Adapter<Histo
     @Override
     public void onBindViewHolder(HistoricStateViewHolder holder, int position) {
         HistoricState historicState = historicStates.get(position);
-        holder.txtNum.setText("#"+c);
+        holder.txtNum.setText("#"+(position + 1));
+
         holder.txtNameTopHistoric.setText(historicState.getNameAppTop());
 
         Drawable icon = packageInformation.getIconAppByName(historicState.getNameAppTop());
@@ -58,7 +63,25 @@ public class HistoricStateAdapterRecyclerView extends RecyclerView.Adapter<Histo
         holder.txtDateHistoric.setText(Converts.convertTimestampToStringShort(historicState.getCreated_at()));
 
         holder.txtUseTimeHistoric.setText(Converts.convertLongToTimeChar(historicState.getTimeUse()));
-        c++;
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, RecordDetailActivity.class);
+                intent.putExtra("id", historicState.getId());
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    Explode explode = new Explode();
+                    explode.setDuration(1000);
+                    activity.getWindow().setExitTransition(explode);
+                    activity.startActivity(intent,
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(activity, v, activity.getString(R.string.transitionname_record)).toBundle());
+
+                }else {
+                    activity.startActivity(intent);
+                }
+            }
+        });
     }
 
     @Override

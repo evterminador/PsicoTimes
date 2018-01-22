@@ -23,24 +23,14 @@ public final class Continual {
     public static final class SQLite {
         public static final String DEFAULT_FILE_NAME = "psicotimes";
 
-        public static final class App {
-            public final String TABLE_NAME = "application";
+        public static final class AppTop {
+            public final String TABLE_NAME = "app_top";
             public final String COLUMN_ID = "id";
-            public final String COLUMN_NAME = "name";
-            public final String COLUMN_RELEVANCE = "relevance";
+            public final String COLUMN_NAME_APP = "name_app";
             public final String COLUMN_IMAGE = "image";
-            public final String COLUMN_DESCRIPTION = "description";
-            public final String COLUMN_CREATED_AT = "created_at";
-            public final String COLUMN_UPDATED_AT = "updated_at";
-        }
-
-        public static final class StateUse {
-            public final String TABLE_NAME = "state_uses";
-            public final String COLUMN_USER_ID = "user_id";
-            public final String COLUMN_APP_ID = "app_id";
-            public final String COLUMN_TIME_USE = "time_use";
             public final String COLUMN_QUANTITY = "quantity";
-            public final String COLUMN_LAST_USE_TIME = "last_use_time";
+            public final String COLUMN_TIME_USE = "time_use";
+            public final String COLUMN_LAST_POSITION = "last_position";
             public final String COLUMN_CREATED_AT = "created_at";
             public final String COLUMN_UPDATED_AT = "updated_at";
         }
@@ -51,6 +41,18 @@ public final class Continual {
             public final String COLUMN_NAME_APP_TOP = "name_app_top";
             public final String COLUMN_QUANTITY = "quantity";
             public final String COLUMN_TIME_USE = "time_use";
+            public final String COLUMN_NRO_UNLOCK = "number_unlock";
+            public final String COLUMN_CREATED_AT = "created_at";
+            public final String COLUMN_UPDATED_AT = "updated_at";
+        }
+
+        public static final class StatisticsDetail {
+            public final String TABLE_NAME = "statistics_detail";
+            public final String COLUMN_NAME_APP = "name_app";
+            public final String COLUMN_IMAGE = "image";
+            public final String COLUMN_QUANTITY = "quantity";
+            public final String COLUMN_TIME_USE = "time_use";
+            public final String COLUMN_LAST_USE_TIME = "last_use_time";
             public final String COLUMN_CREATED_AT = "created_at";
             public final String COLUMN_UPDATED_AT = "updated_at";
         }

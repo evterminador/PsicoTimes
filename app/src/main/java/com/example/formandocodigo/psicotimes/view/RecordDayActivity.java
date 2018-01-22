@@ -1,6 +1,8 @@
 package com.example.formandocodigo.psicotimes.view;
 
-import android.support.constraint.ConstraintLayout;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,28 +10,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.formandocodigo.psicotimes.R;
-import com.example.formandocodigo.psicotimes.adapter.HistoricStateAdapterRecyclerView;
-import com.example.formandocodigo.psicotimes.adapter.StateUseByDateAdapterRecyclerView;
-import com.example.formandocodigo.psicotimes.data.entity.StateUseEntity;
-import com.example.formandocodigo.psicotimes.data.entity.mapper.StateUseEntityDataMapper;
+import com.example.formandocodigo.psicotimes.adapter.StatisticsDetailAdapterRecyclerView;
+import com.example.formandocodigo.psicotimes.domain.StateUseCase;
 import com.example.formandocodigo.psicotimes.domain.StateUseCaseImpl;
 import com.example.formandocodigo.psicotimes.entity.HistoricState;
-import com.example.formandocodigo.psicotimes.entity.StateUse;
-import com.example.formandocodigo.psicotimes.sort.SortHistoricStateByDate;
-import com.example.formandocodigo.psicotimes.sort.SortStateUseByDate;
+import com.example.formandocodigo.psicotimes.entity.StatisticsDetail;
 import com.example.formandocodigo.psicotimes.utils.Converts;
-import com.example.formandocodigo.psicotimes.utils.StateUseAll;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -37,52 +31,59 @@ import butterknife.ButterKnife;
 
 public class RecordDayActivity extends AppCompatActivity {
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+    @BindView(R.id.txt_from_picker)
+    TextInputEditText txtFromPicker;
+    @BindView(R.id.txt_to_picker)
+    TextInputEditText txtToPicker;
+    @BindView(R.id.txt_total_time_use_day)
+    TextView txtTotalTimeUseDay;
+    @BindView(R.id.txt_quantity_nro_apps_day)
+    TextView txtQuantityNroAppsDay;
+    @BindView(R.id.txt_quantity_unlock_screen_day)
+    TextView txtQuantityUnlockScreenDay;
 
-    private ArrayList<StateUse> stateUses = new ArrayList<>();
+    private ArrayList<StatisticsDetail> statisticsDetails = new ArrayList<>();
 
-    @BindView(R.id.ctl_day)
-    ConstraintLayout ctlDay;
-    @BindView(R.id.ctl_month)
-    ConstraintLayout ctlMonth;
-    @BindView(R.id.txt_total_use)
-    TextView txtTotalUse;
+    StateUseCase useCase;
 
-    RecyclerView stateUsesRecycler;
-
-    private int mode = 0;
+    RecyclerView statisticsDetailRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_day);
-        showToolbar("", true);
+        showToolbar("Historial Especifíco", true);
 
         ButterKnife.bind(this);
 
-        getStateUsesAll();
+        useCase = new StateUseCaseImpl();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayout.VERTICAL);
 
-        stateUsesRecycler = findViewById(R.id.record_date_recycler);
-        stateUsesRecycler.setLayoutManager(linearLayoutManager);
+        statisticsDetailRecycler = findViewById(R.id.record_date_recycler);
+        statisticsDetailRecycler.setLayoutManager(linearLayoutManager);
 
-        ctlDay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mode = 0;
-                fillBody(mode);
-            }
-        });
+        Context context = getApplicationContext();
 
-        ctlMonth.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mode = 1;
-                fillBody(mode);
-            }
-        });
+        long install;
+        try {
+            install = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).firstInstallTime;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            install = Calendar.getInstance().getTimeInMillis();
+        }
+
+        Timestamp t1 = new Timestamp(install);
+
+        txtFromPicker.setText(Converts.convertTimestampToStringShort(t1));
+        Timestamp current = new Timestamp(System.currentTimeMillis());
+        txtToPicker.setText(Converts.convertTimestampToStringShort(current));
+
+        getStatisticsDetailByDate(t1, current);
+
+        fillBody();
+        setTextViews();
     }
 
     @Override
@@ -112,103 +113,35 @@ public class RecordDayActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void fillBody(int mode) {
-        changedMode();
+    private void getStatisticsDetailByDate(Timestamp t1, Timestamp t2) {
+        statisticsDetails = new ArrayList<>(useCase.getStatisticsDetailByDate(t1, t2));
+    }
 
-        if (mode == 1) {
-            HistoricStateAdapterRecyclerView recyclerView = new HistoricStateAdapterRecyclerView(historicStateListByMonth(),
-                    R.layout.cardview_historic_state,
-                    this);
+    private void fillBody() {
+        if (statisticsDetails.size() > 0) {
+            StatisticsDetailAdapterRecyclerView recycler =
+                    new StatisticsDetailAdapterRecyclerView(statisticsDetails, R.layout.cardview_state_use_main, this);
 
-            stateUsesRecycler.setAdapter(recyclerView);
-        } else {
-            StateUseByDateAdapterRecyclerView recyclerView = new StateUseByDateAdapterRecyclerView(stateUses,
-                    R.layout.cardview_state_use_historic,
-                    this);
-            stateUsesRecycler.setAdapter(recyclerView);
+            statisticsDetailRecycler.setAdapter(recycler);
+        }
+    }
 
-            Timestamp fecha = new Timestamp(System.currentTimeMillis());
-
-            txtTotalUse.setText(getTotalApp(stateUses));
-
-            String date = dateFormat.format(fecha.getTime());
-            try {
-                fecha = Converts.convertStringToTimestamp(date);
-            } catch (ParseException e) {
-                e.printStackTrace();
+    private void setTextViews() {
+        List<HistoricState> historicStates = useCase.getHistoricStateAll();
+        long totalTime = 0;
+        long totalUnlock = 0;
+        if (historicStates.size() > 0 && statisticsDetails.size() > 0) {
+            for (HistoricState h : historicStates) {
+                totalUnlock += h.getNroUnlock();
             }
-        }
-    }
 
-    private ArrayList<StateUse> stateUseListByDay() {
-        ArrayList<StateUse> list = stateUses;
-        ArrayList<StateUse> newList = new ArrayList<>();
-        Collections.sort(list, new SortStateUseByDate());
-
-        Timestamp fecha = new Timestamp(System.currentTimeMillis());
-
-        txtTotalUse.setText(getTotalApp(list));
-
-        String date = dateFormat.format(fecha.getTime());
-        try {
-            fecha = Converts.convertStringToTimestamp(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (stateUses.size() > 0) {
-            for (StateUse s : list) {
-                if (s.getCreated_at().after(fecha)) {
-                    newList.add(s);
-                }
+            for (StatisticsDetail s : statisticsDetails) {
+                totalTime += s.getTimeUse();
             }
-        }
 
-        return newList;
-    }
-
-    public ArrayList<HistoricState> historicStateListByMonth() {
-        StateUseCaseImpl useCase = new StateUseCaseImpl();
-
-        ArrayList<HistoricState> list = new ArrayList<>(useCase.getHistoricStateAll());
-
-        Collections.sort(list, new SortHistoricStateByDate());
-        Collections.reverse(list);
-
-        return list;
-    }
-
-    private void getStateUsesAll() {
-        StateUseAll stateUseAll = new StateUseAll(this);
-
-        stateUses = transformStateUseEntityToStateUse(stateUseAll.getStateUseEntityAll());
-    }
-
-    private String getTotalApp(ArrayList<StateUse> list) {
-        String date = "2h12m16s";
-        if (stateUses.size() > 0) {
-            long count = 0;
-            for (StateUse s : list) {
-                count += s.getUseTime();
-            }
-            date = Converts.convertLongToTimeChar(count);
-        }
-        return date;
-    }
-
-    private void changedMode() {
-        if (mode == 1) {
-            ctlDay.setBackground(null);
-            ctlDay.setElevation(0);
-
-            ctlMonth.setBackground(getResources().getDrawable(R.drawable.border_select_historic));
-            ctlMonth.setElevation(4F);
-        } else {
-            ctlMonth.setBackground(null);
-            ctlMonth.setElevation(0);
-
-            ctlDay.setBackground(getResources().getDrawable(R.drawable.border_select_historic));
-            ctlDay.setElevation(4F);
+            txtTotalTimeUseDay.setText(Converts.convertLongToTimeSimple(totalTime));
+            txtQuantityNroAppsDay.setText(String.valueOf(statisticsDetails.size()));
+            txtQuantityUnlockScreenDay.setText(String.valueOf(totalUnlock));
         }
     }
 
@@ -219,13 +152,4 @@ public class RecordDayActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(upButton);
     }
 
-    private ArrayList<StateUse> transformStateUseEntityToStateUse(List<StateUseEntity> stateUseEntities) {
-        ArrayList<StateUse> list;
-
-        StateUseEntityDataMapper mapper = new StateUseEntityDataMapper();
-
-        list = new ArrayList<>(mapper.transformArrayList((ArrayList<StateUseEntity>) stateUseEntities));
-
-        return list;
-    }
 }

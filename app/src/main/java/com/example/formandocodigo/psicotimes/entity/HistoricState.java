@@ -6,11 +6,12 @@ import java.sql.Timestamp;
  * Created by FormandoCodigo on 26/12/2017.
  */
 
-public class    HistoricState {
+public class HistoricState {
     private Integer id;
     private String nameAppTop;
     private int quantity;
     private long timeUse;
+    private int nroUnlock;
     private Timestamp created_at;
     private Timestamp updated_at;
 
@@ -47,6 +48,14 @@ public class    HistoricState {
 
     public void setTimeUse(long timeUse) {
         this.timeUse = timeUse;
+    }
+
+    public int getNroUnlock() {
+        return nroUnlock;
+    }
+
+    public void setNroUnlock(int nroUnlock) {
+        this.nroUnlock = nroUnlock;
     }
 
     public Timestamp getCreated_at() {

@@ -5,7 +5,5 @@ package com.example.formandocodigo.psicotimes.main.view;
  */
 
 public interface MainView {
-    void updateAppSuccess(String message);
-    void updateAppError(String error);
-    void syncError(String error);
+
 }

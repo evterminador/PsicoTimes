@@ -29,5 +29,25 @@
     <string name="exception_message_state_use_not_found">Cannot retrieve state use data. Check your internet connection</string>
     <string name="toolbar_tittle_create_profile">Create profile</string>
     <string name="error_field_number">This field accept numbers</string>
+
+    <string name="occupation_prompt">Occupation</string>
+    <string name="sex_prompt">Sex</string>
     <string name="status_network">disconnected</string>
+    <string name="dont_have_account">Don\'t have account?,</string>
+    <string name="create_here">create here</string>
+    <string name="transitionname_record">transitionnamerecord</string>
+    <string name="forgot_password">Forgot password?</string>
+
+    <string-array name="occupations">
+        <item>Only work</item>
+        <item>Only study</item>
+        <item>Study and word</item>
+        <item>Idle</item>
+    </string-array>
+
+    <string-array name="sex">
+        <item>M</item>
+        <item>F</item>
+        <item>others</item>
+    </string-array>
 </resources>
